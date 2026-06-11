@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0e7490">
 <title>旅遊規劃系統 — 國內 / 日本 / 韓國 / 泰國</title>
 <style>
   :root{
@@ -71,7 +73,7 @@
   .day-block{border:1px solid var(--line); border-radius:12px; margin-bottom:14px; overflow:hidden;}
   .day-head{background:linear-gradient(90deg,#0e7490,#0891b2); color:#fff; padding:8px 14px; font-weight:800; display:flex; justify-content:space-between; align-items:center; font-size:.95rem;}
   .day-body{padding:10px 12px;}
-  .itin-row{display:grid; grid-template-columns:78px 78px 1fr 150px 130px 48px; gap:8px; margin-bottom:8px; align-items:center;}
+  .itin-row{display:grid; grid-template-columns:78px 78px 1fr 130px 110px 150px; gap:8px; margin-bottom:8px; align-items:center;}
   .itin-row input{padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-size:.9rem; width:100%;}
   .itin-empty{color:var(--sub); font-size:.85rem; padding:4px 2px;}
   /* ── 路線懶人包 ── */
@@ -114,13 +116,112 @@
   .wiz-done{text-align:center; padding:10px 0;}
   .wiz-done .emoji{font-size:3rem;}
   .wiz-sum{background:#f0f9ff; border-radius:12px; padding:14px; margin:14px 0; text-align:left; font-size:.92rem;}
-  @media print{
-    header,nav.tabs,.setup .dest-btns,.btn,.btn-row,.savebar,.wiz-overlay,footer{display:none!important;}
-    section.panel{display:block!important; border:none; page-break-inside:avoid; margin-bottom:18px;}
-    body{background:#fff;} .setup{border:none;}
-  }
   .badge-shop{background:#7c3aed;}
-  @media(max-width:680px){.itin-row{grid-template-columns:66px 66px 1fr 44px;} .itin-row .hide-m{display:none;} .ritem .desc{padding-left:0;}}
+  /* ── 航班/住宿 ── */
+  .tr-box{border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:10px; background:#fbfdff;}
+  .tr-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px;}
+  .tr-box input,.tr-box select{padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-size:.88rem; width:100%;}
+  .tr-box .full{grid-column:1/-1;}
+  .tr-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-weight:800; color:var(--accent); font-size:.92rem;}
+  .mini-label{font-size:.72rem; color:var(--sub); font-weight:700; display:block; margin-bottom:2px;}
+  /* ── 提醒/警示 ── */
+  .backup-banner{background:#fef3c7; border:1px solid #fbbf24; color:#92400e; padding:10px 16px; border-radius:10px; margin-bottom:14px; display:none; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap; font-size:.88rem;}
+  .backup-banner.show{display:flex;}
+  .warn-row{background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; padding:8px 12px; border-radius:8px; font-size:.85rem; margin-bottom:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .map-link{display:inline-block; background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe; border-radius:6px; padding:2px 9px; font-size:.78rem; text-decoration:none; margin-top:5px; margin-left:4px;}
+  .weather-card{background:linear-gradient(135deg,#e0f2fe,#f0f9ff); border:1px solid #bae6fd;}
+  .opt-static{cursor:default!important;}
+  .opt:focus-visible,.wiz-route:focus-visible,.dest-btn:focus-visible,.tab:focus-visible,.map-link:focus-visible{outline:3px solid #0891b2; outline-offset:2px;}
+  .itin-hd{font-size:.75rem; color:var(--sub); font-weight:700;}
+  .url-share{display:flex; gap:8px; flex-wrap:wrap; align-items:center; background:#f0f9ff; border:1px dashed #7dd3fc; border-radius:10px; padding:10px 12px; margin-bottom:12px; font-size:.9rem;}
+  .url-share code{background:#fff; border:1px solid var(--line); border-radius:6px; padding:5px 9px; font-size:.82rem; word-break:break-all; flex:1 1 200px;}
+  /* ── 天數分頁 chips ── */
+  .day-chips{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;}
+  .day-chip{padding:7px 14px; border-radius:999px; border:2px solid var(--line); background:#fff; cursor:pointer; font-weight:700; font-size:.85rem; color:var(--sub);}
+  .day-chip.active{border-color:var(--accent); background:var(--accent); color:#fff;}
+  /* ── 記帳分帳 ── */
+  .sticky-board{position:sticky; top:8px; z-index:30; background:#111827; color:#fff; border-radius:12px; padding:12px 16px; display:flex; gap:18px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:14px; box-shadow:0 4px 14px rgba(0,0,0,.25);}
+  .sticky-board .big{font-size:1.35rem; font-weight:800;}
+  .sticky-board small{opacity:.7; display:block; font-size:.75rem;}
+  .sticky-board select{padding:5px 8px; border-radius:8px; border:none; font-size:.85rem;}
+  .member-chip{display:inline-flex; align-items:center; gap:6px; background:#e0f2fe; color:#075985; border-radius:999px; padding:4px 12px; font-size:.85rem; font-weight:700; margin:2px;}
+  .member-chip button{border:none; background:none; color:#b91c1c; cursor:pointer; font-weight:800;}
+  .exp-form{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; border:1px solid var(--line); border-radius:12px; padding:12px; background:#fbfdff; margin-bottom:14px;}
+  .exp-form input,.exp-form select{padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:.9rem; width:100%;}
+  .exp-form .full{grid-column:1/-1;}
+  .share-pick{display:flex; gap:6px; flex-wrap:wrap;}
+  .share-chip{padding:5px 12px; border-radius:999px; border:2px solid var(--line); background:#fff; cursor:pointer; font-size:.82rem; font-weight:700; color:var(--sub);}
+  .share-chip.on{border-color:#0e7490; background:#e0f2fe; color:#075985;}
+  .exp-item{display:flex; gap:10px; align-items:center; justify-content:space-between; border-bottom:1px dashed var(--line); padding:8px 4px; font-size:.9rem; flex-wrap:wrap;}
+  .exp-item .amt{font-weight:800; color:var(--accent); white-space:nowrap;}
+  .exp-item .who{font-size:.78rem; color:var(--sub); flex-basis:100%;}
+  .settle-box{background:#f0fdf4; border:1px solid #86efac; border-radius:12px; padding:12px 16px; margin-top:14px; font-size:.92rem;}
+  .settle-box b.give{color:#b91c1c;} .settle-box b.get{color:#15803d;}
+  .spot-title{cursor:pointer;}
+  .spot-title:hover{color:var(--accent); text-decoration:underline dotted;}
+  .journal{width:100%; border:1.5px dashed #c4b5fd; background:#faf5ff; border-radius:10px; padding:9px 12px; font-size:.9rem; font-family:inherit; resize:vertical; min-height:44px; margin-top:8px;}
+  .journal:focus{outline:2px solid #8b5cf6;}
+  .budget-bar{background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:8px 14px; margin:-6px 0 14px; font-size:.88rem;}
+  .budget-bar .track{height:8px; background:#e3e9f1; border-radius:999px; overflow:hidden; margin-top:5px;}
+  .budget-bar .fill{height:100%; background:linear-gradient(90deg,#22c55e,#f59e0b); transition:.3s;}
+  .privacy-note{background:#f0fdf4; border:1px solid #86efac; border-radius:10px; padding:9px 14px; font-size:.85rem; color:#166534; margin-bottom:12px;}
+  /* ── 照片紀錄 ── */
+  .photo-grid{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+  .photo-thumb{position:relative;}
+  .photo-thumb img{width:86px; height:86px; object-fit:cover; border-radius:10px; border:1px solid var(--line); cursor:pointer;}
+  .photo-thumb button{position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%; border:none; background:#b91c1c; color:#fff; font-size:.7rem; cursor:pointer; line-height:1;}
+  .photo-add{display:inline-flex; align-items:center; justify-content:center; width:86px; height:86px; border:2px dashed #93c5fd; border-radius:10px; color:#3b82f6; cursor:pointer; font-size:.78rem; text-align:center; background:#eff6ff;}
+  .img-modal{position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; cursor:zoom-out;}
+  .img-modal img{max-width:94vw; max-height:90vh; border-radius:8px;}
+  /* ── 風險評估 ── */
+  .risk-lv{display:inline-block; border-radius:6px; padding:1px 10px; font-size:.78rem; font-weight:800; margin-left:6px;}
+  .risk-lv.lo{background:#dcfce7; color:#15803d;} .risk-lv.mid{background:#fef3c7; color:#b45309;} .risk-lv.hi{background:#fee2e2; color:#b91c1c;}
+  .rcpt-link{background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe; border-radius:6px; padding:1px 8px; font-size:.76rem; cursor:pointer;}
+  .day-move{padding:4px 2px; border:1px solid var(--line); border-radius:6px; font-size:.78rem; color:var(--sub); background:#fff; max-width:58px;}
+  .print-only{display:none;}
+  @media print{
+    header,nav.tabs,.setup,.btn,.btn-row,.savebar,.wiz-overlay,.backup-banner,.map-link,.warn-row,.url-share,.alert{display:none!important;}
+    #p-routes,#p-spots,#p-export,#p-notes{display:none!important;}
+    section.panel{display:block!important; border:none; padding:0; page-break-inside:avoid; margin-bottom:14px;}
+    .print-only{display:block!important; margin-bottom:12px; font-size:1rem;}
+    .day-head,.total-bar,.sticky-board{color:#000!important; background:#fff!important; border:1.5px solid #000!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; position:static!important;}
+    .total-bar .big,.total-bar small,.sticky-board .big,.sticky-board small{color:#000!important;}
+    .journal{border:1px solid #999; background:#fff;}
+    .day-chips{display:none!important;}
+    .photo-add,.photo-thumb button,.rcpt-link,.day-move{display:none!important;}
+    .photo-thumb img{width:120px; height:120px;}
+    #riskCards{display:grid!important;}
+    details.rday{display:block;} details.rday>*{display:block!important;}
+    .itin-row input,.tr-box input{border:none!important; padding:1px 0!important; font-size:.9rem;}
+    body{background:#fff;}
+    footer{display:block!important;}
+  }
+  /* 平板（681–1024px）：行程列縮欄寬、表單兩欄 */
+  @media(min-width:681px) and (max-width:1024px){
+    .itin-row{grid-template-columns:72px 72px 1fr 110px 95px 145px;}
+    .tr-grid{grid-template-columns:repeat(3,1fr);}
+    .exp-form{grid-template-columns:repeat(3,1fr);}
+    .setup .field input,.setup .field select{min-width:80px;}
+    .btn{padding:10px 16px;}  /* 觸控目標加大 */
+  }
+  @media(max-width:680px){
+    header{padding:14px 16px;}
+    header h1{font-size:1.2rem;}
+    nav.tabs{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
+    .tab{white-space:nowrap; flex:0 0 auto;}
+    section.panel{padding:14px;}
+    .budget-scroll{overflow-x:auto;}
+    #budgetTable{min-width:520px;}
+    .itin-hd{display:none;}
+    .itin-row{grid-template-columns:1fr 1fr; gap:6px;}
+    .itin-row>*:nth-child(n+3){grid-column:1/-1;}
+    .itin-row .hide-m{display:block;}
+    .itin-row .itin-del{min-height:38px; padding:7px 16px;}
+    .tr-grid{grid-template-columns:1fr 1fr;}
+    .ritem .desc{padding-left:0;}
+    .ritem .time{min-width:auto;}
+    .btn.small{padding:7px 12px;}
+  }
 </style>
 </head>
 <body>
@@ -133,13 +234,18 @@
 </header>
 
 <div class="wrap">
+  <div class="print-only" id="printHead"></div>
+  <div class="backup-banner" id="backupBanner">
+    <span>💾 你的行程只存在這台裝置的瀏覽器，建議備份一份以免清資料時遺失。</span>
+    <span><button class="btn small" onclick="exportJSON()">立即備份</button> <button class="btn small ghost" onclick="dismissBanner()">知道了</button></span>
+  </div>
   <div class="setup">
     <div class="field" style="flex:1 1 100%;">
       <label>目的地</label>
       <div class="dest-btns" id="destBtns"></div>
     </div>
     <div class="field"><label>出發日期</label><input type="date" id="startDate"></div>
-    <div class="field"><label>天數</label><input type="number" id="days" min="1" max="30" value="5"></div>
+    <div class="field"><label>天數（1–15）</label><input type="number" id="days" min="1" max="15" value="5"></div>
     <div class="field"><label>大人</label><input type="number" id="adults" min="1" max="20" value="2"></div>
     <div class="field"><label>小孩（半價計）</label><input type="number" id="kids" min="0" max="20" value="0"></div>
     <div class="field"><label>匯率（1 外幣 = ? 台幣）</label><input type="number" id="fxRate" step="0.001" min="0"></div>
@@ -150,6 +256,14 @@
         <option value="1.5">豪華享受</option>
       </select>
     </div>
+    <div class="field"><label>出遊類型</label>
+      <select id="tripType">
+        <option value="family">👨‍👩‍👧 親人家族遊</option>
+        <option value="friends">🍻 朋友出遊</option>
+        <option value="couple">💑 情侶旅行</option>
+        <option value="solo">🧍 個人旅行</option>
+      </select>
+    </div>
   </div>
 
   <nav class="tabs" id="tabs">
@@ -157,6 +271,7 @@
     <button class="tab" data-t="routes">🗺️ 推薦路線</button>
     <button class="tab" data-t="budget">💰 預算試算</button>
     <button class="tab" data-t="itinerary">🗓️ 我的行程</button>
+    <button class="tab" data-t="expense">💸 記帳分帳</button>
     <button class="tab" data-t="packing">🎒 攜帶物品</button>
     <button class="tab" data-t="spots">📍 景點美食購物</button>
     <button class="tab" data-t="notes">⚠️ 注意事項</button>
@@ -179,10 +294,12 @@
   <section class="panel" id="p-budget">
     <h2>預算試算（單價可直接修改、即時重算）</h2>
     <div class="alert">💡 金額為<b>台幣</b>估算值。「每人每日」項目會乘以天數與人數；小孩以半價計。修改任何欄位都會即時更新並自動儲存。</div>
+    <div class="budget-scroll">
     <table id="budgetTable">
       <thead><tr><th>項目</th><th>計算方式</th><th class="num">單價（TWD）</th><th class="num">小計（TWD）</th><th class="num">外幣參考</th></tr></thead>
       <tbody></tbody>
     </table>
+    </div>
     <div class="total-bar">
       <div><small>總預算（含 10% 預備金）</small><span class="big" id="grandTotal">—</span></div>
       <div><small>每人平均</small><span class="big" id="perPerson">—</span></div>
@@ -192,11 +309,35 @@
 
   <section class="panel" id="p-itinerary">
     <h2>我的逐日行程</h2>
-    <div class="alert">從「🗺️ 推薦路線」一鍵套用最快；也可在「📍 景點美食」按＋加入，或在各天手動新增。綠色虛線框是<b>交通建議</b>，可直接修改。</div>
+    <div class="alert">從「🗺️ 推薦路線」一鍵套用最快；也可在「📍 景點美食購物」按＋加入，或在各天手動新增。手機上每筆行程會展開成「開始／結束／內容／交通／備註」，可直接點欄位修改。</div>
+    <div id="travelInfo"></div>
+    <h3>🗓️ 逐日行程（點下方日期切換，不用一直滑）</h3>
+    <div class="day-chips" id="dayChips"></div>
     <div id="itinList"></div>
-    <div class="btn-row">
+    <div class="btn-row" id="itinTools">
       <button class="btn ghost" onclick="clearItin()">清空本目的地行程</button>
     </div>
+  </section>
+
+  <section class="panel" id="p-expense">
+    <h2>旅費記帳與分帳</h2>
+    <div class="sticky-board">
+      <div><small>台幣總花費（自動換匯）</small><span class="big" id="expTotal">NT$ 0</span></div>
+      <div><small>今日小計</small><span class="big" id="expDaySum">NT$ 0</span></div>
+      <div><small>看哪一天</small><select id="expDayView" onchange="setExpDay(this.value)"></select></div>
+    </div>
+    <div class="budget-bar" id="expBudgetBar"></div>
+    <h3 style="margin-top:0">👥 旅伴成員（分帳用）</h3>
+    <div id="memberList" style="margin-bottom:8px"></div>
+    <div class="btn-row" style="margin-top:0;margin-bottom:14px">
+      <input id="memberName" placeholder="輸入成員名字…" style="padding:8px 12px;border:1px solid var(--line);border-radius:8px;min-width:160px;">
+      <button class="btn small" onclick="addMember()">＋ 加成員</button>
+    </div>
+    <h3>➕ 記一筆</h3>
+    <div class="exp-form" id="expForm"></div>
+    <h3>📜 支出紀錄</h3>
+    <div id="expList"></div>
+    <div class="settle-box" id="settleBox"></div>
   </section>
 
   <section class="panel" id="p-packing">
@@ -226,28 +367,40 @@
   </section>
 
   <section class="panel" id="p-notes">
-    <h2 id="notesTitle">注意事項</h2>
+    <h2 id="riskTitle">本次行程風險評估</h2>
+    <div class="alert">依你的<b>出發日期、目的地、預算與已花費</b>自動評估，等級僅供參考，出發前仍以官方即時資訊為準。</div>
+    <div class="grid" id="riskCards"></div>
+    <h2 id="notesTitle" style="margin-top:20px">注意事項</h2>
     <ul id="noteList"></ul>
     <h3>🔗 即時資訊查詢（出發前必看）</h3>
     <ul class="links" id="liveLinks"></ul>
   </section>
 
   <section class="panel" id="p-export">
-    <h2>匯出文件 / 同步行事曆</h2>
+    <h2>讓朋友也用這套系統 / 匯出文件</h2>
+    <div class="privacy-note">🔒 <b>你的資料只存在你自己的裝置</b>，沒有上傳任何伺服器。其他人（即使用同一個網址）看不到、也改不了你的行程與記帳——除非你主動把「共編包」或「備份檔」傳給對方。</div>
+    <div class="url-share">
+      <span>📲 <b>把這個網址傳給朋友</b>，他們點開就能用——每個人有自己的行程資料，互不影響：</span>
+      <code id="shareUrl">（請從網址列複製，或用下方按鈕）</code>
+      <button class="btn small" onclick="copyAppUrl()">複製網址</button>
+    </div>
     <div class="grid">
-      <div class="card"><h4>🖨️ 列印 / 另存 PDF</h4><p class="meta">將總覽、預算、行程、清單一次輸出成 PDF（瀏覽器列印 → 另存為 PDF）。</p><div class="btn-row"><button class="btn" onclick="window.print()">列印 / 存 PDF</button></div></div>
+      <div class="card"><h4>🖨️ 完整旅程 PDF</h4><p class="meta">一鍵輸出：成員名單、預算、逐日行程＋過程日誌、記帳分帳結算、攜帶清單（瀏覽器列印 → 另存為 PDF），旅行結束印一份就是完整遊記。</p><div class="btn-row"><button class="btn" onclick="window.print()">列印 / 存 PDF</button></div></div>
       <div class="card"><h4>📅 行事曆 .ics</h4><p class="meta">下載後雙擊匯入 Google / Apple / Outlook 行事曆，每日行程自動建立事件（含交通建議）。</p><div class="btn-row"><button class="btn" onclick="exportICS()">下載 .ics</button></div></div>
       <div class="card"><h4>📊 試算表 CSV</h4><p class="meta">含預算明細、行程、清單，可用 Excel / Google 試算表開啟。</p><div class="btn-row"><button class="btn" onclick="exportCSV()">下載 CSV</button></div></div>
       <div class="card"><h4>📋 複製行程文字（LINE 分享）</h4><p class="meta">把逐日行程＋預算摘要變成漂亮的文字訊息，直接貼到 LINE 群組給親朋好友。</p><div class="btn-row"><button class="btn" onclick="copyShareText()">複製行程文字</button></div></div>
-      <div class="card"><h4>💾 備份 / 還原</h4><p class="meta">JSON 完整備份，可換電腦或分享給同行旅伴匯入。</p><div class="btn-row"><button class="btn ghost" onclick="exportJSON()">備份</button><button class="btn ghost" onclick="document.getElementById('importFile').click()">還原</button><input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)"></div></div>
+      <div class="card"><h4>🤝 共編行程包（輪流編輯）</h4><p class="meta">把這趟行程（含成員、航班住宿、票券、記帳、日誌）打包傳給旅伴；對方匯入後修改，再傳回來給你匯入——輪流接力編輯。匯入前會自動備份，可救回。</p><div class="btn-row"><button class="btn" onclick="exportTripPack()">匯出共編包</button><button class="btn ghost" onclick="document.getElementById('importFile').click()">匯入共編包</button></div></div>
+      <div class="card"><h4>💾 旅程紀錄檔（備份 / 還原）</h4><p class="meta">完整 JSON 紀錄檔：行程、記帳、日誌、照片全打包。旅行結束存一份封存，下次規劃同地點時匯入參考。<br><span id="storUse" style="color:var(--sub);font-size:.78rem"></span></p><div class="btn-row"><button class="btn ghost" onclick="exportJSON()">下載紀錄檔</button><button class="btn ghost" onclick="document.getElementById('importFile').click()">匯入 / 還原</button><input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)"></div></div>
     </div>
-    <h3>👨‍👩‍👧 怎麼分享給親朋好友？</h3>
+    <h3>👨‍👩‍👧 怎麼讓朋友也使用這套系統？</h3>
     <ul>
-      <li class="note-li"><b>傳整個系統</b>：把「旅遊規劃系統.html」這個檔案用 LINE／Email 傳給對方，對方存到手機或電腦後用瀏覽器打開即可使用（免安裝、離線可用）。</li>
-      <li class="note-li"><b>傳你的行程</b>：①「複製行程文字」貼到 LINE 群組最快；②「備份」匯出 JSON 給旅伴，對方按「還原」就能看到一模一樣的行程和清單。</li>
-      <li class="note-li"><b>同步到大家的行事曆</b>：下載 .ics 丟到群組，每個人匯入自己的 Google／Apple 行事曆；或由一人匯入 Google 日曆後用「與特定使用者共用」邀請全家。</li>
-      <li class="note-li"><b>列印給長輩</b>：「列印／存 PDF」輸出紙本，總覽＋行程＋清單一目了然。</li>
+      <li class="note-li"><b>① 傳網址（最推薦）</b>：用上方「複製網址」把連結傳到 LINE／群組。朋友點開就能用，資料存在他自己的手機，跟你的完全分開。你之後更新系統，他下次開啟就是新版。</li>
+      <li class="note-li"><b>② 加到主畫面更好用</b>：朋友開啟網址後，手機瀏覽器選單按「加入主畫面」，會像 App 一樣有圖示，開啟更快、資料更穩。</li>
+      <li class="note-li"><b>③ 想保留資料／換手機</b>：到上方「💾 備份」存一份 JSON 檔；換裝置或不小心清掉資料時，用「還原」就能復原（還原前會先自動備份目前資料，可救回）。</li>
+      <li class="note-li"><b>④ 分享你排好的行程</b>：「📋 複製行程文字」貼到群組；或下載 .ics 讓大家各自匯入 Google／Apple 行事曆。</li>
+      <li class="note-li"><b>⑤ 列印給長輩</b>：「🖨️ 列印／存 PDF」只會印出總覽＋預算＋行程＋清單（已調整為黑字、會自動展開所有天數）。</li>
     </ul>
+    <p class="note-li" style="color:var(--sub);font-size:.82rem">※ 不建議把 .html 檔直接用 LINE 傳給朋友——iPhone 在 LINE 內開啟是「預覽模式」，勾選的清單關掉就消失。請改傳上方<b>網址</b>。</p>
   </section>
 </div>
 
@@ -267,7 +420,7 @@
 </div>
 
 <div class="savebar" id="savebar">✓ 已自動儲存</div>
-<footer>旅遊規劃系統 ・ 資料儲存於本機瀏覽器 ・ 出發前請以官方公告為準</footer>
+<footer id="appFooter">旅遊規劃系統 ・ 資料儲存於本機瀏覽器 ・ 出發前請以官方公告為準</footer>
 
 <script>
 /* ════════════════ 目的地資料庫 ════════════════ */
@@ -275,39 +428,53 @@ const DB = {
 /* ──────── 台灣 ──────── */
 tw:{name:"台灣國內", flag:"🇹🇼", cur:"TWD", rate:1, dom:true,
  cost:{flight:0, lodging:1600, food:600, transport:600, ticket:300, ins:60},
+ clim:["均溫16°C，濕冷偶雨，帶保暖外套","16°C，偶雨漸暖，洋蔥式穿搭","19°C，春雨綿綿，薄外套＋雨具","23°C，漸熱多雨，短袖＋薄外套","26°C，梅雨季，雨具必備","29°C，悶熱午後雷陣雨，防曬＋雨具","31°C，炎熱颱風季，防曬、留意颱風","31°C，最熱颱風季，防曬＋雨具","29°C，秋老虎仍熱，防曬","26°C，涼爽宜人，最佳旅遊月","22°C，舒適微涼，帶薄外套","18°C，轉冷，保暖外套"],
  facts:[["簽證","不需要"],["時差","無"],["電壓插座","110V／同台灣"],["網路","手機原門號"],["貨幣","新台幣 TWD"],["緊急電話","110 / 119"]],
  transport:[
-  {n:"高鐵",d:"北高最快 94 分鐘；早鳥 65 折，乘車日前 29 天開賣。",t:["西部","快速"]},
-  {n:"台鐵",d:"環島皆達，東部主力；新自強號 3000 需訂票。",t:["環島","平價"]},
-  {n:"租車／自駕",d:"中南部與花東景點分散，自駕最彈性；連假提早兩週訂。",t:["彈性","家庭"]},
-  {n:"台灣好行＋YouBike",d:"景點接駁公車＋市區單車，搭配悠遊卡最省。",t:["省錢"]}],
+  {n:"高鐵",d:"北高最快 94 分鐘、12 站貫穿西部。早鳥 65 折（28 天前）、大學生 5–88 折、TGo 會員累點；自由座約省 3%，連假必劃位。高鐵假期常有車票＋飯店組合價。",t:["西部","快速"]},
+  {n:"台鐵（火車旅遊）",d:"環島皆達、東部主力。新自強 3000 與普悠瑪需對號（開賣日 28 天前 0 點搶）；區間車刷悠遊卡即上。觀光列車：鳴日號、藍皮解憂號（南迴慢旅）；二日環島券、TR-PASS 外籍/學生優惠。",t:["環島","平價","鐵道迷"]},
+  {n:"開車自駕",d:"中南部、花東、武嶺合歡山景點分散最適合。租車日均約 NT$1,500–2,500（淡旺季差大），甲租乙還跨城最方便；國道計程電子收費（eTag）、市區停車 App 先載好。雪隧假日易塞，蘇花改夜間留意。連假請提早兩週預訂。",t:["彈性","家庭","山線"]},
+  {n:"自行車旅遊",d:"市區 YouBike 2.0 前 30 分 NT$10 起；經典路線：日月潭環潭（CNN 全球最美車道）、池上伯朗大道、東豐綠廊、舊草嶺隧道海線。挑戰級「環島 1 號線」約 9–12 天，捷安特/美利達有環島租車＋補給方案，兩鐵列車可帶單車上火車。",t:["慢旅","運動"]},
+  {n:"市區捷運／輕軌",d:"台北/高雄捷運＋淡海、安坑、高雄輕軌；台中捷運綠線。一日票、48/72 小時票適合密集行程；桃園機場捷運直達車 35 分到台北車站。",t:["市區"]},
+  {n:"台灣好行／觀光巴士",d:"60+ 條景點接駁路線（日月潭、阿里山、墾丁快線、太魯閣…），套票常含門票與船票；假日班次多、平日要先查時刻表。",t:["景點直達","省錢"]},
+  {n:"國道客運",d:"台北⇄台中約 NT$260 起、夜車班次多；統聯/和欣/國光沿國道停靠，比火車便宜 3–5 成，適合預算型旅人。",t:["省錢","夜車"]},
+  {n:"租機車／電動車",d:"離島（澎湖、小琉球、綠島）與花東市區主流；日租約 NT$400–800，需帶駕照，電動車免駕照車種可問店家。",t:["離島","機動"]}],
  stay:[
   {n:"商務／連鎖飯店",d:"雙人房約 NT$2,500–4,500／晚，車站周邊方便。",t:["方便"]},
   {n:"特色民宿",d:"花東、清境、九份體驗佳，約 NT$2,000–4,000／晚。",t:["體驗"]},
   {n:"溫泉旅館",d:"礁溪、北投、谷關，一泊二食約 NT$5,000 起。",t:["放鬆"]},
   {n:"青年旅館",d:"床位 NT$500–900／晚，獨旅省錢首選。",t:["省錢"]}],
  spots:[
-  {n:"九份老街・阿妹茶樓",a:"新北",d:"山城紅燈籠黃昏點燈最美，宮崎駿氛圍。",must:1,go:"台北搭 965 快速公車約 70 分"},
+  {n:"九份老街・阿妹茶樓",a:"新北",d:"山城紅燈籠黃昏點燈最美，宮崎駿氛圍。",must:1,hot:1,go:"台北搭 965 快速公車約 70 分"},
   {n:"十分放天燈・瀑布",a:"新北",d:"平溪線鐵道旁放天燈，台版尼加拉瀑布。",must:1,go:"瑞芳轉平溪線小火車"},
   {n:"日月潭",a:"南投",d:"遊湖＋纜車＋向山自行車道，二日遊經典。",must:1,go:"台中干城搭南投客運直達"},
   {n:"阿里山日出",a:"嘉義",d:"祝山線看日出雲海＋神木群棧道。",must:1,go:"嘉義站搭阿里山林鐵或台灣好行"},
   {n:"清境農場",a:"南投",d:"青青草原餵羊、高空步道，避暑勝地。",must:0,go:"台中搭南投客運轉埔里線"},
   {n:"太魯閣・砂卡礑",a:"花蓮",d:"峽谷步道；部分整修中，出發前查開放狀態。",must:1,go:"花蓮站搭台灣好行 310"},
-  {n:"伯朗大道・池上",a:"台東",d:"金城武樹、金黃稻浪，租電動車最 chill。",must:1,go:"台鐵池上站租電動自行車"},
+  {n:"伯朗大道・池上",a:"台東",d:"金城武樹、金黃稻浪，租電動車最 chill。",must:1,hot:1,go:"台鐵池上站租電動自行車"},
   {n:"墾丁・鵝鑾鼻",a:"屏東",d:"水上活動＋龍磐草原星空。",must:0,go:"高鐵左營搭墾丁快線 2 小時"},
   {n:"安平古堡・樹屋",a:"台南",d:"百年榕樹包圍老洋行，台灣第一座城堡。",must:1,go:"台南站搭 2 路公車 25 分"},
   {n:"駁二藝術特區",a:"高雄",d:"倉庫群文創市集＋哈瑪星鐵道園區。",must:0,go:"輕軌駁二大義站下車即達"},
   {n:"野柳女王頭",a:"新北",d:"世界級海蝕地形，建議平日早上去。",must:0,go:"台北車站搭 1815 客運 80 分"},
-  {n:"礁溪溫泉",a:"宜蘭",d:"平地溫泉泡湯＋湯圍溝公園免費泡腳。",must:0,go:"首都客運礁溪線 60 分"}],
+  {n:"礁溪溫泉",a:"宜蘭",d:"平地溫泉泡湯＋湯圍溝公園免費泡腳。",must:0,go:"首都客運礁溪線 60 分"},
+  {n:"高美濕地",a:"台中",d:"夕陽天空之鏡＋風車大道，IG 台灣打卡前三名。",must:1,hot:1,go:"台中車站搭 309 公車約 70 分"},
+  {n:"正濱漁港彩色屋",a:"基隆",d:"台版威尼斯彩虹碼頭，咖啡廳坐對岸拍最美。",must:0,hot:1,go:"基隆站搭 101 公車 15 分"},
+  {n:"審計新村",a:"台中",d:"老宿舍改建文創市集，甜點店與選物店一條街。",must:0,hot:1,go:"台中捷運水安宮站步行 15 分"},
+  {n:"鹿港老街・天后宮",a:"彰化",d:"百年廟宇＋紅磚老街，摸乳巷、半邊井古蹟巡禮。",must:0,go:"台中搭 6936 客運 50 分"},
+  {n:"小琉球",a:"屏東",d:"全台最容易看到海龜的浮潛聖地，環島機車 1 小時。",must:0,hot:1,go:"東港碼頭船程 25 分"},
+  {n:"龜山島牛奶海",a:"宜蘭",d:"Tiffany 藍硫磺海域 SUP／遊艇，4–9 月開放登島。",must:0,hot:1,go:"烏石港報名船團（需預約）"}],
  foods:[
   {n:"士林／寧夏夜市",a:"台北",d:"蚵仔煎、雞排、芋圓，夜市經典。",must:1},
   {n:"台南牛肉湯",a:"台南",d:"溫體牛現燙，清晨 5 點開賣，在地人早餐。",must:1},
   {n:"度小月擔仔麵・周氏蝦捲",a:"台南",d:"百年老店一條龍吃透透。",must:1},
   {n:"逢甲夜市",a:"台中",d:"創新小吃發源地：激旨燒鳥、大腸包小腸。",must:1},
-  {n:"宮原眼科冰淇淋",a:"台中",d:"日治老建築改建，華麗書牆＋豪華聖代。",must:0},
+  {n:"宮原眼科冰淇淋",a:"台中",d:"日治老建築改建，華麗書牆＋豪華聖代。",must:0,hot:1},
   {n:"基隆廟口夜市",a:"基隆",d:"鼎邊銼、營養三明治、一口吃香腸。",must:0},
   {n:"東港黑鮪魚",a:"屏東",d:"4–6 月產季，華僑市場生魚片便宜大碗。",must:0},
-  {n:"羅東夜市",a:"宜蘭",d:"當歸羊肉湯、龍鳳腿、包心粉圓。",must:0}],
+  {n:"羅東夜市",a:"宜蘭",d:"當歸羊肉湯、龍鳳腿、包心粉圓。",must:0},
+  {n:"林聰明沙鍋魚頭",a:"嘉義",d:"《街頭美食鬥士》白鍾元認證，下午常完售。",must:1,hot:1},
+  {n:"阿宗麵線・西門町小吃",a:"台北",d:"站著吃的大腸麵線傳奇，一碗 60 年功力。",must:0},
+  {n:"花蓮東大門夜市",a:"花蓮",d:"原住民一條街烤山豬肉、第一家烤肉串。",must:0}],
  shops:[
   {n:"信義商圈",a:"台北",d:"101、新光三越、誠品一次逛齊，週末有市集。",buy:"台灣茶葉、鳳梨酥、文創小物",hours:"11:00–21:30",go:"捷運市政府站／台北101站",must:1},
   {n:"西門町",a:"台北",d:"年輕潮流聖地，街頭表演＋電影街。",buy:"潮牌、球鞋、動漫周邊",hours:"12:00–22:00",go:"捷運西門站 6 號出口",must:0},
@@ -315,7 +482,35 @@ tw:{name:"台灣國內", flag:"🇹🇼", cur:"TWD", rate:1, dom:true,
   {n:"一中街商圈",a:"台中",d:"學生平價美食＋服飾的一級戰區。",buy:"平價服飾、雞排配奶茶",hours:"12:00–22:30",go:"台中車站轉公車 15 分",must:0},
   {n:"新崛江商圈",a:"高雄",d:"南台灣西門町，日系小物多。",buy:"日韓服飾、扭蛋、文創",hours:"13:00–22:00",go:"捷運中央公園站 2 號出口",must:0}],
  routes:[
-  {n:"台北北海岸經典 3 日",days:3,tags:["首訪","美食","網美","文化"],best:"全年皆宜，避開颱風季",
+  {n:"台北一日輕旅行（單天來回）",days:1,mode:"🚇 大眾運輸",tags:["首訪","美食","文化","網美"],best:"全年皆宜",
+   plan:[
+    {t:"捷運串起台北一日精華",items:[
+     {time:"08:30",n:"龍山寺・剝皮寮老街",k:"spot",must:1,go:"捷運板南線龍山寺站 1 號出口",note:"百年古剎＋清代老街"},
+     {time:"10:30",n:"中正紀念堂",k:"spot",must:0,go:"捷運松山新店線中正紀念堂站",note:"整點衛兵交接"},
+     {time:"12:00",n:"永康街午餐（鼎泰豐／芒果冰）",k:"food",must:1,go:"捷運東門站 5 號出口",note:"小籠包排隊先抽號"},
+     {time:"14:00",n:"大稻埕迪化街",k:"spot",must:1,go:"捷運北門站步行 10 分",note:"南北貨老街＋霞海城隍廟"},
+     {time:"16:30",n:"象山步道看 101",k:"spot",must:1,go:"捷運象山站 2 號出口",note:"來回 1 小時，看夕陽轉夜景"},
+     {time:"19:00",n:"饒河街夜市晚餐",k:"food",must:1,go:"捷運松山站 1 號出口",note:"胡椒餅、藥燉排骨"}]}]},
+  {n:"清境合歡山自駕 3 日",days:3,mode:"🚗 開車自駕",tags:["自然","放鬆","網美","家庭"],best:"4–11 月；冬季上合歡山需雪鏈",
+   plan:[
+    {t:"台中 → 埔里 → 清境",items:[
+     {time:"09:00",n:"台中取車出發",k:"move",must:0,go:"國道6號往埔里，約 60 分",note:"租車記得加保超額險"},
+     {time:"10:30",n:"埔里 18 度C 巧克力工房",k:"food",must:0,go:"埔里市區",note:"免費招待咖啡＋冰淇淋名店"},
+     {time:"13:00",n:"清境天空步道",k:"spot",must:1,go:"台14甲線，山路 40 分",note:"高架步道賞群山"},
+     {time:"15:00",n:"青青草原餵綿羊",k:"spot",must:1,go:"園區接駁或步行",note:"羊咩咩脫衣秀假日場"},
+     {time:"18:00",n:"清境民宿晚餐・觀星",k:"stay",must:0,go:"民宿多含晚餐",note:"光害少，銀河肉眼可見"}]},
+    {t:"合歡山日出 → 武嶺",items:[
+     {time:"04:30",n:"合歡山看日出",k:"spot",must:1,go:"台14甲上山 40 分，石門山步道最易",note:"山上 10°C 以下，羽絨必備"},
+     {time:"08:00",n:"武嶺（台灣公路最高點 3275m）",k:"spot",must:1,go:"日出後順路",note:"地標拍照"},
+     {time:"12:00",n:"回清境午餐（雲南擺夷料理）",k:"food",must:1,go:"下山 40 分",note:"魯媽媽、美斯樂"},
+     {time:"15:00",n:"小瑞士花園",k:"spot",must:0,go:"清境市區",note:"水中落羽松"},
+     {time:"19:00",n:"民宿夜景",k:"stay",must:0,go:"",note:""}]},
+    {t:"日月潭順遊 → 回程",items:[
+     {time:"09:00",n:"下山往日月潭",k:"move",must:0,go:"台21線約 70 分",note:""},
+     {time:"10:00",n:"日月潭遊湖＋纜車",k:"spot",must:1,go:"水社碼頭停車",note:"玄光寺阿婆茶葉蛋"},
+     {time:"13:00",n:"伊達邵午餐",k:"food",must:0,go:"碼頭旁",note:"小米酒香腸、總統魚"},
+     {time:"15:30",n:"回台中還車",k:"move",must:0,go:"國道6號 70 分",note:"加滿油再還車"}]}]},
+  {n:"台北北海岸經典 3 日",days:3,mode:"🚇 大眾運輸＋客運",tags:["首訪","美食","網美","文化"],best:"全年皆宜，避開颱風季",
    plan:[
     {t:"台北市區文化美食日",items:[
      {time:"09:00",n:"中正紀念堂",k:"spot",must:0,go:"捷運淡水信義線中正紀念堂站",note:"整點衛兵交接"},
@@ -335,7 +530,7 @@ tw:{name:"台灣國內", flag:"🇹🇼", cur:"TWD", rate:1, dom:true,
      {time:"14:00",n:"陽明山擎天崗",k:"spot",must:0,go:"劍潭站搭紅 5 轉 108 遊園公車",note:"大草原＋水牛"},
      {time:"17:00",n:"泡湯（亞太或日勝生）",k:"spot",must:0,go:"回新北投",note:"大眾湯約 NT$600–800"},
      {time:"19:30",n:"士林夜市",k:"food",must:1,go:"捷運劍潭站 1 號出口",note:"豪大雞排、青蛙下蛋"}]}]},
-  {n:"環島精華 5 日（西進東回）",days:5,tags:["首訪","自然","美食","家庭"],best:"3–5 月、10–12 月",
+  {n:"環島精華 5 日（西進東回）",days:5,mode:"🚄 高鐵＋台鐵＋好行",tags:["首訪","自然","美食","家庭"],best:"3–5 月、10–12 月",
    plan:[
     {t:"台北 → 台中",items:[
      {time:"09:00",n:"高鐵台北→台中",k:"move",must:0,go:"高鐵 50 分，早鳥 65 折",note:"取車或搭接駁"},
@@ -366,7 +561,7 @@ tw:{name:"台灣國內", flag:"🇹🇼", cur:"TWD", rate:1, dom:true,
      {time:"10:00",n:"駁二藝術特區",k:"spot",must:1,go:"輕軌駁二大義站",note:"倉庫文創＋大港橋"},
      {time:"12:00",n:"旗津海產午餐",k:"food",must:1,go:"鼓山輪渡站搭船 10 分",note:"烤小卷、番茄切盤"},
      {time:"15:00",n:"高鐵左營返北",k:"move",must:0,go:"捷運西子灣→左營 25 分",note:"順買不二家蛋黃酥"}]}]},
-  {n:"花東縱谷療癒 4 日",days:4,tags:["自然","放鬆","網美","家庭"],best:"6–8 月金針花、全年",
+  {n:"花東縱谷療癒 4 日",days:4,mode:"🚄 台鐵＋自駕／單車",tags:["自然","放鬆","網美","家庭"],best:"6–8 月金針花、全年",
    plan:[
     {t:"台北 → 礁溪 → 花蓮",items:[
      {time:"09:00",n:"台北→礁溪",k:"move",must:0,go:"首都客運 60 分",note:""},
@@ -397,13 +592,14 @@ tw:{name:"台灣國內", flag:"🇹🇼", cur:"TWD", rate:1, dom:true,
   "部分國家公園步道需入山入園申請（如玉山、嘉明湖），提前 1 個月辦理。",
   "花東大眾運輸班次少，縱谷段建議自駕、包車或參加在地一日遊。",
   "墾丁、綠島浮潛選有救生員的合法業者，注意離岸流。"],
- packMust:["身分證件（健保卡／駕照）","手機＋充電器","行動電源","常用藥品（個人處方藥）","現金＋悠遊卡／一卡通","信用卡","訂房／車票證明（截圖備份）"],
+ packMust:["悠遊卡／一卡通先加值（捷運公車超商通用）","入山入園許可（玉山、嘉明湖等高山行程，提前 1 個月申請）","乘車 QR／訂票 App（高鐵 T-EX、台鐵 e訂通）"],
  packNice:["薄外套（山區早晚涼）","雨具（折疊傘）","防曬乳＋帽子","泳衣（溫泉／海邊）","防蚊液","環保杯／購物袋","暈車藥"],
  links:[["交通部觀光署（活動與景點公告）","https://www.taiwan.net.tw"],["中央氣象署（天氣／颱風）","https://www.cwa.gov.tw"],["台灣高鐵訂票","https://www.thsrc.com.tw"],["台鐵訂票","https://www.railway.gov.tw"],["台灣好行路線","https://www.taiwantrip.com.tw"]]},
 
 /* ──────── 日本 ──────── */
 jp:{name:"日本", flag:"🇯🇵", cur:"JPY", rate:0.21, dom:false,
  cost:{flight:12000, lodging:2200, food:1200, transport:700, ticket:500, ins:150},
+ clim:["均溫5°C，乾冷飄雪，羽絨＋發熱衣","6°C，寒冷，厚外套","10°C，早春賞梅，外套","15°C，櫻花季，洋蔥式穿搭","20°C，舒適宜人，薄外套","23°C，梅雨季，雨具","27°C，濕熱，防曬＋雨具","29°C，最熱，防曬補水","25°C，颱風季，雨具","19°C，紅葉漸始，薄外套","13°C，紅葉季，外套","8°C，入冬，厚外套＋發熱衣"],
  facts:[["簽證","免簽 90 天（觀光）"],["時差","快台灣 1 小時"],["電壓插座","100V／兩腳扁插（同台灣可用）"],["網路","eSIM／WiFi 機，約 NT$150–300／天"],["貨幣","日圓 JPY"],["緊急電話","警察 110／救護 119"]],
  transport:[
   {n:"區域周遊券",d:"全國 JR PASS 大漲價後，多數行程買區域券（關西、關東廣域、北陸）較划算。",t:["跨城市"]},
@@ -417,17 +613,23 @@ jp:{name:"日本", flag:"🇯🇵", cur:"JPY", rate:0.21, dom:false,
   {n:"膠囊旅館",d:"¥3,000–5,000／晚，獨旅省錢。",t:["省錢"]}],
  spots:[
   {n:"淺草寺・仲見世通",a:"東京",d:"雷門大燈籠＋江戶風老街，東京第一名所。",must:1,go:"地鐵銀座線淺草站 1 號出口"},
-  {n:"澀谷天空 SHIBUYA SKY",a:"東京",d:"229 米露天展望台俯瞰十字路口。",must:1,go:"澀谷站直結，門票線上預約"},
+  {n:"澀谷天空 SHIBUYA SKY",a:"東京",d:"229 米露天展望台俯瞰十字路口。",must:1,hot:1,go:"澀谷站直結，門票線上預約"},
   {n:"明治神宮・竹下通",a:"東京",d:"森林參道＋原宿少女系購物街一次走完。",must:0,go:"JR 原宿站下車即達"},
   {n:"東京迪士尼",a:"東京",d:"陸地經典／海洋限定，APP 抽 DPA。",must:0,go:"JR 京葉線舞濱站 15 分"},
-  {n:"teamLab Planets",a:"東京",d:"赤腳走進水中數位藝術，務必提前購票。",must:1,go:"百合海鷗號新豐洲站"},
+  {n:"teamLab Planets",a:"東京",d:"赤腳走進水中數位藝術，務必提前購票。",must:1,hot:1,go:"百合海鷗號新豐洲站"},
   {n:"清水寺・二三年坂",a:"京都",d:"清水舞台＋石板坂道，清晨 6 點開門人最少。",must:1,go:"京都站搭 100/206 公車"},
   {n:"伏見稻荷千本鳥居",a:"京都",d:"萬座朱紅鳥居隧道，24 小時免費。",must:1,go:"JR 奈良線稻荷站出站即達"},
   {n:"嵐山竹林・渡月橋",a:"京都",d:"竹林小徑＋保津川，順搭嵯峨野小火車。",must:0,go:"JR 嵯峨嵐山站步行 10 分"},
   {n:"大阪環球影城 USJ",a:"大阪",d:"瑪利歐＋哈利波特園區，快速通關先買。",must:1,go:"JR 環狀線→夢咲線環球城站"},
   {n:"道頓堀・心齋橋",a:"大阪",d:"固力果跑跑人打卡＋藥妝掃貨主場。",must:1,go:"地鐵難波站 14 號出口"},
   {n:"奈良公園・東大寺",a:"奈良",d:"千頭小鹿鞠躬討仙貝＋世界最大木造大佛。",must:1,go:"近鐵奈良站步行 15 分"},
-  {n:"富士山河口湖",a:"山梨",d:"大石公園逆富士、纜車天上山。",must:0,go:"新宿高速巴士直達 105 分"}],
+  {n:"富士山河口湖",a:"山梨",d:"大石公園逆富士、纜車天上山。",must:0,hot:1,go:"新宿高速巴士直達 105 分"},
+  {n:"鎌倉高校前平交道・江之島",a:"神奈川",d:"灌籃高手聖地巡禮＋湘南海岸電車，江之島看富士山夕陽。",must:0,hot:1,go:"新宿小田急＋江之電一日券"},
+  {n:"川越小江戶",a:"埼玉",d:"江戶藏造老街＋冰川神社釣鯛魚籤，和服散策半日遊。",must:0,hot:1,go:"池袋搭東武東上線 30 分"},
+  {n:"箱根大涌谷・蘆之湖",a:"神奈川",d:"火山黑蛋（吃一顆延壽七年）＋海賊船遊湖，周遊券一票到底。",must:0,go:"新宿小田急浪漫特快 85 分"},
+  {n:"中目黑・代官山",a:"東京",d:"目黑川沿岸咖啡與選物店，春天櫻吹雪隧道東京第一。",must:0,hot:1,go:"東急東橫線中目黑站"},
+  {n:"白鬚神社水上鳥居",a:"滋賀",d:"琵琶湖版嚴島神社，日出時刻湖中鳥居絕景。",must:0,hot:1,go:"京都搭湖西線 40 分＋計程車"},
+  {n:"合掌村白川鄉",a:"岐阜",d:"世界遺產童話小屋，冬季點燈需抽選；名古屋、金澤巴士可達。",must:0,go:"名古屋高速巴士約 2.5 小時"}],
  foods:[
   {n:"築地場外市場",a:"東京",d:"海鮮丼、玉子燒，早上 8–10 點最新鮮。",must:1},
   {n:"一蘭／阿夫利拉麵",a:"東京",d:"機器點餐免日文；柚子鹽拉麵清爽系。",must:1},
@@ -436,7 +638,11 @@ jp:{name:"日本", flag:"🇯🇵", cur:"JPY", rate:0.21, dom:false,
   {n:"錦市場",a:"京都",d:"京都的廚房：豆乳甜甜圈、漬物、玉子燒。",must:1},
   {n:"奈良中谷堂麻糬",a:"奈良",d:"高速搗麻糬表演，現搗艾草麻糬。",must:0},
   {n:"百貨地下美食街",a:"全國",d:"閉店前 1 小時熟食半價，省錢晚餐神器。",must:0},
-  {n:"迴轉壽司（壽司郎／藏壽司）",a:"全國",d:"一盤 ¥115 起，APP 先抽號免排隊。",must:1}],
+  {n:"迴轉壽司（壽司郎／藏壽司）",a:"全國",d:"一盤 ¥115 起，APP 先抽號免排隊。",must:1},
+  {n:"蟹道樂",a:"大阪",d:"道頓堀大螃蟹招牌本店，午間套餐最划算，先網路訂位。",must:0,hot:1},
+  {n:"利久牛舌",a:"全國",d:"厚切炭烤牛舌＋麥飯牛尾湯，車站百貨都有分店。",must:1},
+  {n:"白一生淇淋",a:"東京",d:"原宿排隊王，生乳極細霜淇淋拍照打卡定番。",must:0,hot:1},
+  {n:"鰻魚飯三吃（名古屋）",a:"名古屋",d:"蓬萊軒百年老店，原味→佐料→茶泡飯三段吃法。",must:0}],
  shops:[
   {n:"新宿東口商圈",a:"東京",d:"百貨激戰區：伊勢丹、0101、BicCamera。",buy:"藥妝、電器、洋菓子伴手禮",hours:"11:00–21:00（唐吉訶德 24h）",go:"JR 新宿站東口",must:1},
   {n:"銀座",a:"東京",d:"UNIQLO／無印全球旗艦＋百年文具伊東屋。",buy:"旗艦店限定、文具、和菓子",hours:"11:00–20:00",go:"地鐵銀座站",must:0},
@@ -533,13 +739,14 @@ jp:{name:"日本", flag:"🇯🇵", cur:"JPY", rate:0.21, dom:false,
   "小費文化：不需要給小費。",
   "藥妝、電器免稅品出境前不可拆封使用。",
   "小店常見只收現金，日圓現金要備足。"],
- packMust:["護照（效期建議 6 個月以上）","Visit Japan Web QR Code 截圖","網路（eSIM／WiFi 機）","日圓現金（小店仍常見只收現金）","信用卡（JCB/Visa 感應）","交通 IC 卡（手機 Suica）","常用藥品＋腸胃藥","訂房／機票證明"],
+ packMust:["Visit Japan Web 入境 QR Code 截圖","手機 Suica／ICOCA 先加入錢包並儲值","日圓現金備足（小店、神社常只收現金）","乘換案內 App（查電車路線）"],
  packNice:["折疊購物袋（商店袋子要收費）","保溫瓶（冬季）","口罩（冬季感冒高峰）","好走的鞋（日均 2 萬步）","行李秤（戰利品超重防範）","乳液／護唇膏（冬季乾燥）"],
  links:[["Visit Japan Web（入境必填）","https://vjw-lp.digital.go.jp"],["日本氣象廳","https://www.jma.go.jp"],["外交部領事事務局（旅遊警示）","https://www.boca.gov.tw"],["Yahoo!乘換案內（交通查詢）","https://transit.yahoo.co.jp"],["日圓匯率（台銀牌告）","https://rate.bot.com.tw/xrt"]]},
 
 /* ──────── 韓國 ──────── */
 kr:{name:"韓國", flag:"🇰🇷", cur:"KRW", rate:0.023, dom:false,
  cost:{flight:9000, lodging:1800, food:1000, transport:500, ticket:400, ins:150},
+ clim:["均溫-2°C，嚴寒，羽絨＋發熱衣＋暖暖包","1°C，仍寒冷，厚羽絨","7°C，乍暖還寒，外套","13°C，櫻花季，薄外套","18°C，舒適，長袖","23°C，漸熱，短袖","25°C，雨季，雨具","26°C，悶熱，防曬","21°C，秋高氣爽，薄外套","14°C，楓葉季，外套","7°C，轉冷，厚外套","0°C，嚴寒，羽絨＋發熱衣"],
  facts:[["簽證","免簽 90 天；K-ETA 豁免狀態出發前再確認"],["時差","快台灣 1 小時"],["電壓插座","220V／圓形兩腳插（需轉接頭）"],["網路","eSIM／WiFi 機"],["貨幣","韓元 KRW"],["緊急電話","警察 112／救護 119"]],
  transport:[
   {n:"AREX 機場快線",d:"仁川→首爾站直達 43 分（約 ₩11,000）；機場巴士直達各飯店區。",t:["機場"]},
@@ -561,9 +768,15 @@ kr:{name:"韓國", flag:"🇰🇷", cur:"KRW", rate:0.023, dom:false,
   {n:"昌德宮後苑",a:"首爾",d:"世界遺產祕苑，需預約導覽。",must:0,go:"地鐵 3 號線安國站 3 號出口"},
   {n:"南怡島",a:"京畿道",d:"冬季戀歌水杉大道，秋天銀杏最美。",must:1,go:"龍山搭 ITX 青春列車 60 分＋渡船"},
   {n:"愛寶樂園 Everland",a:"京畿道",d:"全韓最大樂園，T Express 木製雲霄飛車。",must:0,go:"江南站搭 5002 巴士 60 分"},
-  {n:"甘川洞文化村",a:"釜山",d:"韓版聖托里尼彩色山城，小王子打卡。",must:1,go:"釜山土城站轉社區巴士"},
-  {n:"海雲台 Blueline Park",a:"釜山",d:"海岸膠囊列車＋天空步道。",must:1,go:"地鐵 2 號線中洞站"},
-  {n:"廣安里海灘",a:"釜山",d:"廣安大橋夜景＋週末無人機燈光秀。",must:0,go:"地鐵 2 號線廣安站"}],
+  {n:"甘川洞文化村",a:"釜山",d:"韓版聖托里尼彩色山城，小王子打卡。",must:1,hot:1,go:"釜山土城站轉社區巴士"},
+  {n:"海雲台 Blueline Park",a:"釜山",d:"海岸膠囊列車＋天空步道。",must:1,hot:1,go:"地鐵 2 號線中洞站"},
+  {n:"廣安里海灘",a:"釜山",d:"廣安大橋夜景＋週末無人機燈光秀。",must:0,hot:1,go:"地鐵 2 號線廣安站"},
+  {n:"益善洞韓屋咖啡街",a:"首爾",d:"最老韓屋村改造的甜點咖啡巷弄，IG 首爾打卡前三。",must:0,hot:1,go:"地鐵 1/3/5 號線鐘路三街站 4 號出口"},
+  {n:"聖水洞咖啡街",a:"首爾",d:"首爾布魯克林：舊工廠改建咖啡廳、Dior 旗艦、快閃店聖地。",must:0,hot:1,go:"地鐵 2 號線聖水站"},
+  {n:"漢江公園野餐",a:"首爾",d:"租野餐墊＋叫炸雞外送到江邊，汝矣島春天櫻花季最美。",must:0,hot:1,go:"地鐵 5 號線汝矣渡口站"},
+  {n:"北村清晨韓服寫真",a:"首爾",d:"專業 snap 攝影師跟拍 1 小時，人少光美出大片。",must:0,hot:1,go:"安國站，Klook/KKday 預約"},
+  {n:"海東龍宮寺",a:"釜山",d:"全韓最美海岸寺廟，日出時刻浪打岩岸絕景。",must:1,go:"海雲台搭 181 公車 40 分"},
+  {n:"全州韓屋村",a:"全州",d:"700 棟韓屋＋拌飯故鄉，首爾 KTX 90 分鐘一日遊。",must:0,go:"龍山站 KTX 直達"}],
  foods:[
   {n:"廣藏市場",a:"首爾",d:"綠豆煎餅、麻藥飯捲、活章魚，百年市場。",must:1},
   {n:"土俗村人蔘雞",a:"首爾",d:"景福宮旁排隊名店，整隻雞塞糯米人蔘。",must:1},
@@ -573,7 +786,11 @@ kr:{name:"韓國", flag:"🇰🇷", cur:"KRW", rate:0.023, dom:false,
   {n:"東大門陳玉華一隻雞",a:"首爾",d:"清燉全雞＋刀削麵收尾，宵夜場。",must:0},
   {n:"釜山豬肉湯飯",a:"釜山",d:"西面豬肉湯飯街，24 小時營業。",must:1},
   {n:"札嘎其市場烤貝",a:"釜山",d:"韓國最大海鮮市場，現選現烤。",must:0},
-  {n:"橋村炸雞＋啤酒",a:"全國",d:"外帶回飯店配漢江便利商店啤酒。",must:1}],
+  {n:"橋村炸雞＋啤酒",a:"全國",d:"外帶回飯店配漢江便利商店啤酒。",must:1},
+  {n:"雪冰 Sulbing",a:"全國",d:"牛奶雪花冰始祖，黃豆粉麻糬＋芒果起司必點。",must:0,hot:1},
+  {n:"馬鈴薯排骨湯",a:"首爾",d:"應岩洞馬鈴薯湯一條街，醒酒暖胃 24 小時。",must:0},
+  {n:"烤腸一條街",a:"首爾",d:"王十里烤腸配燒酒，在地人深夜食堂。",must:0},
+  {n:"益善洞甜點咖啡",a:"首爾",d:"청수당 庭園麵包店、溫室咖啡，每間都好拍。",must:0,hot:1}],
  shops:[
   {n:"明洞商圈",a:"首爾",d:"美妝一條街，Olive Young 旗艦店掃貨＋退稅最方便。",buy:"美妝保養、面膜、韓襪",hours:"10:00–22:00",go:"地鐵 4 號線明洞站",must:1},
   {n:"東大門批發商圈",a:"首爾",d:"DDP＋深夜批發商場，凌晨最熱鬧。",buy:"平價服飾、飾品（可殺價）",hours:"10:30–凌晨 05:00",go:"地鐵 2/4/5 號線東大門歷史文化公園站",must:1},
@@ -641,13 +858,14 @@ kr:{name:"韓國", flag:"🇰🇷", cur:"KRW", rate:0.023, dom:false,
   "退稅：單筆滿 ₩15,000 即可，市區即時退稅商店直接折扣最方便。",
   "地鐵博愛座（粉紅色）完全不要坐，文化上非常敏感。",
   "冬季（12–2 月）氣溫常 -10°C，發熱衣＋羽絨外套必備。"],
- packMust:["護照（效期 6 個月以上）","轉接頭（圓形兩腳 220V）","網路（eSIM／WiFi 機）","韓元現金＋信用卡","T-money（可到當地便利商店買）","Naver Map／Papago App 先裝好","常用藥品","訂房／機票證明"],
+ packMust:["K-ETA 豁免狀態確認＋e-Arrival Card 填寫","轉接頭（220V 圓形兩腳，必帶）","T-money 卡（當地便利商店可買）","Naver Map＋Papago 翻譯 App 先裝好"],
  packNice:["發熱衣／暖暖包（冬季必帶）","防曬＋墨鏡（夏季）","空行李袋（美妝戰利品）","腸胃藥（辣食不適應）","保濕面膜旅行包","摺疊傘"],
  links:[["K-ETA 官網（確認豁免狀態）","https://www.k-eta.go.kr"],["韓國觀光公社中文網","https://big5chinese.visitkorea.or.kr"],["外交部領事事務局（旅遊警示）","https://www.boca.gov.tw"],["Naver Map","https://map.naver.com"],["韓元匯率（台銀牌告）","https://rate.bot.com.tw/xrt"]]},
 
 /* ──────── 泰國 ──────── */
 th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
  cost:{flight:9500, lodging:1300, food:700, transport:450, ticket:600, ins:180},
+ clim:["均溫27°C，涼季最舒適，短袖＋進寺廟長褲","28°C，涼季宜人，防曬","30°C，漸熱，防曬補水","32°C，最熱潑水節，防曬＋手機防水袋","30°C，雨季開始，雨具","29°C，雨季，雨具","29°C，雨季，雨具","29°C，雨季，雨具","28°C，雨量最多，雨具","28°C，雨季末，雨具","27°C，涼季開始，舒適","26°C，涼季，最佳旅遊月"],
  facts:[["簽證","免簽（措施有期限，出發前確認）；需填 TDAC 數位入境卡"],["時差","慢台灣 1 小時"],["電壓插座","220V／多為萬用插座"],["網路","eSIM 便宜（約 NT$100–200／7天）"],["貨幣","泰銖 THB"],["緊急電話","觀光警察 1155"]],
  transport:[
   {n:"BTS／MRT（曼谷）",d:"空鐵＋地鐵避開塞車，單程 ฿17–62；感應信用卡直接刷。",t:["市區","必備"]},
@@ -662,7 +880,7 @@ th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
  spots:[
   {n:"大皇宮・玉佛寺",a:"曼谷",d:"泰國最神聖皇家建築群，金碧輝煌。",must:1,go:"MRT Sanam Chai 站步行 15 分"},
   {n:"臥佛寺 Wat Pho",a:"曼谷",d:"46 米鍍金臥佛＋傳統按摩學校發源地。",must:1,go:"大皇宮步行 10 分"},
-  {n:"鄭王廟 Wat Arun",a:"曼谷",d:"黎明寺河畔日落剪影最美。",must:1,go:"Tha Tien 碼頭搭渡船 ฿5"},
+  {n:"鄭王廟 Wat Arun",a:"曼谷",d:"黎明寺河畔日落剪影最美。",must:1,hot:1,go:"Tha Tien 碼頭搭渡船 ฿5"},
   {n:"洽圖洽週末市集",a:"曼谷",d:"萬攤規模只開六日，早上去避高溫。",must:1,go:"BTS Mo Chit 站 1 號出口"},
   {n:"ICONSIAM",a:"曼谷",d:"河畔頂級商場，室內水上市場樓層。",must:0,go:"BTS 金線 Charoen Nakhon 站"},
   {n:"美功鐵道市場",a:"曼谷近郊",d:"火車穿過菜市場瞬間，攤販秒收棚。",must:1,go:"參加半日團最方便"},
@@ -671,7 +889,13 @@ th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
   {n:"清邁古城寺廟群",a:"清邁",d:"契迪龍寺、帕辛寺，古城牆內漫步。",must:1,go:"市區步行或雙條車 ฿30"},
   {n:"雙龍寺 Doi Suthep",a:"清邁",d:"素帖山金色佛塔俯瞰清邁全城。",must:1,go:"古城搭雙條車上山 40 分"},
   {n:"大象保護營",a:"清邁",d:"餵食、泥巴浴，選「無騎乘」道德營區。",must:1,go:"營區含飯店接送"},
-  {n:"PP 島跳島",a:"普吉",d:"瑪雅灣、竹子島浮潛，快艇一日遊。",must:1,go:"普吉碼頭快艇 45 分，選含保險船公司"}],
+  {n:"PP 島跳島",a:"普吉",d:"瑪雅灣、竹子島浮潛，快艇一日遊。",must:1,go:"普吉碼頭快艇 45 分，選含保險船公司"},
+  {n:"水門寺玻璃佛塔",a:"曼谷",d:"翡翠綠玻璃佛塔＋巨大金佛，IG 曼谷寺廟新霸主。",must:0,hot:1,go:"MRT Bang Phai 站步行 10 分"},
+  {n:"唐人街耀華力路",a:"曼谷",d:"霓虹招牌＋街頭海鮮攤，入夜後最有電影感。",must:0,hot:1,go:"MRT Wat Mangkon 站"},
+  {n:"Asiatique 河濱夜市",a:"曼谷",d:"摩天輪河景夜市，泰拳秀＋人妖秀劇場。",must:0,go:"BTS Saphan Taksin 站轉免費接駁船"},
+  {n:"安帕瓦水上市場・螢火蟲",a:"曼谷近郊",d:"傍晚開市的在地水上市場，夜遊運河看螢火蟲。",must:0,hot:1,go:"週末限定，一日團含接送"},
+  {n:"清萊白廟・藍廟",a:"清萊",d:"純白雕花聖殿＋寶藍佛寺，清邁出發一日遊經典。",must:0,hot:1,go:"清邁參加一日團車程 3 小時"},
+  {n:"考艾國家公園",a:"中部",d:"泰國小瑞士：葡萄園、義式小鎮、野生動物 safari。",must:0,go:"曼谷自駕或包車 2.5 小時"}],
  foods:[
   {n:"痣姐 Jay Fai",a:"曼谷",d:"米其林一星街頭小炒，蟹肉蛋捲 ฿1,000。",must:0},
   {n:"Thip Samai 炒河粉",a:"曼谷",d:"Pad Thai 創始名店，鮮蝦包蛋版。",must:1},
@@ -680,8 +904,12 @@ th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
   {n:"芒果糯米飯 Mae Varee",a:"曼谷",d:"4–6 月芒果季最甜。",must:1},
   {n:"Jodd Fairs 喬德夜市",a:"曼谷",d:"水果西施、火山排骨打卡。",must:1},
   {n:"清邁咖哩麵 Khao Soi",a:"清邁",d:"椰奶咖哩＋脆麵雙重口感，北泰靈魂。",must:1},
-  {n:"鳳飛飛豬腳飯",a:"清邁",d:"清邁北門夜市傳奇，戴牛仔帽老闆娘。",must:1},
-  {n:"泰式奶茶＋香蕉煎餅",a:"全國",d:"路邊攤 ฿25–50，手標茶最經典。",must:0}],
+  {n:"鳳飛飛豬腳飯",a:"清邁",d:"清邁北門夜市傳奇，戴牛仔帽老闆娘。",must:1,hot:1},
+  {n:"泰式奶茶＋香蕉煎餅",a:"全國",d:"路邊攤 ฿25–50，手標茶最經典。",must:0},
+  {n:"After You 蜜糖吐司",a:"曼谷",d:"泰國甜點王者，Shibuya 蜜糖吐司＋芒果糯米冰。",must:0,hot:1},
+  {n:"T&K 海鮮（唐人街）",a:"曼谷",d:"綠色制服烤大頭蝦，唐人街排隊王。",must:0,hot:1},
+  {n:"船麵一條街",a:"曼谷",d:"勝利紀念碑旁一碗 ฿20 起，連吃十碗疊塔。",must:0},
+  {n:"現切水果攤",a:"全國",d:"4–6 月芒果榴槤季、山竹紅毛丹，路邊 ฿20 起。",must:0}],
  shops:[
   {n:"Siam 商圈",a:"曼谷",d:"Siam Paragon／Center／Discovery 三館相連。",buy:"曼谷包 NaRaYa、設計師品牌",hours:"10:00–22:00",go:"BTS Siam 站直結",must:1},
   {n:"Terminal 21",a:"曼谷",d:"每層一個城市主題；頂樓美食街超便宜。",buy:"平價服飾、創意伴手禮",hours:"10:00–22:00",go:"BTS Asok／MRT Sukhumvit 站直結",must:0},
@@ -748,24 +976,136 @@ th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
   "防詐：嘟嘟車「大皇宮今天關門我帶你去別的」是經典騙術，直接無視。",
   "4 月潑水節（宋干節）全國潑水，手機防水袋必備。",
   "小費文化：床頭小費 ฿20–50、按摩後 ฿50–100。"],
- packMust:["護照（效期 6 個月以上）","TDAC 入境卡 QR Code 截圖","網路 eSIM","泰銖現金（小額多換）","信用卡","防曬乳（SPF50）","防蚊液（登革熱防範）","腸胃藥＋止瀉藥","訂房／機票證明"],
+ packMust:["TDAC 入境卡 QR Code 截圖（出發前 72 小時內填）","防曬乳 SPF50（全年烈日）","進寺廟長褲／有袖上衣／披肩","泰銖小鈔多備（小費文化：床頭 ฿20–50）","Grab App 先綁卡"],
  packNice:["手機防水袋（海島／潑水節）","輕薄長褲／披肩（進寺廟）","泳衣＋拖鞋","帽子＋墨鏡","濕紙巾","小背包（市集掃貨）","護照影本（分開放）"],
  links:[["TDAC 數位入境卡（官方）","https://tdac.immigration.go.th"],["外交部領事事務局（旅遊警示）","https://www.boca.gov.tw"],["泰國觀光局中文網","https://www.tattpe.org.tw"],["Grab App","https://www.grab.com"],["泰銖匯率（台銀牌告）","https://rate.bot.com.tw/xrt"]]}
 };
 
-const COMMON_MUST = ["手機＋充電線","行動電源（≤100Wh 手提上機）","旅遊平安險＋不便險保單（出國）","緊急聯絡人資訊卡"];
+/* 共通必帶（分類）：intl:1 = 僅出國需要 */
+const PACK_GROUPS = [
+ ["📄 證件文件",[
+  {n:"護照（效期 6 個月以上）",intl:1},
+  {n:"身分證／健保卡"},
+  {n:"駕照（自駕用；出國自駕加辦國際駕照）"},
+  {n:"訂房／機票證明（紙本＋手機截圖各一份）"},
+  {n:"旅遊平安險＋不便險保單",intl:1},
+  {n:"護照影本＋2吋照片×2（遺失補辦用，與正本分開放）",intl:1},
+  {n:"緊急聯絡人資訊卡（含飯店地址、駐外館處電話）"}]],
+ ["💳 金錢支付",[
+  {n:"台幣現金"},
+  {n:"外幣現金（小額多換、分開收納）",intl:1},
+  {n:"信用卡×2（出國先開通海外刷卡＋感應）"},
+  {n:"交通卡（悠遊卡／Suica／T-money／Rabbit）"},
+  {n:"零錢包（日本硬幣特別多）",intl:1}]],
+ ["📱 3C 與網路",[
+  {n:"手機＋充電線"},
+  {n:"網路卡：eSIM／實體 SIM／WiFi 分享器（出發前先測試開通）",intl:1},
+  {n:"行動電源（≤100Wh，務必手提上機、不可托運）"},
+  {n:"多孔充電頭（一顆充全家）"},
+  {n:"轉接頭（韓國／泰國 220V；日本免）",intl:1},
+  {n:"行李秤（回程戰利品防超重）",intl:1},
+  {n:"耳機／相機／記憶卡"}]],
+ ["💊 必備用藥",[
+  {n:"個人處方藥＋處方箋影本（過海關備查、避免攜帶量爭議）"},
+  {n:"腸胃藥＋止瀉藥（飲食不適應第一名）"},
+  {n:"感冒藥／退燒止痛藥"},
+  {n:"暈車暈機藥（搭船跳島必備）"},
+  {n:"OK繃／優碘棉片（走路起水泡）"},
+  {n:"防蚊液（台灣小黑蚊／泰國登革熱）"},
+  {n:"酒精棉片／乾洗手"},
+  {n:"口罩數枚／個人保健品"}]]
+];
 const PREF_TAGS = [["首訪","🌟 第一次去"],["自然","🏞️ 自然風景"],["文化","🏯 歷史文化"],["購物","🛍️ 購物血拼"],["美食","🍜 美食探索"],["親子","👨‍👩‍👧 親子同樂"],["網美","📸 網美打卡"],["放鬆","♨️ 溫泉放鬆"],["主題樂園","🎢 主題樂園"],["家庭","🚗 家庭出遊"]];
 
-/* ════════════════ 狀態 ════════════════ */
-let S = {dest:"jp", startDate:"", days:5, adults:2, kids:0, fx:null, style:1,
-         prices:{}, itin:[], checks:{}, custom:[], prefs:[], wizDone:false};
+/* ════════════════ 出遊類型 ════════════════ */
+const TRIP_TYPES = {
+  family:{label:"👨‍👩‍👧 親人家族遊", tags:["親子","家庭","放鬆","自然"], tip:"行程節奏放慢、午休彈性，長輩小孩都顧到"},
+  friends:{label:"🍻 朋友出遊", tags:["網美","美食","購物","主題樂園"], tip:"打卡、逛街、夜生活滿檔，分帳功能直接用起來"},
+  couple:{label:"💑 情侶旅行", tags:["網美","放鬆","美食","文化"], tip:"浪漫景點＋兩人世界，餐廳記得先訂位"},
+  solo:{label:"🧍 個人旅行", tags:["文化","美食","自然","首訪"], tip:"自由自在，路線可以排鬆一點隨時改"}
+};
+
+/* ════════════════ 版本與狀態 ════════════════ */
+const APP_VERSION = "3.0";          // 系統版本（改版時更新）
+const DATA_DATE   = "2026-06";      // 資料更新月份
+const LS_KEY  = "twTrip.planner.v3";          // 帶命名空間的儲存鍵
+const OLD_KEYS = ["tripPlanner.v2", "tripPlanner.v1"]; // 舊鍵（自動遷移）
+
+function defaultState(){
+  return {dest:"jp", startDate:"", days:5, adults:2, kids:0, fx:null, style:1,
+          prices:{}, itin:[], checks:{}, custom:[], prefs:[],
+          flights:[], hotels:[], tickets:[], itinBackup:null,
+          members:["我"], expenses:[], expDraft:null, itinDay:0, expDay:1,
+          tripType:"family", party:[], journal:{}, photos:[],
+          wizDone:false, lastBackup:0, schemaVersion:3};
+}
+let S = defaultState();
 
 const $ = id => document.getElementById(id);
 const fmt = n => "NT$ " + Math.round(n).toLocaleString();
 
-function save(){ localStorage.setItem("tripPlanner.v2", JSON.stringify(S));
-  const b=$("savebar"); b.classList.add("show"); clearTimeout(save._t); save._t=setTimeout(()=>b.classList.remove("show"),1200); }
-function load(){ try{ const j=localStorage.getItem("tripPlanner.v2"); if(j) S=Object.assign(S,JSON.parse(j)); }catch(e){} }
+/* 把任意物件安全合併進預設狀態，避免缺欄位/壞值導致崩潰或白屏 */
+function mergeState(p){
+  const m = Object.assign(defaultState(), (p && typeof p==="object" && !Array.isArray(p)) ? p : {});
+  if(!DB[m.dest]) m.dest = "jp";
+  if(!Array.isArray(m.itin)) m.itin = [];
+  if(!Array.isArray(m.custom)) m.custom = [];
+  if(!Array.isArray(m.prefs)) m.prefs = [];
+  if(!Array.isArray(m.flights)) m.flights = [];
+  if(!Array.isArray(m.hotels)) m.hotels = [];
+  if(!Array.isArray(m.tickets)) m.tickets = [];
+  if(!Array.isArray(m.members) || !m.members.length) m.members = ["我"];
+  if(!Array.isArray(m.expenses)) m.expenses = [];
+  m.expenses = m.expenses.filter(e=>e && typeof e==="object" && Array.isArray(e.sharers));
+  if(typeof m.itinDay!=="number") m.itinDay = 0;
+  if(typeof m.expDay!=="number" || m.expDay<1) m.expDay = 1;
+  if(!TRIP_TYPES[m.tripType]) m.tripType = "family";
+  if(!Array.isArray(m.party)) m.party = [];
+  m.party = m.party.filter(p=>p && typeof p==="object");
+  if(!m.party.length && Array.isArray(m.members) && m.members.length)
+    m.party = m.members.map(n=>({name:String(n), role:"大人", note:""}));  // 舊資料遷移
+  if(!m.journal || typeof m.journal!=="object" || Array.isArray(m.journal)) m.journal = {};
+  if(!Array.isArray(m.photos)) m.photos = [];
+  m.photos = m.photos.filter(p=>p && typeof p==="object" && typeof p.src==="string");
+  if(!m.prices || typeof m.prices!=="object") m.prices = {};
+  if(!m.checks || typeof m.checks!=="object") m.checks = {};
+  if(typeof m.days!=="number" || m.days<1) m.days = 5;
+  if(typeof m.adults!=="number" || m.adults<1) m.adults = 1;
+  if(typeof m.kids!=="number" || m.kids<0) m.kids = 0;
+  return m;
+}
+
+function showSave(msg, err){
+  const b=$("savebar"); if(!b) return;
+  b.textContent=msg; b.style.background=err?"#b91c1c":"#1e2a3a"; b.classList.add("show");
+  clearTimeout(showSave._t); showSave._t=setTimeout(()=>b.classList.remove("show"), err?5000:1200);
+}
+function save(){
+  S.schemaVersion=3;
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(S));
+    showSave("✓ 已自動儲存", false);
+  }catch(e){
+    // 隱私模式 / 容量滿 / 暫存環境會走到這裡，不再靜默
+    showSave("⚠️ 儲存失敗！請到「匯出/同步」按『備份』保存", true);
+  }
+  updateBackupBanner();
+}
+function load(){
+  let raw=null;
+  try{ raw=localStorage.getItem(LS_KEY); }catch(e){}
+  if(!raw){ // 從舊鍵遷移
+    for(const k of OLD_KEYS){ try{ const o=localStorage.getItem(k); if(o){ raw=o; break; } }catch(e){} }
+  }
+  if(raw){ try{ S=mergeState(JSON.parse(raw)); }catch(e){ S=defaultState(); } }
+}
+function dismissBanner(){ S.lastBackup = S.lastBackup || Date.now(); $("backupBanner").classList.remove("show"); save(); }
+function updateBackupBanner(){
+  const b=$("backupBanner"); if(!b) return;
+  const count=(S.itin||[]).length + Object.keys(S.checks||{}).length;
+  const stale=!S.lastBackup || (Date.now()-S.lastBackup > 7*864e5);
+  b.classList.toggle("show", count>=8 && stale);
+}
 
 /* ════════════════ 初始化 ════════════════ */
 function init(){
@@ -780,13 +1120,36 @@ function init(){
     $(id).oninput = ()=>{ S[id==="startDate"?"startDate":id] = id==="startDate" ? $(id).value : (+$(id).value||0); renderBudget(); renderItin(); save(); };
   });
   $("style").value = S.style; $("style").onchange = ()=>{S.style=+$("style").value; renderBudget(); save();};
+  $("tripType").value = S.tripType; $("tripType").onchange = ()=>{S.tripType=$("tripType").value; renderAll(); save();};
+  // 列印前展開全部天數，印完還原
+  let _pd=0;
+  window.addEventListener("beforeprint", ()=>{ _pd=S.itinDay; S.itinDay=0; renderItin(); });
+  window.addEventListener("afterprint", ()=>{ S.itinDay=_pd; renderItin(); });
   $("fxRate").oninput = ()=>{S.fx=+$("fxRate").value||0; renderBudget(); save();};
   $("customItem").onkeydown = e=>{ if(e.key==="Enter") addCustomItem(); };
+  // 暫存防丟：打字中切出 App / 滑掉頁面，立刻把畫面上未提交的內容寫進 localStorage
+  const flushNow = ()=>{ flushInputs(); try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} };
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") flushNow(); });
+  window.addEventListener("pagehide", flushNow);
+  // 版本號與分享網址
+  $("appFooter").textContent = `旅遊規劃系統 v${APP_VERSION} ・ 資料更新 ${DATA_DATE} ・ 資料儲存於本機瀏覽器 ・ 出發前請以官方公告為準`;
+  if(location.protocol.startsWith("http")) $("shareUrl").textContent = location.href.split("#")[0];
+  // 分頁無障礙
+  document.querySelectorAll(".tab").forEach(t=>{ t.setAttribute("role","tab"); });
+  $("tabs").setAttribute("role","tablist");
+  // 鍵盤：Enter/空白鍵可觸發卡片選項（精靈、路線）
+  document.addEventListener("keydown", e=>{
+    const el=document.activeElement;
+    if((e.key==="Enter"||e.key===" ") && el && (el.classList.contains("opt")||el.classList.contains("wiz-route")) && !el.classList.contains("opt-static")){
+      e.preventDefault(); el.click();
+    }
+  });
   renderAll();
+  updateBackupBanner();
   if(!S.wizDone) openWiz();   // 第一次使用自動開啟引導
 }
 function showTab(t){
-  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active", x.dataset.t===t));
+  document.querySelectorAll(".tab").forEach(x=>{ const on=x.dataset.t===t; x.classList.toggle("active",on); x.setAttribute("aria-selected", on?"true":"false"); });
   document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"));
   $("p-"+t).classList.add("show");
 }
@@ -797,7 +1160,13 @@ function renderAll(){
   ["days","adults","kids","startDate"].forEach(id=>$(id).value = S[id==="startDate"?"startDate":id]);
   $("fxRate").value = S.fx ?? d.rate;
   $("ov-title").textContent = `${d.flag} ${d.name}行程總覽`;
-  $("ov-cards").innerHTML = d.facts.map(f=>`<div class="card"><h4>${f[0]}</h4><p class="meta">${f[1]}</p></div>`).join("");
+  // 依出發月份的天氣卡
+  let wx="";
+  if(S.startDate && d.clim){
+    const mo=new Date(S.startDate+"T00:00:00").getMonth();
+    if(!isNaN(mo)) wx=`<div class="card weather-card" style="grid-column:1/-1"><h4>🌤️ 你出發的 ${mo+1} 月天氣</h4><p class="meta">${d.clim[mo]}</p></div>`;
+  }
+  $("ov-cards").innerHTML = wx + d.facts.map(f=>`<div class="card"><h4>${f[0]}</h4><p class="meta">${f[1]}</p></div>`).join("");
   $("ov-transport").innerHTML = d.transport.map(t=>card(t)).join("");
   $("ov-stay").innerHTML = d.stay.map(t=>card(t)).join("");
   $("spotsTitle").textContent = `${d.flag} ${d.name}可玩景點（★＝必去）`;
@@ -806,16 +1175,34 @@ function renderAll(){
   $("shopCards").innerHTML = (d.shops||[]).map((s,i)=>spotCard(s,"shop",i)).join("");
   $("notesTitle").textContent = `${d.flag} ${d.name}注意事項`;
   $("noteList").innerHTML = d.notes.map(n=>`<li class="note-li">${n}</li>`).join("");
-  $("liveLinks").innerHTML = d.links.map(l=>`<li class="note-li"><a href="${l[1]}" target="_blank">${l[0]}</a></li>`).join("");
-  renderRoutes(); renderBudget(); renderPacking(); renderItin();
+  $("liveLinks").innerHTML = d.links.map(l=>`<li class="note-li"><a href="${l[1]}" target="_blank" rel="noopener noreferrer">${l[0]}</a></li>`).join("");
+  $("tripType").value = S.tripType;
+  // 列印用標題（含類型、成員、實際花費）
+  const spent = (S.expenses||[]).filter(e=>e.dest===S.dest).reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+  const names = (S.party||[]).map(p=>p.name).filter(Boolean).join("、") || "我";
+  $("printHead").innerHTML = `<b>${d.flag} ${d.name}旅遊計畫</b>｜${TRIP_TYPES[S.tripType].label}｜${S.startDate||"未定"} 出發｜${S.days} 天<br>👥 成員：${esc(names)}${spent?`｜💸 實際花費 ${fmt(spent)}`:""}`;
+  renderRoutes(); renderBudget(); renderPacking(); renderTravelInfo(); renderItin(); renderExpense(); renderRisks();
+  const su=$("storUse"); if(su){ const kb=storUsedKB(); su.textContent=`📦 已用空間約 ${kb} KB / 5000 KB（照片會佔最多，滿了先備份再刪舊照片）`; }
 }
+/* 即時暫存：每次輸入就更新狀態（防抖寫入），切頁/關閉前 flushInputs 兜底 */
+function debSave(){ clearTimeout(debSave._t); debSave._t=setTimeout(()=>save(), 400); }
+function liveItin(gi,k,v){ if(S.itin[gi]){ S.itin[gi][k]=v; debSave(); } }
+function flushInputs(){ clearTimeout(debSave._t); }
+/* 地圖連結：韓國用 Naver，其餘用 Google Maps */
+function mapUrl(q){
+  const base = S.dest==="kr" ? "https://map.naver.com/p/search/" : "https://www.google.com/maps/search/?api=1&query=";
+  return base + encodeURIComponent(q);
+}
+const stripName = s => (s||"").replace(/^[🍜🛍️📍🚄✈️🏨★\s]+/,"").trim();
 const card = t => `<div class="card"><h4>${t.n}</h4><p class="meta">${t.d}</p><div style="margin-top:6px">${(t.t||[]).map(x=>`<span class="tag">${x}</span>`).join("")}</div></div>`;
 function spotCard(s,kind,i){
   const badge = s.must ? (kind==="food" ? `<span class="badge-must badge-eat">🍜 必吃</span>` : kind==="shop" ? `<span class="badge-must badge-shop">🛍️ 必逛</span>` : `<span class="badge-must">★ 必去</span>`) : "";
   const go = s.go ? `<div class="go-chip">🚌 ${s.go}</div>` : "";
   const shopInfo = kind==="shop" ? `<p class="meta" style="margin-top:4px">🕐 ${s.hours}<br><b>必買：</b>${s.buy}</p>` : "";
-  return `<div class="card">${badge}<h4>${s.n}</h4><span class="tag">${s.a}</span><p class="meta" style="margin-top:6px">${s.d}</p>${shopInfo}${go}<div class="btn-row"><button class="btn small ghost" onclick="quickAdd('${kind}',${i})">＋ 加入行程</button></div></div>`;
+  const hotTag = s.hot ? `<span class="tag" style="background:#fce7f3;color:#be185d">📸 網紅打卡</span>` : "";
+  return `<div class="card">${badge}<h4 class="spot-title" title="點一下可開地圖" onclick="askMap('${esc(s.n)} ${esc(s.a)}')">${s.n}</h4><span class="tag">${s.a}</span>${hotTag}<p class="meta" style="margin-top:6px">${s.d}</p>${shopInfo}${go}<div class="btn-row"><button class="btn small ghost" onclick="quickAdd('${kind}',${i})">＋ 加入行程</button><a class="map-link" href="${mapUrl(s.n+" "+s.a)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a></div></div>`;
 }
+function askMap(q){ if(confirm(`要開啟地圖查看「${q}」嗎？`)) window.open(mapUrl(q), "_blank", "noopener"); }
 
 /* ════════════════ 推薦路線 ════════════════ */
 function renderRoutes(){
@@ -831,29 +1218,57 @@ function renderRoutes(){
             <span class="time">${it.time}–${p.items[ii+1]?.time || addMin(it.time,90)}</span>
             <span class="nm">${it.k==="food"?"🍜":it.k==="move"?"🚄":"📍"} ${it.n}</span>
             ${it.must?(it.k==="food"?`<span class="b-eat">必吃</span>`:`<span class="b-must">必去</span>`):""}
+            ${it.k!=="move"?`<a class="map-link" href="${mapUrl(it.n)}" target="_blank" rel="noopener noreferrer">🗺️</a>`:""}
             <span class="desc">${it.go?`<span class="go-chip">🚌 ${it.go}</span> `:""}${it.note||""}</span>
           </div>`).join("")}
       </details>`).join("");
+    const fitNote = (+S.days && +S.days !== r.days) ? `（自動調整為你的 ${S.days} 天）` : "";
     return `<div class="route-card">
       <div class="route-head">
         <div>
           <h4>${r.n}</h4>
-          <div class="meta">⏱️ ${r.days} 天｜🗓️ 最佳季節：${r.best}｜含 ${musts.length} 個必去必吃</div>
+          <div class="meta">⏱️ ${r.days} 天｜${r.mode?`${r.mode}｜`:""}🗓️ 最佳季節：${r.best}｜含 ${musts.length} 個必去必吃</div>
           <div style="margin-top:4px">${r.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
         </div>
-        <button class="btn" onclick="applyRoute(${ri})">⚡ 套用到我的行程</button>
+        <button class="btn" onclick="applyRoute(${ri})">⚡ 套用到我的行程${fitNote}</button>
       </div>
       <div class="route-body">${days}</div>
     </div>`;
   }).join("");
 }
+/* 把路線調整成指定天數：多的截掉、不夠的用「還沒排到的必去/網紅景點」自動生成 */
+function fitPlan(d, r, target){
+  const plan = r.plan.slice(0, target).map(p=>({t:p.t, items:p.items}));
+  if(plan.length >= target) return plan;
+  const used = new Set(r.plan.flatMap(p=>p.items.map(i=>i.n)));
+  const rank = (a,b)=>(b.must||0)-(a.must||0)||(b.hot||0)-(a.hot||0);
+  const pool = {
+    spot: d.spots.filter(s=>!used.has(s.n)).sort(rank),
+    food: d.foods.filter(s=>!used.has(s.n)).sort(rank),
+    shop: (d.shops||[]).filter(s=>!used.has(s.n)).sort(rank)
+  };
+  const take = k => pool[k].shift();
+  while(plan.length < target){
+    const items=[];
+    const s1=take("spot"); if(s1) items.push({time:"09:00",n:s1.n,k:"spot",must:s1.must||0,go:s1.go||"",note:s1.d});
+    const f1=take("food"); if(f1) items.push({time:"12:00",n:f1.n,k:"food",must:f1.must||0,go:"",note:f1.d});
+    const s2=take("spot"); if(s2) items.push({time:"14:30",n:s2.n,k:"spot",must:s2.must||0,go:s2.go||"",note:s2.d});
+    const sh=take("shop"); if(sh) items.push({time:"17:00",n:sh.n,k:"spot",must:sh.must||0,go:sh.go||"",note:"必買："+(sh.buy||"")});
+    const f2=take("food"); if(f2) items.push({time:"19:00",n:f2.n,k:"food",must:f2.must||0,go:"",note:f2.d});
+    if(!items.length) items.push({time:"09:00",n:"自由活動／彈性安排",k:"spot",must:0,go:"",note:"從「景點美食購物」挑喜歡的加入，或睡到自然醒"});
+    plan.push({t:"自由探索日（依你的喜好自動推薦）", items});
+  }
+  return plan;
+}
 function applyRoute(ri, silent){
   const d = DB[S.dest], r = d.routes[ri];
   const existing = getItin();
-  if(existing.length && !silent && !confirm(`「我的行程」已有 ${existing.length} 筆，套用「${r.n}」會先清空本目的地行程，確定？`)) return;
+  const target = Math.min(Math.max(+S.days||r.days,1),15);
+  if(existing.length && !silent && !confirm(`「我的行程」已有 ${existing.length} 筆，套用「${r.n}」（將安排為 ${target} 天）會先清空本目的地行程（之後可按『復原上一版』救回）。確定？`)) return;
+  if(existing.length) S.itinBackup = {dest:S.dest, items:JSON.parse(JSON.stringify(existing)), days:S.days};
   S.itin = S.itin.filter(x=>x.dest!==S.dest);
-  S.days = r.days; $("days").value = r.days;
-  r.plan.forEach((p,di)=>{
+  S.days = target; $("days").value = target;
+  fitPlan(d, r, target).forEach((p,di)=>{
     p.items.forEach((it,ii)=>{
       const next = p.items[ii+1];
       S.itin.push({dest:S.dest, day:di+1, time:it.time, end: next ? next.time : addMin(it.time,90),
@@ -861,6 +1276,7 @@ function applyRoute(ri, silent){
         go:it.go||"", note:it.note||""});
     });
   });
+  S.itinDay = 0;
   save(); renderItin(); renderBudget();
   if(!silent){ showTab("itinerary"); }
 }
@@ -898,6 +1314,7 @@ function renderBudget(){
       <td class="num"><b>${fmt(sub)}</b></td><td class="num">${fxTxt}</td></tr>`;
   }).join("");
   const grand=total*1.1;
+  LAST_BUDGET=grand;
   $("grandTotal").textContent=fmt(grand);
   $("perPerson").textContent=S.adults+S.kids>0?fmt(grand/(S.adults+S.kids)):"—";
   $("fxTotal").textContent=(S.dest!=="tw"&&fx>0)?(grand/fx).toLocaleString(undefined,{maximumFractionDigits:0})+" "+d.cur:"—";
@@ -910,50 +1327,196 @@ function getItin(){ if(!Array.isArray(S.itin)) S.itin=[]; return S.itin.filter(x
 function dayDate(day){ const d=new Date(S.startDate+"T00:00:00"); d.setDate(d.getDate()+day-1); return d; }
 function addMin(t,m){ let[h,mi]=(t||"09:00").split(":").map(Number); let x=Math.min(h*60+mi+m, 23*60+59); return String(Math.floor(x/60)).padStart(2,"0")+":"+String(x%60).padStart(2,"0"); }
 const esc = s => (s||"").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+/* ── 參與人員 ── */
+function syncMembers(){ S.members = S.party.length ? S.party.map(p=>(p.name||"").trim()||"成員") : ["我"]; }
+function partyBox(p,gi){
+  return `<div class="tr-box"><div class="tr-head"><span>👤 ${esc(p.name)||"成員"}</span><button class="btn small danger" onclick="delParty(${gi})">移除</button></div>
+  <div class="tr-grid">
+    <div><span class="mini-label">姓名／暱稱</span><input value="${esc(p.name)}" placeholder="名字" oninput="updParty(${gi},'name',this.value)" onchange="renderAll()"></div>
+    <div><span class="mini-label">身分</span><select onchange="updParty(${gi},'role',this.value)">${["大人","小孩","長輩"].map(r=>`<option ${p.role===r?"selected":""}>${r}</option>`).join("")}</select></div>
+    <div><span class="mini-label">備註（過敏／用藥／特殊需求）</span><input value="${esc(p.note)}" placeholder="如：對蝦過敏、需輪椅" oninput="updParty(${gi},'note',this.value)"></div>
+  </div></div>`;
+}
+function addParty(name){
+  if(name && S.party.some(p=>(p.name||"").trim()===String(name).trim())){ alert("已有同名成員"); return; }
+  S.party.push({name:name||"", role:"大人", note:""});
+  syncMembers(); save(); renderTravelInfo(); renderExpense();
+}
+function updParty(gi,k,v){
+  if(k==="name"){
+    const old=(S.party[gi].name||"").trim()||"成員";
+    S.party[gi].name=v;
+    const nu=(v||"").trim()||"成員";
+    // 改名同步到記帳紀錄（誰先墊／分攤者）
+    S.expenses.forEach(e=>{ if(e.payer===old) e.payer=nu; e.sharers=e.sharers.map(s=>s===old?nu:s); });
+    syncMembers();
+  } else S.party[gi][k]=v;
+  debSave();
+}
+function delParty(gi){
+  const nm=(S.party[gi].name||"").trim()||"成員";
+  if(expOf().some(e=>e.payer===nm||e.sharers.includes(nm))){ alert(`「${nm}」已有記帳紀錄，請先刪除相關支出再移除成員`); return; }
+  S.party.splice(gi,1); syncMembers(); save(); renderTravelInfo(); renderExpense(); renderAll();
+}
+
+/* ── 航班 / 住宿 ── */
+function renderTravelInfo(){
+  const fl=(S.flights||[]).filter(x=>x.dest===S.dest), ho=(S.hotels||[]).filter(x=>x.dest===S.dest);
+  const tk=(S.tickets||[]).filter(x=>x.dest===S.dest);
+  let h=`<h3 style="margin-top:0">👥 行程參與人員（${TRIP_TYPES[S.tripType].label}） <button class="btn small" onclick="addParty()">＋ 加成員</button></h3>`;
+  h += `<p class="meta" style="margin:-4px 0 8px;color:var(--sub);font-size:.83rem">💡 ${TRIP_TYPES[S.tripType].tip}。成員會自動同步到「💸 記帳分帳」。</p>`;
+  h += S.party.length ? S.party.map((p,i)=>partyBox(p,i)).join("") : `<p class="itin-empty">還沒加成員。加了之後：記帳能選誰先墊、備註欄可記過敏／用藥等需求（列印與共編檔都會帶上）。</p>`;
+  h += `<h3>✈️ 我的航班 <button class="btn small" onclick="addFlight()">＋ 新增</button></h3>`;
+  h += fl.length ? fl.map(f=>flightBox(f,S.flights.indexOf(f))).join("") : `<p class="itin-empty">尚未填航班。填了會自動帶進行事曆與列印文件，旅途中查訂位代碼最方便。</p>`;
+  h += `<h3>🏨 我的住宿 <button class="btn small" onclick="addHotel()">＋ 新增</button></h3>`;
+  h += ho.length ? ho.map(o=>hotelBox(o,S.hotels.indexOf(o))).join("") : `<p class="itin-empty">尚未填住宿。填了地址可一鍵開地圖（給計程車司機看），也會印在文件上。</p>`;
+  h += `<h3>🎫 交通票券／門票 <button class="btn small" onclick="addTicket()">＋ 新增</button></h3>`;
+  h += tk.length ? tk.map(t=>ticketBox(t,S.tickets.indexOf(t))).join("") : `<p class="itin-empty">如：地鐵一日券、JR PASS、樂園門票。記下票號／兌換碼，並追蹤「已買／未買」。</p>`;
+  $("travelInfo").innerHTML = h;
+}
+function ticketBox(t,gi){
+  const d=DB[S.dest];
+  return `<div class="tr-box"><div class="tr-head"><span>🎫 ${esc(t.name)||"票券"} ${t.bought?'<span class="tag" style="background:#dcfce7;color:#15803d">✓ 已買</span>':'<span class="tag" style="background:#fee2e2;color:#b91c1c">未買</span>'}</span><button class="btn small danger" onclick="delTicket(${gi})">刪除</button></div>
+  <div class="tr-grid">
+    <div class="full"><span class="mini-label">票券名稱</span><input value="${esc(t.name)}" placeholder="如 東京Metro 72小時券／USJ 門票" oninput="updTicket(${gi},'name',this.value)"></div>
+    <div><span class="mini-label">使用日期</span><input type="date" value="${esc(t.date)}" oninput="updTicket(${gi},'date',this.value)"></div>
+    <div><span class="mini-label">金額</span><input type="number" min="0" value="${t.amt||""}" oninput="updTicket(${gi},'amt',+this.value||0)"></div>
+    <div><span class="mini-label">幣別</span><select onchange="updTicket(${gi},'cur',this.value)"><option ${t.cur==="TWD"?"selected":""}>TWD</option>${S.dest!=="tw"?`<option ${t.cur===d.cur?"selected":""}>${d.cur}</option>`:""}</select></div>
+    <div><span class="mini-label">票號／兌換碼</span><input value="${esc(t.code)}" oninput="updTicket(${gi},'code',this.value)"></div>
+    <div><span class="mini-label">狀態</span><select onchange="updTicket(${gi},'bought',this.value==='1');renderTravelInfo()"><option value="0" ${!t.bought?"selected":""}>還沒買</option><option value="1" ${t.bought?"selected":""}>已買好</option></select></div>
+  </div></div>`;
+}
+function addTicket(){ const d=DB[S.dest]; S.tickets.push({dest:S.dest,name:"",date:S.startDate||"",amt:0,cur:S.dest==="tw"?"TWD":d.cur,code:"",bought:false}); save(); renderTravelInfo(); }
+function updTicket(gi,k,v){ S.tickets[gi][k]=v; debSave(); }
+function delTicket(gi){ S.tickets.splice(gi,1); save(); renderTravelInfo(); }
+function flightBox(f,gi){
+  return `<div class="tr-box"><div class="tr-head"><span>✈️ ${f.dir||"航班"} ${esc(f.no)}</span><button class="btn small danger" onclick="delFlight(${gi})">刪除</button></div>
+  <div class="tr-grid">
+    <div><span class="mini-label">方向</span><select onchange="updFlight(${gi},'dir',this.value)"><option ${f.dir==="去程"?"selected":""}>去程</option><option ${f.dir==="回程"?"selected":""}>回程</option></select></div>
+    <div><span class="mini-label">航空/班號</span><input value="${esc(f.no)}" placeholder="如 CI100" oninput="updFlight(${gi},'no',this.value)"></div>
+    <div><span class="mini-label">日期</span><input type="date" value="${esc(f.date)}" oninput="updFlight(${gi},'date',this.value)"></div>
+    <div><span class="mini-label">起飛</span><input type="time" value="${esc(f.dep)}" oninput="updFlight(${gi},'dep',this.value)"></div>
+    <div><span class="mini-label">抵達</span><input type="time" value="${esc(f.arr)}" oninput="updFlight(${gi},'arr',this.value)"></div>
+    <div><span class="mini-label">訂位代碼</span><input value="${esc(f.code)}" placeholder="PNR" oninput="updFlight(${gi},'code',this.value)"></div>
+  </div></div>`;
+}
+function hotelBox(o,gi){
+  return `<div class="tr-box"><div class="tr-head"><span>🏨 ${esc(o.name)||"住宿"}</span><button class="btn small danger" onclick="delHotel(${gi})">刪除</button></div>
+  <div class="tr-grid">
+    <div class="full"><span class="mini-label">飯店名稱</span><input value="${esc(o.name)}" placeholder="飯店名" oninput="updHotel(${gi},'name',this.value)"></div>
+    <div class="full"><span class="mini-label">地址 ${o.addr||o.name?`<a class="map-link" href="${mapUrl(o.addr||o.name)}" target="_blank" rel="noopener noreferrer">🗺️ 開地圖</a>`:""}</span><input value="${esc(o.addr)}" placeholder="地址" oninput="updHotel(${gi},'addr',this.value)"></div>
+    <div><span class="mini-label">入住</span><input type="date" value="${esc(o.cin)}" oninput="updHotel(${gi},'cin',this.value)"></div>
+    <div><span class="mini-label">退房</span><input type="date" value="${esc(o.cout)}" oninput="updHotel(${gi},'cout',this.value)"></div>
+    <div><span class="mini-label">訂房代碼</span><input value="${esc(o.code)}" oninput="updHotel(${gi},'code',this.value)"></div>
+    <div><span class="mini-label">飯店電話</span><input value="${esc(o.tel)}" oninput="updHotel(${gi},'tel',this.value)"></div>
+  </div></div>`;
+}
+function addFlight(){ S.flights.push({dest:S.dest,dir:"去程",no:"",date:S.startDate||"",dep:"",arr:"",code:""}); save(); renderTravelInfo(); }
+function addHotel(){ S.hotels.push({dest:S.dest,name:"",addr:"",cin:"",cout:"",code:"",tel:""}); save(); renderTravelInfo(); }
+function updFlight(gi,k,v){ S.flights[gi][k]=v; debSave(); }
+function updHotel(gi,k,v){ S.hotels[gi][k]=v; debSave(); }
+function delFlight(gi){ S.flights.splice(gi,1); save(); renderTravelInfo(); }
+function delHotel(gi){ S.hotels.splice(gi,1); save(); renderTravelInfo(); }
+
+/* ── 逐日行程 ── */
 function renderItin(){
   const list=getItin();
+  // 工具列：清空＋（有備份才顯示）復原
+  $("itinTools").innerHTML = `<button class="btn ghost" onclick="clearItin()">清空本目的地行程</button>` +
+    ((S.itinBackup && S.itinBackup.dest===S.dest) ? ` <button class="btn ghost" onclick="restoreItin()">↩️ 復原上一版行程</button>` : "");
+  // 超出天數的孤兒行程
+  const orphans=list.filter(it=>it.day>S.days);
+  const warn = orphans.length ? `<div class="warn-row">⚠️ 有 ${orphans.length} 筆行程排在第 ${S.days} 天之後（超出目前天數），畫面看不到但仍會被匯出。<button class="btn small" onclick="fixOrphans()">移到最後一天</button><button class="btn small danger" onclick="delOrphans()">刪除</button></div>` : "";
+  // 天數分頁 chips（0=全部）
+  const view = (S.itinDay>S.days) ? 0 : (S.itinDay||0);
+  let chips = `<button class="day-chip ${view===0?"active":""}" onclick="setItinDay(0)">全部</button>`;
+  for(let d2=1; d2<=Math.max(S.days,1); d2++){
+    const dt=S.startDate?dayDate(d2).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric"}):"";
+    const cnt=list.filter(x=>x.day===d2).length;
+    chips += `<button class="day-chip ${view===d2?"active":""}" onclick="setItinDay(${d2})">D${d2} ${dt}${cnt?` (${cnt})`:""}</button>`;
+  }
+  $("dayChips").innerHTML = chips;
   let html="";
   for(let day=1; day<=Math.max(S.days,1); day++){
-    const items = list.filter(it=>it.day===day).sort((a,b)=>a.time.localeCompare(b.time));
-    const dateTxt = S.startDate ? dayDate(day).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric",weekday:"short"}) : "";
-    html += `<div class="day-block">
-      <div class="day-head"><span>Day ${day}｜${dateTxt}</span>
-        <button class="btn small" style="background:rgba(255,255,255,.2)" onclick="addItinDay(${day})">＋ 新增</button></div>
-      <div class="day-body">` +
-      (items.length===0 ? `<p class="itin-empty">尚無安排 — 按「＋新增」、或從「🗺️ 推薦路線」「📍 景點美食購物」加入。</p>` :
-       `<div class="itin-row" style="font-size:.75rem;color:var(--sub);font-weight:700"><span>開始</span><span>結束</span><span>行程內容</span><span class="hide-m">🚌 交通建議</span><span class="hide-m">備註</span><span></span></div>`+
-       items.map(it=>{
-        const gi=S.itin.indexOf(it);
-        return `<div class="itin-row">
+    if(view!==0 && day!==view) continue;
+    const items=list.filter(it=>it.day===day).sort((a,b)=>a.time.localeCompare(b.time));
+    const dateTxt=S.startDate?dayDate(day).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric",weekday:"short"}):"";
+    html += `<div class="day-block"><div class="day-head"><span>Day ${day}｜${dateTxt}</span><button class="btn small" style="background:rgba(255,255,255,.2)" onclick="addItinDay(${day})">＋ 新增</button></div><div class="day-body">`;
+    if(items.length===0){ html += `<p class="itin-empty">尚無安排 — 按「＋新增」、或從「🗺️ 推薦路線」「📍 景點美食購物」加入。</p>`; }
+    else{
+      html += `<div class="itin-row itin-hd"><span>開始</span><span>結束</span><span>行程內容</span><span class="hide-m">🚌 交通建議</span><span class="hide-m">備註</span><span></span></div>`;
+      items.forEach((it,idx)=>{
+        const gi=S.itin.indexOf(it), endV=it.end||addMin(it.time,90);
+        const bad = endV < it.time;
+        const overlap = idx>0 && it.time < (items[idx-1].end||items[idx-1].time);
+        const tag = bad ? `<span class="hide-m" style="grid-column:1/-1;color:var(--bad);font-size:.74rem">⚠️ 結束時間早於開始時間</span>`
+                  : overlap ? `<span class="hide-m" style="grid-column:1/-1;color:var(--warn);font-size:.74rem">⚠️ 與前一個行程時段重疊</span>` : "";
+        html += `<div class="itin-row"${(bad||overlap)?' style="background:#fff7ed;border-radius:8px;padding:2px 0"':''}>
           <input type="time" value="${it.time}" onchange="updItin(${gi},'time',this.value)">
-          <input type="time" value="${it.end||addMin(it.time,90)}" onchange="updItin(${gi},'end',this.value)">
-          <input value="${esc(it.title)}" placeholder="行程內容…" onchange="updItin(${gi},'title',this.value)">
-          <input class="hide-m" value="${esc(it.go)}" placeholder="交通方式…" onchange="updItin(${gi},'go',this.value)" style="border-style:dashed;border-color:#34d399;background:#f0fdf4">
-          <input class="hide-m" value="${esc(it.note)}" placeholder="備註" onchange="updItin(${gi},'note',this.value)">
-          <button class="btn small danger" onclick="delItin(${gi})">✕</button></div>`;
-       }).join("")) +
-      `</div></div>`;
+          <input type="time" value="${endV}" onchange="updItin(${gi},'end',this.value)">
+          <input value="${esc(it.title)}" placeholder="行程內容…" oninput="liveItin(${gi},'title',this.value)" onchange="updItin(${gi},'title',this.value)">
+          <input class="hide-m" value="${esc(it.go)}" placeholder="交通方式…" oninput="liveItin(${gi},'go',this.value)" onchange="updItin(${gi},'go',this.value)" style="border-style:dashed;border-color:#34d399;background:#f0fdf4">
+          <input class="hide-m" value="${esc(it.note)}" placeholder="備註" oninput="liveItin(${gi},'note',this.value)" onchange="updItin(${gi},'note',this.value)">
+          <span style="display:flex;gap:5px;justify-content:flex-end;align-items:center"><select class="day-move" title="移到其他天" onchange="moveItin(${gi},+this.value)">${Array.from({length:Math.max(S.days,1)},(_,x)=>`<option value="${x+1}" ${it.day===x+1?"selected":""}>D${x+1}</option>`).join("")}</select>${it.title?`<a class="map-link" style="margin:0" href="${mapUrl(stripName(it.title))}" target="_blank" rel="noopener noreferrer">🗺️</a>`:""}<button class="btn small danger itin-del" onclick="delItin(${gi})">✕</button></span>
+          ${tag}</div>`;
+      });
+    }
+    // 當日花費小計＋照片＋過程紀錄
+    const daySpent=(S.expenses||[]).filter(e=>e.dest===S.dest&&e.day===day).reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+    if(daySpent) html += `<p style="font-size:.8rem;color:var(--sub);margin-top:4px">💸 本日已記帳 ${fmt(daySpent)}（明細在「記帳分帳」）</p>`;
+    const dayPhotos=S.photos.map((p,gi)=>({p,gi})).filter(x=>x.p.dest===S.dest&&x.p.day===day);
+    html += `<div class="photo-grid">`+
+      dayPhotos.map(({p,gi})=>`<span class="photo-thumb"><img src="${p.src}" onclick="showImg(this.src)" alt="Day${day}照片"><button onclick="delPhoto(${gi})">✕</button></span>`).join("")+
+      `<label class="photo-add">📷 加照片<input type="file" accept="image/*" style="display:none" onchange="addPhoto(${day},this)"></label></div>`;
+    const jk=S.dest+"|"+day;
+    html += `<textarea class="journal" rows="2" placeholder="📔 Day ${day} 過程紀錄：今天去了哪、好吃好玩的、突發狀況…（自動儲存，會印進 PDF）" oninput="updJournal('${jk}',this.value)">${esc(S.journal[jk]||"")}</textarea>`;
+    html += `</div></div>`;
   }
-  $("itinList").innerHTML = html;
+  $("itinList").innerHTML = warn + html;
 }
-function addItinDay(day){ S.itin.push({dest:S.dest, day, time:"09:00", end:"10:30", title:"", go:"", note:""}); renderItin(); save(); }
+function updJournal(k,v){ S.journal[k]=v; debSave(); }
+function setItinDay(d){ S.itinDay=d; save(); renderItin(); }
+function addItinDay(day){ S.itin.push({dest:S.dest, day, time:"09:00", end:"10:30", title:"", go:"", note:""}); save(); renderItin(); }
 function quickAdd(kind,i){
   const d=DB[S.dest], s=kind==="spot"?d.spots[i]:kind==="food"?d.foods[i]:d.shops[i];
   const pre = kind==="food"?"🍜 ":kind==="shop"?"🛍️ ":"📍 ";
-  S.itin.push({dest:S.dest, day:1, time:"09:00", end:"10:30", title:pre+(s.must?"★":"")+s.n, go:s.go||"", note:kind==="shop"?`必買：${s.buy}`:s.a});
+  // 預設加到「目前天數內最後一天」的最後一筆之後，避免全擠在 Day1 09:00 重疊
+  const day = Math.max(S.days,1);
+  const dayItems = getItin().filter(x=>x.day===day);
+  const lastEnd = dayItems.length ? dayItems.map(x=>x.end||x.time).sort().pop() : "09:00";
+  const start = dayItems.length ? lastEnd : "09:00";
+  S.itin.push({dest:S.dest, day, time:start, end:addMin(start,90), title:pre+(s.must?"★":"")+s.n, go:s.go||"", note:kind==="shop"?`必買：${s.buy}`:s.a});
   save(); renderItin();
-  alert(`已加入 Day 1：${s.n}\n請到「🗓️ 我的行程」調整日期時間。`);
+  if(confirm(`已加入 Day ${day}：${s.n}\n要順便開啟地圖看位置嗎？`)) window.open(mapUrl(s.n+" "+s.a), "_blank", "noopener");
 }
 function updItin(gi,k,v){ S.itin[gi][k]=v; save(); renderItin(); }
-function delItin(gi){ S.itin.splice(gi,1); renderItin(); save(); }
-function clearItin(){ if(confirm("確定清空本目的地的所有行程？")){ S.itin=S.itin.filter(x=>x.dest!==S.dest); renderItin(); save(); } }
+function moveItin(gi,day){ S.itin[gi].day=day; save(); renderItin(); }
+function delItin(gi){ S.itin.splice(gi,1); save(); renderItin(); }
+function clearItin(){ if(confirm("確定清空本目的地的所有行程？")){ const ex=getItin(); if(ex.length) S.itinBackup={dest:S.dest,items:JSON.parse(JSON.stringify(ex)),days:S.days}; S.itin=S.itin.filter(x=>x.dest!==S.dest); save(); renderItin(); } }
+function restoreItin(){
+  const b=S.itinBackup;
+  if(!b || b.dest!==S.dest){ alert("目前沒有可復原的行程"); return; }
+  S.itin=S.itin.filter(x=>x.dest!==b.dest).concat(b.items.map(x=>Object.assign({},x,{dest:b.dest})));
+  S.days=b.days; $("days").value=b.days; S.itinBackup=null;
+  save(); renderAll(); showTab("itinerary"); alert("已復原上一版行程");
+}
+function fixOrphans(){ S.itin.forEach(it=>{ if(it.dest===S.dest && it.day>S.days) it.day=S.days; }); save(); renderItin(); }
+function delOrphans(){ if(!confirm("確定刪除超出天數的行程？")) return; S.itin=S.itin.filter(it=>!(it.dest===S.dest && it.day>S.days)); save(); renderItin(); }
 
 /* ════════════════ 攜帶物品 ════════════════ */
 function packKey(item){ return S.dest+"|"+item; }
 function renderPacking(){
   const d=DB[S.dest];
-  const must=[...COMMON_MUST.filter(x=>d.dom?!x.includes("出國"):true), ...d.packMust];
-  $("packMust").innerHTML = must.map(it=>checkRow(it,true)).join("");
+  let h="";
+  PACK_GROUPS.forEach(([title,items])=>{
+    const list=items.filter(it=>d.dom?!it.intl:true);
+    if(!list.length) return;
+    h+=`<p style="grid-column:1/-1;font-weight:800;color:#155e75;margin:8px 0 2px">${title}</p>`;
+    h+=list.map(it=>checkRow(it.n,true)).join("");
+  });
+  h+=`<p style="grid-column:1/-1;font-weight:800;color:#155e75;margin:8px 0 2px">${d.flag} ${d.name}專屬必帶</p>`;
+  h+=d.packMust.map(it=>checkRow(it,true)).join("");
+  $("packMust").innerHTML = h;
   $("packNice").innerHTML = d.packNice.map(it=>checkRow(it,false)).join("");
   $("packCustom").innerHTML = (S.custom||[]).map((it,i)=>checkRow(it,false,i)).join("") || `<p style="color:var(--sub);font-size:.85rem">尚無自訂物品</p>`;
   updProg();
@@ -974,12 +1537,205 @@ function updProg(){
   $("packStat").textContent = `已完成 ${done} / ${boxes.length} 項`;
 }
 
+/* ════════════════ 照片紀錄（自動壓縮） ════════════════ */
+function compressImg(file, maxW, q, cb){
+  const rd=new FileReader();
+  rd.onload=()=>{ const img=new Image();
+    img.onload=()=>{ const sc=Math.min(maxW/img.width,1);
+      const c=document.createElement("canvas");
+      c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      cb(c.toDataURL("image/jpeg",q)); };
+    img.onerror=()=>alert("這個檔案不是可讀取的圖片");
+    img.src=rd.result; };
+  rd.readAsDataURL(file);
+}
+function storUsedKB(){ try{ return Math.round(JSON.stringify(S).length/1024); }catch(e){ return 0; } }
+function storWarn(){
+  const kb=storUsedKB();
+  if(kb>4200){ alert(`⚠️ 儲存空間快滿了（約 ${kb}KB / 5000KB 上限）。\n建議：先「下載紀錄檔」備份，再刪除部分照片。`); return false; }
+  return true;
+}
+function addPhoto(day, input){
+  const f=input.files[0]; input.value="";
+  if(!f) return;
+  if(!storWarn()) return;
+  compressImg(f, 700, 0.6, src=>{
+    S.photos.push({dest:S.dest, day, src});
+    save(); renderItin();
+  });
+}
+function delPhoto(gi){ if(confirm("刪除這張照片？")){ S.photos.splice(gi,1); save(); renderItin(); } }
+function showImg(src){
+  const m=document.createElement("div");
+  m.className="img-modal"; m.onclick=()=>m.remove();
+  m.innerHTML=`<img src="${src}">`;
+  document.body.appendChild(m);
+}
+
+/* ════════════════ 風險評估 ════════════════ */
+const RISK_DB = {
+ tw:{ weather:m=>[7,8,9].includes(m)?["hi","颱風季：出發前一週緊盯氣象署颱風動態，東部與離島行程準備備案，船班高機率停駛"]:[5,6].includes(m)?["mid","梅雨季：午後雷陣雨頻繁，雨具必備，戶外行程排上午"]:[1,2].includes(m)?["mid","寒流季：山區（合歡山、阿里山）可能結冰，上山查雪鏈管制"]:["lo","天氣相對穩定，正常準備即可"],
+     traffic:m=>[1,2].includes(m)?["hi","春節連假：國道塞爆、高鐵台鐵開賣秒殺，提早 29 天訂票，市區改大眾運輸"]:["mid","週五晚／週日下午國道易塞；連假高鐵票難搶，提早規劃"],
+     other:["mid","地震頻繁屬日常，住宿先看逃生路線；夏季海邊注意離岸流，浮潛選合法業者"]},
+ jp:{ weather:m=>[6].includes(m)?["mid","梅雨季：幾乎天天有雨，行程多排室內（美術館、商場、水族館）"]:[7,8].includes(m)?["hi","酷暑＋颱風季：中暑風險高，正午避戶外；颱風可能影響航班"]:[9].includes(m)?["mid","颱風尾季：留意航班異動，買「不便險」涵蓋延誤"]:[12,1,2].includes(m)?["mid","降雪季：北海道、東北航班可能延誤，雪地穿防滑鞋"]:["lo","氣候舒適，櫻花紅葉季人多但天氣穩定"],
+     traffic:m=>[4,5].includes(m)?["hi","黃金週（4/29–5/6）：新幹線自由席擠爆、飯店翻倍，避開或提早 1 個月訂"]:[8].includes(m)?["hi","盂蘭盆節（8 月中）：返鄉潮，交通住宿大爆滿"]:[12,1].includes(m)?["mid","年末年始：多數店家 12/31–1/3 休息，行程先查營業日"]:["lo","平日交通順暢，避開通勤尖峰 7:30–9:00 即可"],
+     other:["mid","地震帶國家：入住先確認逃生路線，手機開啟緊急速報；旅平險＋不便險必保"]},
+ kr:{ weather:m=>[12,1,2].includes(m)?["hi","嚴寒：常 -10°C 以下，沒發熱衣羽絨直接影響行程品質；路面結冰小心滑倒"]:[7,8].includes(m)?["mid","雨季＋悶熱：7 月集中暴雨，地下街是雨天備案"]:["lo","春秋氣候宜人，是最佳旅遊季"],
+     traffic:m=>["mid","首爾市區塞車嚴重，跨區一律地鐵；韓國春節/中秋連假很多店休息，出發前查日期"],
+     other:["mid","示威集會偶見（光化門一帶），遇到繞開即可；夜店區深夜留意安全"]},
+ th:{ weather:m=>[4].includes(m)?["hi","全年最熱（常 38°C+）＋潑水節：中暑風險高，手機必備防水袋"]:[5,6,7,8,9,10].includes(m)?["mid","雨季：午後暴雨 1–2 小時，曼谷易積水塞車；海島西岸浪大，跳島可能停航"]:["lo","涼季（11–2 月）：最舒適的旅遊季節"],
+     traffic:m=>["hi","曼谷塞車世界知名：跨區移動時間抓 1.5 倍，優先 BTS/MRT；嘟嘟車先談價、機場往返用 Grab 或機場快線"],
+     other:["mid","登革熱風險：防蚊液必擦；觀光區防詐（「大皇宮關門」騙術）與扒手；水上活動選有保險的合法業者"]}
+};
+function renderRisks(){
+  const d=DB[S.dest], mo=S.startDate?new Date(S.startDate+"T00:00:00").getMonth()+1:0;
+  const R=RISK_DB[S.dest];
+  $("riskTitle").textContent=`${d.flag} 本次行程風險評估（${mo?mo+" 月出發":"未設定日期"}）`;
+  const lvTag=l=>`<span class="risk-lv ${l}">${l==="hi"?"高":l==="mid"?"中":"低"}風險</span>`;
+  const [wl,wt]=R.weather(mo), [tl,tt]=R.traffic(mo), [ol,ot]=R.other;
+  // 費用風險：實際花費 vs 預算
+  const spent=expOf().reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+  let cl="lo", ct=S.dest==="tw"?"以台幣計價無匯率風險；連假住宿常漲 3–5 成，提早訂房鎖價":"匯率每日波動，出發前分批換匯；旺季機票住宿可差 1 倍，提早 2–3 個月訂最划算";
+  if(LAST_BUDGET>0 && spent>LAST_BUDGET){ cl="hi"; ct=`已超出預算 ${fmt(spent-LAST_BUDGET)}！建議檢視「記帳分帳」刪減非必要支出`; }
+  else if(LAST_BUDGET>0 && spent>LAST_BUDGET*0.8){ cl="mid"; ct=`已花費 ${Math.round(spent/LAST_BUDGET*100)}% 預算，後續消費建議節制`; }
+  $("riskCards").innerHTML=
+    `<div class="card"><h4>🌦️ 天氣影響 ${lvTag(wl)}</h4><p class="meta">${wt}</p></div>`+
+    `<div class="card"><h4>🚦 交通影響 ${lvTag(tl)}</h4><p class="meta">${tt}</p></div>`+
+    `<div class="card"><h4>💰 費用風險 ${lvTag(cl)}</h4><p class="meta">${ct}</p></div>`+
+    `<div class="card"><h4>🛡️ 安全與健康 ${lvTag(ol)}</h4><p class="meta">${ot}</p></div>`;
+}
+
+/* ════════════════ 記帳分帳 ════════════════ */
+let LAST_BUDGET = 0;
+const EXP_CATS = ["🍜 餐飲","🚇 交通","🎫 門票","🛍️ 購物","🏨 住宿","📦 其他"];
+function expOf(){ return (S.expenses||[]).filter(e=>e.dest===S.dest); }
+function toTWD(amt,cur){ const d=DB[S.dest]; const fx=S.fx??d.rate; return cur==="TWD"?amt:amt*fx; }
+function draft(k,v){ S.expDraft=Object.assign({},S.expDraft||{},{[k]:v}); debSave(); }
+function renderExpense(){
+  const d=DB[S.dest], list=expOf();
+  // Sticky 看板
+  const total=list.reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+  if(S.expDay>S.days) S.expDay=1;
+  const daySum=list.filter(e=>e.day===S.expDay).reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+  $("expTotal").textContent=fmt(total);
+  $("expDaySum").textContent=fmt(daySum);
+  // 預算 vs 實際
+  if(LAST_BUDGET>0){
+    const pct=Math.min(total/LAST_BUDGET*100,100);
+    const over=total>LAST_BUDGET;
+    $("expBudgetBar").innerHTML=`預算 ${fmt(LAST_BUDGET)}｜已花 <b style="color:${over?"#b91c1c":"#15803d"}">${fmt(total)}（${Math.round(total/LAST_BUDGET*100)}%）</b>${over?"　⚠️ 已超出預算！":""}<div class="track"><div class="fill" style="width:${pct}%${over?";background:#ef4444":""}"></div></div>`;
+  } else $("expBudgetBar").innerHTML="";
+  $("expDayView").innerHTML=Array.from({length:Math.max(S.days,1)},(_,i)=>{
+    const dt=S.startDate?dayDate(i+1).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric"}):"";
+    return `<option value="${i+1}" ${S.expDay===i+1?"selected":""}>Day ${i+1}（${dt}）</option>`;}).join("");
+  // 成員
+  $("memberList").innerHTML=S.members.map((m,i)=>
+    `<span class="member-chip">${esc(m)}${S.members.length>1?`<button onclick="delMember(${i})" title="移除">✕</button>`:""}</span>`).join("");
+  // 記一筆表單（含草稿還原）
+  const df=S.expDraft||{};
+  const sharers=Array.isArray(df.sharers)?df.sharers:S.members.slice();
+  $("expForm").innerHTML=`
+    <div><span class="mini-label">哪一天</span><select id="efDay">${Array.from({length:Math.max(S.days,1)},(_,i)=>`<option value="${i+1}" ${(df.day||S.expDay)===i+1?"selected":""}>Day ${i+1}</option>`).join("")}</select></div>
+    <div><span class="mini-label">分類</span><select id="efCat" onchange="draft('cat',this.value)">${EXP_CATS.map(c=>`<option ${df.cat===c?"selected":""}>${c}</option>`).join("")}</select></div>
+    <div class="full"><span class="mini-label">項目</span><input id="efName" placeholder="如 一蘭拉麵、地鐵券、伴手禮…" value="${esc(df.name||"")}" oninput="draft('name',this.value)"></div>
+    <div><span class="mini-label">金額</span><input id="efAmt" type="number" min="0" placeholder="0" value="${df.amt||""}" oninput="draft('amt',this.value)"></div>
+    <div><span class="mini-label">幣別</span><select id="efCur" onchange="draft('cur',this.value)"><option ${df.cur==="TWD"?"selected":""}>TWD</option>${S.dest!=="tw"?`<option ${(df.cur||d.cur)===d.cur?"selected":""}>${d.cur}</option>`:""}</select></div>
+    <div><span class="mini-label">誰先墊錢</span><select id="efPayer">${S.members.map(m=>`<option ${df.payer===m?"selected":""}>${esc(m)}</option>`).join("")}</select></div>
+    <div class="full"><span class="mini-label">誰要分攤（點選切換）</span><div class="share-pick" id="efShare">${S.members.map(m=>`<button class="share-chip ${sharers.includes(m)?"on":""}" onclick="this.classList.toggle('on');draftShare()">${esc(m)}</button>`).join("")}</div></div>
+    <div class="full"><span class="mini-label">📎 收據／發票照片（選填，自動壓縮存證）</span><input type="file" accept="image/*" id="efRcpt" onchange="pickRcpt(this)"><span id="efRcptOk" style="font-size:.78rem;color:#15803d">${window._rcpt?"✓ 已附上收據":""}</span></div>
+    <div class="full btn-row" style="margin-top:4px"><button class="btn" onclick="addExpense()">＋ 記下這筆</button></div>`;
+  // 紀錄清單（依天分組，新的在上）
+  if(!list.length){ $("expList").innerHTML=`<p class="itin-empty">還沒有紀錄。旅途中隨手記，回國直接看誰該給誰多少。</p>`; }
+  else{
+    let h="";
+    for(let day=Math.max(S.days,1); day>=1; day--){
+      const items=list.filter(e=>e.day===day);
+      if(!items.length) continue;
+      const sub=items.reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+      h+=`<h3 style="margin-top:10px">Day ${day} <small style="color:var(--sub);font-weight:400">小計 ${fmt(sub)}</small></h3>`;
+      h+=items.map(e=>{
+        const gi=S.expenses.indexOf(e);
+        const orig=e.cur==="TWD"?"":`${e.cur} ${(+e.amt).toLocaleString()}（≈`;
+        const rcpt=e.rcpt?` <button class="rcpt-link" onclick="showImg(S.expenses[${gi}].rcpt)">📎 收據</button>`:"";
+        return `<div class="exp-item"><span>${e.cat||""} <b>${esc(e.name)}</b>${rcpt}</span>
+          <span class="amt">${orig}${fmt(toTWD(e.amt,e.cur))}${orig?"）":""} <button class="btn small danger" onclick="delExpense(${gi})">✕</button></span>
+          <span class="who">💳 ${esc(e.payer)} 先墊 ・ ${e.sharers.length} 人分攤（${e.sharers.map(esc).join("/")}）・ 每人 ${fmt(toTWD(e.amt,e.cur)/e.sharers.length)}</span></div>`;
+      }).join("");
+    }
+    $("expList").innerHTML=h;
+  }
+  renderSettle();
+}
+function draftShare(){ const arr=[...document.querySelectorAll("#efShare .share-chip.on")].map(b=>b.textContent); draft('sharers',arr); }
+function setExpDay(v){ S.expDay=+v||1; save(); renderExpense(); }
+function addMember(){
+  const v=$("memberName").value.trim();
+  if(!v) return;
+  if(S.members.includes(v)){ alert("已有同名成員"); return; }
+  $("memberName").value="";
+  addParty(v);   // 與「行程參與人員」同一份名單
+}
+function delMember(i){
+  const m=S.members[i];
+  const pi=S.party.findIndex(p=>((p.name||"").trim()||"成員")===m);
+  if(pi>=0){ delParty(pi); return; }
+  if(expOf().some(e=>e.payer===m||e.sharers.includes(m))){ alert(`「${m}」已有記帳紀錄，不能移除（先刪除相關紀錄）`); return; }
+  S.members.splice(i,1); save(); renderExpense();
+}
+function pickRcpt(input){
+  const f=input.files[0]; if(!f) return;
+  if(!storWarn()){ input.value=""; return; }
+  compressImg(f, 600, 0.55, src=>{ window._rcpt=src; const ok=$("efRcptOk"); if(ok) ok.textContent="✓ 已附上收據"; });
+}
+function addExpense(){
+  const name=$("efName").value.trim(), amt=+$("efAmt").value;
+  const sharers=[...document.querySelectorAll("#efShare .share-chip.on")].map(b=>b.textContent);
+  if(!name){ alert("請輸入項目名稱"); return; }
+  if(!amt||amt<=0){ alert("請輸入金額"); return; }
+  if(!sharers.length){ alert("至少選一位分攤者"); return; }
+  const rec={dest:S.dest, day:+$("efDay").value, name, amt, cur:$("efCur").value, cat:$("efCat").value, payer:$("efPayer").value, sharers};
+  if(window._rcpt){ rec.rcpt=window._rcpt; window._rcpt=null; }
+  S.expenses.push(rec);
+  S.expDraft=null;            // 清掉草稿
+  save(); renderExpense();
+}
+function delExpense(gi){ S.expenses.splice(gi,1); save(); renderExpense(); }
+function renderSettle(){
+  const list=expOf();
+  if(!list.length){ $("settleBox").innerHTML="💡 記帳後這裡會自動算出「誰該給誰多少錢」。"; return; }
+  const bal={};
+  S.members.forEach(m=>bal[m]=0);
+  list.forEach(e=>{
+    const twd=toTWD(e.amt,e.cur);
+    bal[e.payer]=(bal[e.payer]||0)+twd;
+    e.sharers.forEach(s=>bal[s]=(bal[s]||0)-twd/e.sharers.length);
+  });
+  let h=`<b>💰 分帳結算（台幣）</b><br>`;
+  h+=Object.entries(bal).map(([m,v])=>`${esc(m)}：${v>=0?`<b class="get">應收 ${fmt(v)}</b>`:`<b class="give">應付 ${fmt(-v)}</b>`}`).join("｜")+"<br>";
+  // 最少轉帳次數的建議
+  const debt=Object.entries(bal).filter(([,v])=>v<-1).map(([m,v])=>({m,v:-v})).sort((a,b)=>b.v-a.v);
+  const cred=Object.entries(bal).filter(([,v])=>v>1).map(([m,v])=>({m,v})).sort((a,b)=>b.v-a.v);
+  const moves=[];
+  let i=0,j=0;
+  while(i<debt.length&&j<cred.length){
+    const x=Math.min(debt[i].v,cred[j].v);
+    moves.push(`${esc(debt[i].m)} → 給 ${esc(cred[j].m)} <b>${fmt(x)}</b>`);
+    debt[i].v-=x; cred[j].v-=x;
+    if(debt[i].v<1)i++; if(cred[j].v<1)j++;
+  }
+  if(moves.length) h+=`<div style="margin-top:6px">👉 建議轉帳：${moves.join("；")}</div>`;
+  else h+=`<div style="margin-top:6px">🎉 目前剛好平帳，不用互相轉錢！</div>`;
+  $("settleBox").innerHTML=h;
+}
+
 /* ════════════════ 規劃精靈 ════════════════ */
 let wizStep = 0, wizSel = {dest:null, routeIdx:null};
 function openWiz(){ wizStep=0; wizSel={dest:S.dest, routeIdx:null}; $("wizNext").style.display=""; $("wizOverlay").classList.add("show"); renderWiz(); }
 function closeWiz(){ $("wizOverlay").classList.remove("show"); S.wizDone=true; save(); }
 function wizGo(dir){
   if(dir>0 && !wizValidate()) return;
+  if(wizStep===2) wizCollectStep2();   // 離開第 2 步時收集（不論前進或後退）
   wizStep += dir;
   if(wizStep>4){ wizFinish(); return; }
   if(wizStep<0) wizStep=0;
@@ -998,53 +1754,65 @@ function renderWiz(){
     B.innerHTML = `<h3>👋 嗨！我來幫你一步步規劃旅程</h3>
     <p class="sub">只要回答 4 個小問題，就能拿到：推薦路線（含必去景點、必吃美食、交通建議）＋ 預算試算 ＋ 攜帶清單。隨時可按「先跳過」自己逛。</p>
     <div class="opt-grid">
-      <div class="opt sel"><span class="big-ico">🗺️</span>幫我排行程<small>推薦最佳路線、一鍵套用</small></div>
-      <div class="opt"><span class="big-ico">💰</span>算旅費<small>精靈完成後直接看到總預算</small></div>
-      <div class="opt"><span class="big-ico">🎒</span>準備清單<small>依目的地自動產生必帶物品</small></div>
+      <div class="opt opt-static"><span class="big-ico">🗺️</span>幫你排行程<small>推薦最佳路線、一鍵套用</small></div>
+      <div class="opt opt-static"><span class="big-ico">💰</span>幫你算旅費<small>完成後直接看到總預算</small></div>
+      <div class="opt opt-static"><span class="big-ico">🎒</span>幫你列清單<small>依目的地產生必帶物品</small></div>
     </div>`;
   }
   if(wizStep===1){
     B.innerHTML = `<h3>Q1．想去哪裡玩？</h3><p class="sub">點選一個目的地（之後隨時可換）</p>
     <div class="opt-grid">` + Object.entries(DB).map(([k,d])=>
-      `<div class="opt ${wizSel.dest===k?"sel":""}" onclick="wizPickDest('${k}')"><span class="big-ico">${d.flag}</span>${d.name}<small>${d.dom?"說走就走免簽證":"飛行約 2.5–4 小時"}</small></div>`).join("")+`</div>`;
+      `<div class="opt ${wizSel.dest===k?"sel":""}" role="button" tabindex="0" aria-pressed="${wizSel.dest===k}" onclick="wizPickDest('${k}')"><span class="big-ico">${d.flag}</span>${d.name}<small>${d.dom?"說走就走免簽證":"飛行約 2.5–4 小時"}</small></div>`).join("")+`</div>`;
   }
   if(wizStep===2){
     B.innerHTML = `<h3>Q2．什麼時候出發？玩幾天？幾個人？</h3><p class="sub">這些會用來計算預算與行事曆日期</p>
     <div class="field-row">
       <div class="field"><label>出發日期</label><input type="date" id="wizDate" value="${S.startDate}"></div>
-      <div class="field"><label>天數</label><input type="number" id="wizDays" min="1" max="30" value="${S.days}"></div>
+      <div class="field"><label>天數（1–15）</label><input type="number" id="wizDays" min="1" max="15" value="${S.days}"></div>
       <div class="field"><label>大人</label><input type="number" id="wizAdults" min="1" max="20" value="${S.adults}"></div>
       <div class="field"><label>小孩</label><input type="number" id="wizKids" min="0" max="20" value="${S.kids}"></div>
+    </div>
+    <h3 style="margin-top:8px">這是什麼樣的旅行？</h3>
+    <div class="opt-grid" id="wizTypeGrid">
+      ${Object.entries(TRIP_TYPES).map(([k,t])=>
+        `<div class="opt ${S.tripType===k?"sel":""}" role="button" tabindex="0" onclick="wizPickType('${k}',this)">${t.label}<small>${t.tip}</small></div>`).join("")}
     </div>
     <h3 style="margin-top:8px">旅行預算風格？</h3>
     <div class="opt-grid">
       ${[["0.8","💸 省錢背包","青旅＋小吃"],["1","🏨 標準舒適","三四星＋名店"],["1.5","✨ 豪華享受","五星＋大餐"]].map(([v,t,s])=>
-        `<div class="opt ${String(S.style)===v?"sel":""}" onclick="wizPickStyle('${v}',this)">${t}<small>${s}</small></div>`).join("")}
+        `<div class="opt ${String(S.style)===v?"sel":""}" role="button" tabindex="0" onclick="wizPickStyle('${v}',this)">${t}<small>${s}</small></div>`).join("")}
     </div>`;
   }
   if(wizStep===3){
     B.innerHTML = `<h3>Q3．這趟旅行你最想要什麼？</h3><p class="sub">可複選，會用來推薦最適合的路線</p>
     <div class="opt-grid">` + PREF_TAGS.map(([k,label])=>
-      `<div class="opt ${S.prefs.includes(k)?"sel":""}" onclick="wizTogglePref('${k}',this)">${label}</div>`).join("")+`</div>`;
+      `<div class="opt ${S.prefs.includes(k)?"sel":""}" role="button" tabindex="0" aria-pressed="${S.prefs.includes(k)}" onclick="wizTogglePref('${k}',this)">${label}</div>`).join("")+`</div>`;
   }
   if(wizStep===4){
     wizCollectStep2();
-    const d=DB[wizSel.dest], ranked = d.routes.map((r,i)=>({r,i,score:r.tags.filter(t=>S.prefs.includes(t)).length*2 - Math.abs(r.days-S.days)*0.5}))
+    const typeTags = TRIP_TYPES[S.tripType].tags;
+    const d=DB[wizSel.dest], ranked = d.routes.map((r,i)=>({r,i,
+      score: r.tags.filter(t=>S.prefs.includes(t)).length*2
+           + r.tags.filter(t=>typeTags.includes(t)).length      // 出遊類型加權
+           - Math.abs(r.days-S.days)*0.5}))
       .sort((a,b)=>b.score-a.score);
     if(wizSel.routeIdx===null) wizSel.routeIdx = ranked[0].i;
-    B.innerHTML = `<h3>Q4．為你推薦的最佳路線 🎯</h3><p class="sub">依你的偏好排序，點選一條，完成後自動排好逐日行程（含交通建議）</p>` +
+    const existCount = S.itin.filter(x=>x.dest===wizSel.dest).length;
+    const overwriteWarn = existCount ? `<div class="warn-row">⚠️ 你在「${DB[wizSel.dest].name}」已有 ${existCount} 筆行程，選路線套用會覆蓋它們（完成後仍可按『復原上一版行程』救回）。不想覆蓋請選最下方「自己規劃」。</div>` : "";
+    B.innerHTML = `<h3>Q4．為你推薦的最佳路線 🎯</h3><p class="sub">依你的偏好排序，點選一條，完成後自動排好逐日行程（含交通建議）</p>${overwriteWarn}` +
       ranked.map(({r,i},rank)=>{
         const musts=r.plan.flatMap(p=>p.items).filter(x=>x.must).length;
-        return `<div class="wiz-route ${wizSel.routeIdx===i?"sel":""}" onclick="wizPickRoute(${i})">
+        return `<div class="wiz-route ${wizSel.routeIdx===i?"sel":""}" role="button" tabindex="0" aria-pressed="${wizSel.routeIdx===i}" onclick="wizPickRoute(${i})">
           <h5>${rank===0?"🥇 最推薦｜":""}${r.n}</h5>
-          <div class="meta">⏱️ ${r.days} 天｜🗓️ ${r.best}｜★必去＋🍜必吃共 ${musts} 個</div>
+          <div class="meta">⏱️ 原 ${r.days} 天（會調整為你的 ${S.days} 天）｜${r.mode?`${r.mode}｜`:""}★必去＋🍜必吃共 ${musts} 個</div>
           <div style="margin-top:3px">${r.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
         </div>`;}).join("") +
-      `<div class="wiz-route ${wizSel.routeIdx===-1?"sel":""}" onclick="wizPickRoute(-1)"><h5>✏️ 不用排，我想自己慢慢規劃</h5><div class="meta">精靈只幫你算預算＋準備清單</div></div>`;
+      `<div class="wiz-route ${wizSel.routeIdx===-1?"sel":""}" role="button" tabindex="0" aria-pressed="${wizSel.routeIdx===-1}" onclick="wizPickRoute(-1)"><h5>✏️ 不用排，我想自己慢慢規劃</h5><div class="meta">精靈只幫你算預算＋準備清單，不動現有行程</div></div>`;
   }
 }
 function wizPickDest(k){ wizSel.dest=k; wizSel.routeIdx=null; renderWiz(); }
 function wizPickStyle(v,el){ S.style=+v; document.querySelectorAll("#wizBody .opt").forEach(o=>{ if(o.parentElement===el.parentElement) o.classList.remove("sel"); }); el.classList.add("sel"); }
+function wizPickType(k,el){ S.tripType=k; [...document.getElementById("wizTypeGrid").children].forEach(o=>o.classList.remove("sel")); el.classList.add("sel"); }
 function wizTogglePref(k,el){ const i=S.prefs.indexOf(k); if(i>=0)S.prefs.splice(i,1); else S.prefs.push(k); el.classList.toggle("sel"); }
 function wizPickRoute(i){ wizSel.routeIdx=i; renderWiz(); }
 function wizCollectStep2(){
@@ -1070,6 +1838,7 @@ function wizFinish(){
     <div class="btn-row" style="justify-content:center">
       <button class="btn big" onclick="closeWiz();showTab('itinerary')">看我的行程 →</button>
       <button class="btn big ghost" onclick="closeWiz();showTab('budget')">看預算明細</button>
+      <button class="btn big ghost" onclick="exportJSON()">💾 立即備份</button>
     </div></div>`;
   S.wizDone=true; save();
 }
@@ -1082,24 +1851,45 @@ function dl(name, content, type){
 }
 function exportICS(){
   const d=DB[S.dest], list=getItin();
-  if(!list.length){ alert("行程是空的，請先套用推薦路線或新增行程。"); return; }
+  const flights=(S.flights||[]).filter(x=>x.dest===S.dest&&x.date&&x.dep);
+  const hotels=(S.hotels||[]).filter(x=>x.dest===S.dest&&x.cin);
+  if(!list.length && !flights.length && !hotels.length){ alert("行程是空的，請先套用推薦路線、新增行程，或填寫航班住宿。"); return; }
   const pad=n=>String(n).padStart(2,"0");
+  const esc5=s=>String(s||"").replace(/\\/g,"\\\\").replace(/[,;]/g,m=>"\\"+m).replace(/\r?\n/g,"\\n");
+  const stamp=(()=>{ const n=new Date(); return `${n.getUTCFullYear()}${pad(n.getUTCMonth()+1)}${pad(n.getUTCDate())}T${pad(n.getUTCHours())}${pad(n.getUTCMinutes())}${pad(n.getUTCSeconds())}Z`; })();
   let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TripPlanner//ZH-TW//\r\nCALSCALE:GREGORIAN\r\n";
+  const ev=(uid,st,en,sum,desc)=>`BEGIN:VEVENT\r\nUID:${uid}@tripplanner\r\nDTSTAMP:${stamp}\r\nDTSTART:${st}\r\nDTEND:${en}\r\nSUMMARY:${esc5(sum)}\r\nDESCRIPTION:${esc5(desc)}\r\nEND:VEVENT\r\n`;
+  // 航班
+  flights.forEach((f,i)=>{
+    const dt=f.date.replace(/-/g,""), [h,m]=(f.dep||"09:00").split(":").map(Number);
+    const arr=/^\d{2}:\d{2}$/.test(f.arr||"")?f.arr:addMin(f.dep,150);
+    const [eh,em]=arr.split(":").map(Number);
+    const st=`${dt}T${pad(h)}${pad(m)}00`, en=`${dt}T${pad(eh)}${pad(em)}00`;
+    const remind=f.dir==="去程"?"（建議提前 3 小時到機場）":"";
+    ics+=ev(`flight-${S.dest}-${i}`, st, en, `✈️ ${f.dir||""} ${f.no||""}`, `訂位代碼：${f.code||"-"} ${remind}`);
+  });
+  // 住宿（入住/退房各一個 30 分鐘提醒事件）
+  hotels.forEach((o,i)=>{
+    if(o.cin){ const dt=o.cin.replace(/-/g,""); ics+=ev(`hotel-in-${S.dest}-${i}`, `${dt}T150000`, `${dt}T153000`, `🏨 入住 ${o.name||""}`, `地址：${o.addr||"-"}｜訂房代碼：${o.code||"-"}｜電話：${o.tel||"-"}｜地圖：${mapUrl(o.addr||o.name||"")}`); }
+    if(o.cout){ const dt=o.cout.replace(/-/g,""); ics+=ev(`hotel-out-${S.dest}-${i}`, `${dt}T110000`, `${dt}T113000`, `🏨 退房 ${o.name||""}`, `退房日`); }
+  });
+  // 逐日行程
   list.forEach((it,i)=>{
     const dt=dayDate(it.day), [h,m]=it.time.split(":").map(Number);
-    const endT=/^\d{2}:\d{2}$/.test(it.end||"") ? it.end : addMin(it.time,60);
+    let endT=/^\d{2}:\d{2}$/.test(it.end||"") ? it.end : addMin(it.time,60);
+    if(endT < it.time) endT=addMin(it.time,60);   // 防呆：結束不得早於開始
     const [eh,em]=endT.split(":").map(Number);
     const st=`${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}T${pad(h)}${pad(m)}00`;
     const en=`${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}T${pad(eh)}${pad(em)}00`;
-    const desc=[it.go?("交通："+it.go):"", it.note||""].filter(Boolean).join("｜");
-    ics+=`BEGIN:VEVENT\r\nUID:trip-${S.dest}-${i}-${st}@tripplanner\r\nDTSTART:${st}\r\nDTEND:${en}\r\nSUMMARY:${(d.flag+" "+it.title).replace(/[,;]/g," ")}\r\nDESCRIPTION:${desc.replace(/[,;]/g," ")}\r\nEND:VEVENT\r\n`;
+    const desc=[it.go?("交通："+it.go):"", it.note||"", "地圖："+mapUrl(stripName(it.title))].filter(Boolean).join("｜");
+    ics+=ev(`trip-${S.dest}-${i}-${st}`, st, en, `${d.flag} ${it.title}`, desc);
   });
   ics+="END:VCALENDAR\r\n";
   dl(`${d.name}行程.ics`, ics, "text/calendar;charset=utf-8");
 }
 function exportCSV(){
   const d=DB[S.dest], fx=S.fx??d.rate, heads=S.adults+S.kids*0.5, nights=Math.max(S.days-1,0);
-  let rows=[["旅遊規劃試算表"],[`目的地,${d.name}`],[`出發日期,${S.startDate}`],[`天數,${S.days}`],[`人數,${S.adults}大+${S.kids}小`],[],
+  let rows=[["旅遊規劃試算表",`v${APP_VERSION}`],["目的地",d.name],["出遊類型",TRIP_TYPES[S.tripType].label],["出發日期",S.startDate],["天數",S.days],["人數",`${S.adults}大+${S.kids}小`],["成員",(S.party||[]).map(p=>`${p.name}(${p.role})${p.note?`:${p.note}`:""}`).join("、")],[],
     ["【預算明細】"],["項目","計算方式","單價TWD","小計TWD"]];
   let total=0;
   BUDGET_ROWS.forEach(([key,label,mode])=>{
@@ -1109,8 +1899,21 @@ function exportCSV(){
     rows.push([label,mode,p,Math.round(sub)]);
   });
   rows.push(["預備金 10%","",,Math.round(total*0.1)],["總計","",,Math.round(total*1.1)],[]);
+  const fl=(S.flights||[]).filter(x=>x.dest===S.dest), ho=(S.hotels||[]).filter(x=>x.dest===S.dest);
+  if(fl.length){ rows.push(["【航班】"],["方向","航空/班號","日期","起飛","抵達","訂位代碼"]); fl.forEach(f=>rows.push([f.dir,f.no,f.date,f.dep,f.arr,f.code])); rows.push([]); }
+  if(ho.length){ rows.push(["【住宿】"],["飯店","地址","入住","退房","訂房代碼","電話"]); ho.forEach(o=>rows.push([o.name,o.addr,o.cin,o.cout,o.code,o.tel])); rows.push([]); }
+  const tk=(S.tickets||[]).filter(x=>x.dest===S.dest);
+  if(tk.length){ rows.push(["【票券】"],["名稱","日期","金額","幣別","票號","狀態"]); tk.forEach(t=>rows.push([t.name,t.date,t.amt,t.cur,t.code,t.bought?"已買":"未買"])); rows.push([]); }
+  const ex=expOf();
+  if(ex.length){
+    rows.push(["【記帳】"],["天","分類","項目","金額","幣別","約台幣","誰先墊","分攤者"]);
+    ex.forEach(e=>rows.push([`D${e.day}`,e.cat,e.name,e.amt,e.cur,Math.round(toTWD(e.amt,e.cur)),e.payer,e.sharers.join("/")]));
+    rows.push(["記帳總計（台幣）","",,,,Math.round(ex.reduce((s,e)=>s+toTWD(e.amt,e.cur),0))],[]);
+  }
   rows.push(["【行程】"],["天","開始","結束","內容","交通","備註"]);
   getItin().sort((a,b)=>a.day-b.day||a.time.localeCompare(b.time)).forEach(it=>rows.push([`D${it.day}`,it.time,it.end||"",it.title,it.go,it.note]));
+  const jEntries=Object.entries(S.journal).filter(([k,v])=>k.startsWith(S.dest+"|")&&v&&v.trim());
+  if(jEntries.length){ rows.push(["【旅程日誌】"],["天","紀錄"]); jEntries.sort().forEach(([k,v])=>rows.push([`D${k.split("|")[1]}`,v])); rows.push([]); }
   rows.push([],["【攜帶物品】"],["物品","狀態"]);
   document.querySelectorAll("#packMust label,#packNice label,#packCustom label").forEach(l=>{
     const cb=l.querySelector("input"); if(!cb) return;
@@ -1122,7 +1925,11 @@ function exportCSV(){
 function shareText(){
   const d=DB[S.dest], list=getItin().sort((a,b)=>a.day-b.day||a.time.localeCompare(b.time));
   const grand=renderBudget();
-  let t=`${d.flag}【${d.name}旅遊計畫】\n📅 ${S.startDate} 出發｜${S.days} 天｜${S.adults} 大 ${S.kids} 小\n💰 預估總預算 ${fmt(grand)}（每人約 ${fmt(grand/Math.max(S.adults+S.kids,1))}）\n`;
+  const names=(S.party||[]).map(p=>p.name).filter(Boolean).join("、");
+  let t=`${d.flag}【${d.name}旅遊計畫】${TRIP_TYPES[S.tripType].label}\n📅 ${S.startDate} 出發｜${S.days} 天｜${S.adults} 大 ${S.kids} 小${names?`\n👥 成員：${names}`:""}\n💰 預估總預算 ${fmt(grand)}（每人約 ${fmt(grand/Math.max(S.adults+S.kids,1))}）\n`;
+  const fl=(S.flights||[]).filter(x=>x.dest===S.dest), ho=(S.hotels||[]).filter(x=>x.dest===S.dest);
+  fl.forEach(f=>{ t+=`✈️ ${f.dir||""} ${f.no||""} ${f.date||""} ${f.dep||""}→${f.arr||""}${f.code?`（訂位 ${f.code}）`:""}\n`; });
+  ho.forEach(o=>{ if(o.name) t+=`🏨 ${o.name}${o.cin?` ${o.cin}入住`:""}${o.code?`（訂房 ${o.code}）`:""}\n`; });
   let day=0;
   list.forEach(it=>{
     if(it.day!==day){ day=it.day;
@@ -1141,11 +1948,75 @@ function copyShareText(){
     ()=>alert("已複製！直接到 LINE 貼上即可分享 🎉"),
     ()=>{ prompt("手動複製以下文字：", t); });
 }
-function exportJSON(){ dl("旅遊規劃備份.json", JSON.stringify(S,null,2), "application/json"); }
+function copyAppUrl(){
+  const url = location.protocol.startsWith("http") ? location.href.split("#")[0] : "";
+  if(!url){ alert("這個網址無法複製（你可能是直接開檔案）。請改用部署後的網址。"); return; }
+  (navigator.clipboard?.writeText(url) || Promise.reject()).then(
+    ()=>alert("已複製網址！貼到 LINE 傳給朋友即可 🎉\n"+url),
+    ()=>prompt("手動複製這個網址：", url));
+}
+function todayStr(){ const n=new Date(); const p=x=>String(x).padStart(2,"0"); return `${n.getFullYear()}${p(n.getMonth()+1)}${p(n.getDate())}`; }
+function exportJSON(){
+  S.lastBackup=Date.now();
+  const data=Object.assign({_app:"twTrip", _version:APP_VERSION}, S);
+  dl(`旅遊規劃備份_${todayStr()}.json`, JSON.stringify(data,null,2), "application/json");
+  updateBackupBanner(); save();
+}
+/* 共編行程包：只打包「這一趟」的資料，輪流編輯用 */
+function exportTripPack(){
+  const dest=S.dest, d=DB[dest];
+  const pack={_app:"twTrip", _kind:"tripShare", _version:APP_VERSION,
+    dest, tripType:S.tripType, startDate:S.startDate, days:S.days, adults:S.adults, kids:S.kids,
+    party:S.party, itin:S.itin.filter(x=>x.dest===dest),
+    flights:S.flights.filter(x=>x.dest===dest), hotels:S.hotels.filter(x=>x.dest===dest),
+    tickets:S.tickets.filter(x=>x.dest===dest), expenses:S.expenses.filter(x=>x.dest===dest),
+    photos:S.photos.filter(x=>x.dest===dest),
+    journal:Object.fromEntries(Object.entries(S.journal).filter(([k])=>k.startsWith(dest+"|")))};
+  dl(`${d.name}共編行程包_${todayStr()}.json`, JSON.stringify(pack,null,2), "application/json");
+  alert("已匯出共編包！用 LINE 傳給旅伴，對方在「匯出/同步」按「匯入共編包」即可接力編輯。");
+}
+function importTripPack(p){
+  const dest=DB[p.dest]?p.dest:null;
+  if(!dest){ alert("共編包的目的地無法識別。"); return; }
+  const mine=S.itin.filter(x=>x.dest===dest).length;
+  if(!confirm(`這是「${DB[dest].name}」的共編行程包（${p.days||"?"} 天、${(p.itin||[]).length} 筆行程、${(p.expenses||[]).length} 筆記帳）。\n匯入會【取代】你在此目的地的行程／航班住宿／票券／記帳／日誌${mine?`（你目前有 ${mine} 筆行程）`:""}，並更新成員名單。\n你的其他目的地資料不受影響，且目前資料會先自動備援。確定匯入？`)) return;
+  try{ localStorage.setItem(LS_KEY+".bak", JSON.stringify(S)); }catch(e){}
+  const keep=x=>x.dest!==dest;
+  S.itin=S.itin.filter(keep).concat((Array.isArray(p.itin)?p.itin:[]).map(x=>({...x,dest})));
+  S.flights=S.flights.filter(keep).concat(Array.isArray(p.flights)?p.flights:[]);
+  S.hotels=S.hotels.filter(keep).concat(Array.isArray(p.hotels)?p.hotels:[]);
+  S.tickets=S.tickets.filter(keep).concat(Array.isArray(p.tickets)?p.tickets:[]);
+  S.expenses=S.expenses.filter(keep).concat((Array.isArray(p.expenses)?p.expenses:[]).filter(e=>e&&Array.isArray(e.sharers)));
+  S.photos=S.photos.filter(keep).concat((Array.isArray(p.photos)?p.photos:[]).filter(x=>x&&typeof x.src==="string"));
+  Object.keys(S.journal).forEach(k=>{ if(k.startsWith(dest+"|")) delete S.journal[k]; });
+  Object.assign(S.journal, (p.journal&&typeof p.journal==="object")?p.journal:{});
+  if(Array.isArray(p.party)&&p.party.length){ S.party=p.party.filter(x=>x&&typeof x==="object"); syncMembers(); }
+  S.dest=dest;
+  if(p.startDate) S.startDate=p.startDate;
+  if(+p.days) S.days=Math.min(Math.max(+p.days,1),15);
+  if(TRIP_TYPES[p.tripType]) S.tripType=p.tripType;
+  if(+p.adults) S.adults=+p.adults; S.kids=+p.kids||0;
+  S.itinDay=0;
+  save(); renderAll();
+  alert("共編包已匯入！改完後記得再「匯出共編包」傳回給對方。");
+}
 function importJSON(input){
-  const f=input.files[0]; if(!f) return;
+  const f=input.files[0]; if(!f){ return; }
   const r=new FileReader();
-  r.onload=()=>{ try{ S=JSON.parse(r.result); save(); init(); alert("已還原備份！"); }catch(e){ alert("檔案格式錯誤"); } };
+  r.onload=()=>{
+    let p;
+    try{ p=JSON.parse(r.result); }
+    catch(e){ alert("檔案格式錯誤，無法讀取（請確認是本系統匯出的 .json 檔案）"); input.value=""; return; }
+    input.value="";
+    if(!p || typeof p!=="object" || Array.isArray(p)){ alert("這不是有效的檔案。"); return; }
+    if(p._kind==="tripShare"){ importTripPack(p); return; }   // 共編包 → 只換該目的地
+    if(!confirm("這是完整備份檔，還原會覆蓋目前【全部】資料。\n（目前資料會先自動存到備援，可救回）確定還原？")) return;
+    try{ localStorage.setItem(LS_KEY+".bak", JSON.stringify(S)); }catch(e){}
+    S = mergeState(p);
+    syncMembers&&S.party.length&&syncMembers();
+    save(); renderAll();
+    alert("已還原備份！");
+  };
   r.readAsText(f);
 }
 
