@@ -276,7 +276,8 @@
     <div class="field" style="flex:1 1 100%;"><label>地區（可複選，選 2 個以上一起玩）</label><div class="region-chips" id="setupRegionChips"></div></div>
     <div class="field"><label>縣市 / 城市</label><select id="setupRegionCity" onchange="setRegionCity(this.value)"></select></div>
     <div class="field"><label>出發日期</label><input type="date" id="startDate"></div>
-    <div class="field"><label>天數（1–15）</label><input type="number" id="days" min="1" max="15" value="5"></div>
+    <div class="field"><label>返回日期</label><input type="date" id="endDate"></div>
+    <div class="field"><label>天數（依日期自動算）</label><input type="number" id="days" min="1" max="30" value="5"></div>
     <div class="field"><label>大人</label><input type="number" id="adults" min="1" max="20" value="2"></div>
     <div class="field"><label>小孩（半價計）</label><input type="number" id="kids" min="0" max="20" value="0"></div>
     <div class="field"><label>匯率（1 外幣 = ? 台幣）</label><input type="number" id="fxRate" step="0.001" min="0"></div>
@@ -1288,7 +1289,7 @@ const BACKUP_KEY = APP_CONFIG.backupStorageKey || `${LS_KEY}.bak`;
 
 function defaultState(){
   return {dest:"jp", startDate:"", days:5, adults:2, kids:0, fx:null, style:1,
-          prices:{}, itin:[], checks:{}, custom:[], prefs:[],
+          endDate:"", prices:{}, itin:[], checks:{}, custom:[], prefs:[],
           userAlias:"", wantsRecommendation:false, regionScope:"", regionScopes:[], regionCity:"", customPlaces:{},
           flights:[], hotels:[], tickets:[], itinBackup:null,
           members:["我"], expenses:[], expDraft:null, itinDay:0, expDay:1,
@@ -1313,6 +1314,7 @@ function mergeState(p){
   if(typeof m.regionScope!=="string") m.regionScope = "";
   if(!Array.isArray(m.regionScopes)) m.regionScopes = (m.regionScope ? [m.regionScope] : []);
   if(typeof m.regionCity!=="string") m.regionCity = "";
+  if(typeof m.endDate!=="string") m.endDate = "";
   if(!Array.isArray(m.flights)) m.flights = [];
   if(!Array.isArray(m.hotels)) m.hotels = [];
   if(!Array.isArray(m.tickets)) m.tickets = [];
@@ -1382,6 +1384,21 @@ function updateBackupBanner(){
   b.classList.toggle("show", count>=8 && stale);
 }
 
+/* ── 日期 ⇄ 天數 換算 ── */
+function addDaysISO(start, n){            // start 之後第 n 天（含當天）的 ISO 日期（用本地日期，避免時區差一天）
+  const a = new Date(start+"T00:00:00"); if(isNaN(a)) return "";
+  a.setDate(a.getDate() + (Math.max(1,n)-1));
+  const y=a.getFullYear(), m=String(a.getMonth()+1).padStart(2,"0"), d=String(a.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+function daysBetweenISO(start, end){      // 含頭尾的天數；無效回傳 null
+  if(!start || !end) return null;
+  const a=new Date(start+"T00:00:00"), b=new Date(end+"T00:00:00");
+  if(isNaN(a)||isNaN(b)) return null;
+  return Math.round((b-a)/86400000) + 1;
+}
+function recalcEndDate(){ if(S.startDate && S.days>0) S.endDate = addDaysISO(S.startDate, S.days); }
+
 /* ════════════════ 初始化 ════════════════ */
 function init(){
   load();
@@ -1390,10 +1407,19 @@ function init(){
   document.querySelectorAll(".dest-btn").forEach(b=>b.onclick=()=>{S.dest=b.dataset.d; S.fx=null; renderAll(); save();});
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showTab(t.dataset.t));
   if(!S.startDate){ const d=new Date(); d.setDate(d.getDate()+30); S.startDate=d.toISOString().slice(0,10); }
-  ["startDate","days","adults","kids"].forEach(id=>{
-    $(id).value = S[id==="startDate"?"startDate":id];
-    $(id).oninput = ()=>{ S[id==="startDate"?"startDate":id] = id==="startDate" ? $(id).value : (+$(id).value||0); renderBudget(); renderItin(); renderRoutes(); save(); };
-  });
+  if(!S.endDate && S.startDate && S.days>0){ S.endDate = addDaysISO(S.startDate, S.days); }
+  const syncDateFields = ()=>{ $("startDate").value=S.startDate||""; $("endDate").value=S.endDate||""; $("days").value=S.days; };
+  const afterDateChange = ()=>{ renderBudget(); renderItin(); renderRoutes(); save(); };
+  syncDateFields();
+  // 出發日改 → 保持天數、整段平移（返回日跟著動）
+  $("startDate").oninput = ()=>{ S.startDate=$("startDate").value; if(S.startDate && S.days>0) S.endDate=addDaysISO(S.startDate,S.days); syncDateFields(); afterDateChange(); };
+  // 返回日改 → 自動換算天數
+  $("endDate").oninput = ()=>{ S.endDate=$("endDate").value; const n=daysBetweenISO(S.startDate,S.endDate);
+    if(n && n>=1){ S.days=Math.min(n,30); } else if(S.startDate && S.endDate){ S.endDate=S.startDate; S.days=1; }
+    syncDateFields(); afterDateChange(); };
+  // 天數改 → 自動換算返回日
+  $("days").oninput = ()=>{ S.days=Math.max(1, Math.min(30, +$("days").value||1)); if(S.startDate) S.endDate=addDaysISO(S.startDate,S.days); syncDateFields(); afterDateChange(); };
+  ["adults","kids"].forEach(id=>{ $(id).value = S[id]; $(id).oninput = ()=>{ S[id]=+$(id).value||0; renderBudget(); renderItin(); save(); }; });
   $("style").value = S.style; $("style").onchange = ()=>{S.style=+$("style").value; renderBudget(); save();};
   $("tripType").value = S.tripType; $("tripType").onchange = ()=>{S.tripType=$("tripType").value; renderAll(); save();};
   $("userAlias").value = S.userAlias || "";
@@ -1440,7 +1466,7 @@ function showTab(t){
 function renderAll(){
   const d = DB[S.dest];
   document.querySelectorAll(".dest-btn").forEach(b=>b.classList.toggle("active", b.dataset.d===S.dest));
-  ["days","adults","kids","startDate"].forEach(id=>$(id).value = S[id==="startDate"?"startDate":id]);
+  ["days","adults","kids","startDate","endDate"].forEach(id=>{ const el=$(id); if(el) el.value = (S[id]==null?"":S[id]); });
   $("fxRate").value = S.fx ?? d.rate;
   $("ov-title").textContent = `${d.flag} ${d.name}行程總覽`;
   // 依出發月份的天氣卡
@@ -1553,7 +1579,7 @@ function toggleRegionScope(id){
 function setRegionCity(v){ S.regionCity=v; renderAll(); save(); }
 function setDurationPreset(v){
   const p=(window.TripDurationPresets||[]).find(x=>x.id===v);
-  if(p && p.days){ S.days=p.days; renderAll(); save(); }
+  if(p && p.days){ S.days=p.days; recalcEndDate(); renderAll(); save(); }
 }
 function addCustomPlace(){
   const name=$("customPlaceName").value.trim();
@@ -2265,7 +2291,7 @@ function wizTogglePref(k,el){ const i=S.prefs.indexOf(k); if(i>=0)S.prefs.splice
 function wizPickRoute(i){ wizSel.routeIdx=i; renderWiz(); }
 function wizCollectStep2(){
   const g=id=>document.getElementById(id);
-  if(g("wizDate")){ S.startDate=g("wizDate").value||S.startDate; S.days=+g("wizDays").value||S.days; S.adults=+g("wizAdults").value||1; S.kids=+g("wizKids").value||0; }
+  if(g("wizDate")){ S.startDate=g("wizDate").value||S.startDate; S.days=+g("wizDays").value||S.days; S.adults=+g("wizAdults").value||1; S.kids=+g("wizKids").value||0; recalcEndDate(); }
 }
 function wizFinish(){
   S.dest = wizSel.dest;
