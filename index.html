@@ -28,6 +28,9 @@
   .dest-btns{display:flex; gap:8px; flex-wrap:wrap;}
   .dest-btn{padding:9px 16px; border-radius:999px; border:2px solid var(--line); background:#fff; cursor:pointer; font-size:.95rem; font-weight:700; color:var(--sub); transition:.15s;}
   .dest-btn.active{border-color:var(--accent); background:var(--accent); color:#fff;}
+  .region-chips{display:flex; gap:6px; flex-wrap:wrap;}
+  .rg-chip{padding:5px 13px; border-radius:999px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-size:.85rem; font-weight:600; color:var(--sub); transition:.15s;}
+  .rg-chip.on{border-color:var(--accent); background:var(--accent); color:#fff;}
   nav.tabs{display:flex; gap:4px; flex-wrap:wrap; margin-bottom:14px;}
   .tab{padding:10px 16px; border:none; border-radius:10px 10px 0 0; background:#dde6ef; cursor:pointer; font-size:.9rem; font-weight:700; color:var(--sub);}
   .tab.active{background:var(--card); color:var(--accent); box-shadow:0 -2px 6px rgba(0,0,0,.05);}
@@ -270,7 +273,7 @@
       <label>目的地</label>
       <div class="dest-btns" id="destBtns"></div>
     </div>
-    <div class="field"><label>地區（選完目的地再選）</label><select id="setupRegionScope" onchange="setRegionScope(this.value)"></select></div>
+    <div class="field" style="flex:1 1 100%;"><label>地區（可複選，選 2 個以上一起玩）</label><div class="region-chips" id="setupRegionChips"></div></div>
     <div class="field"><label>縣市 / 城市</label><select id="setupRegionCity" onchange="setRegionCity(this.value)"></select></div>
     <div class="field"><label>出發日期</label><input type="date" id="startDate"></div>
     <div class="field"><label>天數（1–15）</label><input type="number" id="days" min="1" max="15" value="5"></div>
@@ -389,7 +392,7 @@
 
   <section class="panel" id="p-spots">
     <div class="filter-bar">
-      <div class="field"><label>需求導向</label><select id="regionScope" onchange="setRegionScope(this.value)"></select></div>
+      <div class="field" style="flex:1 1 100%;"><label>地區（可複選）</label><div class="region-chips" id="regionChips"></div></div>
       <div class="field"><label>縣市 / 城市</label><select id="regionCity" onchange="setRegionCity(this.value)"></select></div>
       <div class="field"><label>幾日幾夜</label><select id="tripDurationPreset" onchange="setDurationPreset(this.value)"></select></div>
       <button class="btn ghost" onclick="openMapForCurrentPlan()">🗺️ 用 Google Map 查看目前行程</button>
@@ -438,6 +441,7 @@
       <div class="card"><h4>📋 複製行程文字（LINE 分享）</h4><p class="meta">把逐日行程＋預算摘要變成漂亮的文字訊息，直接貼到 LINE 群組給親朋好友。</p><div class="btn-row"><button class="btn" onclick="copyShareText()">複製行程文字</button></div></div>
       <div class="card"><h4>🤝 共編行程包（輪流編輯）</h4><p class="meta">把這趟行程（含成員、航班住宿、票券、記帳、日誌）打包傳給旅伴；對方匯入後修改，再傳回來給你匯入——輪流接力編輯。匯入前會自動備份，可救回。</p><div class="btn-row"><button class="btn" onclick="exportTripPack()">匯出共編包</button><button class="btn ghost" onclick="document.getElementById('importFile').click()">匯入共編包</button></div></div>
       <div class="card"><h4>💾 旅程紀錄檔（備份 / 還原）</h4><p class="meta">完整 JSON 紀錄檔：行程、記帳、日誌、照片全打包。旅行結束存一份封存，下次規劃同地點時匯入參考。<br><span id="storUse" style="color:var(--sub);font-size:.78rem"></span></p><div class="btn-row"><button class="btn ghost" onclick="exportJSON()">下載紀錄檔</button><button class="btn ghost" onclick="document.getElementById('importFile').click()">匯入 / 還原</button><input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)"></div></div>
+      <div class="card"><h4>🗑️ 清除全部、重新開始</h4><p class="meta">一鍵清空所有目的地的行程、航班住宿、票券、記帳、日誌、照片與設定，回到全新狀態重新規劃。清除前會自動在本機備份一份，可按「還原上次清除」救回一次。<b>重要資料請先用左方「下載紀錄檔」另存。</b></p><div class="btn-row"><button class="btn danger" onclick="resetAll()">🗑️ 清除全部重來</button><button class="btn ghost" onclick="restoreBackup()">↩️ 還原上次清除</button></div></div>
     </div>
     <h3>👨‍👩‍👧 怎麼讓朋友也使用這套系統？</h3>
     <ul>
@@ -1285,7 +1289,7 @@ const BACKUP_KEY = APP_CONFIG.backupStorageKey || `${LS_KEY}.bak`;
 function defaultState(){
   return {dest:"jp", startDate:"", days:5, adults:2, kids:0, fx:null, style:1,
           prices:{}, itin:[], checks:{}, custom:[], prefs:[],
-          userAlias:"", wantsRecommendation:false, regionScope:"", regionCity:"", customPlaces:{},
+          userAlias:"", wantsRecommendation:false, regionScope:"", regionScopes:[], regionCity:"", customPlaces:{},
           flights:[], hotels:[], tickets:[], itinBackup:null,
           members:["我"], expenses:[], expDraft:null, itinDay:0, expDay:1,
           tripType:"family", party:[], journal:{}, photos:[],
@@ -1307,6 +1311,7 @@ function mergeState(p){
   if(typeof m.userAlias!=="string") m.userAlias = "";
   if(typeof m.wantsRecommendation!=="boolean") m.wantsRecommendation = false;
   if(typeof m.regionScope!=="string") m.regionScope = "";
+  if(!Array.isArray(m.regionScopes)) m.regionScopes = (m.regionScope ? [m.regionScope] : []);
   if(typeof m.regionCity!=="string") m.regionCity = "";
   if(!Array.isArray(m.flights)) m.flights = [];
   if(!Array.isArray(m.hotels)) m.hotels = [];
@@ -1387,7 +1392,7 @@ function init(){
   if(!S.startDate){ const d=new Date(); d.setDate(d.getDate()+30); S.startDate=d.toISOString().slice(0,10); }
   ["startDate","days","adults","kids"].forEach(id=>{
     $(id).value = S[id==="startDate"?"startDate":id];
-    $(id).oninput = ()=>{ S[id==="startDate"?"startDate":id] = id==="startDate" ? $(id).value : (+$(id).value||0); renderBudget(); renderItin(); save(); };
+    $(id).oninput = ()=>{ S[id==="startDate"?"startDate":id] = id==="startDate" ? $(id).value : (+$(id).value||0); renderBudget(); renderItin(); renderRoutes(); save(); };
   });
   $("style").value = S.style; $("style").onchange = ()=>{S.style=+$("style").value; renderBudget(); save();};
   $("tripType").value = S.tripType; $("tripType").onchange = ()=>{S.tripType=$("tripType").value; renderAll(); save();};
@@ -1448,7 +1453,8 @@ function renderAll(){
   $("ov-transport").innerHTML = d.transport.map(t=>card(t)).join("");
   $("ov-stay").innerHTML = d.stay.map(t=>card(t)).join("");
   renderRegionControls();
-  $("spotsTitle").textContent = `${d.flag} ${d.name}${S.regionCity?`\u30fb${S.regionCity}`:""}\u53ef\u73a9\u666f\u9ede\uff08\u2605\uff1d\u5fc5\u53bb\uff09`;
+  const regLbl = S.regionCity || activeScopesLabel();
+  $("spotsTitle").textContent = `${d.flag} ${d.name}${regLbl?`\u30fb${regLbl}`:""}\u53ef\u73a9\u666f\u9ede\uff08\u2605\uff1d\u5fc5\u53bb\uff09`;
   const spotList = getPlaceList("spot"), foodList = getPlaceList("food"), shopList = getPlaceList("shop");
   $("spotCards").innerHTML = spotList.length ? spotList.map((s,i)=>spotCard(s,"spot",i)).join("") : emptyPlaceCard("spot");
   $("foodCards").innerHTML = foodList.length ? foodList.map((s,i)=>spotCard(s,"food",i)).join("") : emptyPlaceCard("food");
@@ -1481,23 +1487,32 @@ function customPlaceBucket(kind){
   S.customPlaces[S.dest][kind] = S.customPlaces[S.dest][kind] || [];
   return S.customPlaces[S.dest][kind];
 }
-function activeRegionScope(){
+/* 多地區複選：回傳目前選到的地區物件清單（至少保留一個） */
+function activeScopeList(){
   const scopes = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
-  return scopes.find(x=>x.id===S.regionScope) || scopes[0] || {cities:[]};
+  if(!scopes.length) return [];
+  let sel = scopes.filter(x=>(S.regionScopes||[]).includes(x.id));
+  if(!sel.length){ sel = [scopes[0]]; S.regionScopes = [scopes[0].id]; }
+  return sel;
 }
-/* 路線模板是否屬於目前所選地區：用模板裡提到的城市名比對該地區的縣市清單 */
+function activeScopeCities(){
+  const out=[]; activeScopeList().forEach(s=>(s.cities||[]).forEach(c=>{ if(!out.includes(c)) out.push(c); })); return out;
+}
+function activeScopesLabel(){ return activeScopeList().map(s=>s.label).join("＋"); }
+function activeRegionScope(){ return activeScopeList()[0] || {cities:[]}; }   // 相容舊呼叫
+/* 路線模板是否屬於目前所選（可能多個）地區：用模板裡提到的城市名比對 */
 function routeMatchesScope(r){
-  const scope = activeRegionScope();
-  if(!scope || !Array.isArray(scope.cities) || !scope.cities.length) return true;
+  const cities = activeScopeCities();
+  if(!cities.length) return true;
   const txt = (r.n||"") + " " + (r.plan||[]).map(p=>(p.t||"")+" "+(p.items||[]).map(i=>(i.n||"")+" "+(i.go||"")+" "+(i.note||"")).join(" ")).join(" ");
-  return scope.cities.some(c=>txt.includes(c));
+  return cities.some(c=>txt.includes(c));
 }
 function placeMatchesRegion(place){
   const area = String(place.a || "").trim();
   const city = String(S.regionCity || "").trim();
-  const scope = activeRegionScope();
   if(city) return area===city || area.includes(city) || city.includes(area);
-  if(scope && Array.isArray(scope.cities) && scope.cities.length) return scope.cities.some(c=>area===c || area.includes(c) || c.includes(area));
+  const cities = activeScopeCities();
+  if(cities.length) return cities.some(c=>area===c || area.includes(c) || c.includes(area));
   return true;
 }
 function emptyPlaceCard(kind){
@@ -1512,19 +1527,29 @@ function getPlaceList(kind){
 }
 function renderRegionControls(){
   const catalog = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
-  let activeScope = catalog.find(x=>x.id===S.regionScope);
-  if(!activeScope && catalog[0]){ S.regionScope = catalog[0].id; activeScope = catalog[0]; }
-  activeScope = activeScope || {cities:[]};
-  if(S.regionCity && activeScope.cities.length && !activeScope.cities.includes(S.regionCity)) S.regionCity = "";
-  if(!activeScope.cities.length) S.regionCity = "";
-  const scopeOpts = catalog.map(x=>`<option value="${x.id}" ${S.regionScope===x.id?"selected":""}>${x.label}</option>`).join("") || `<option value="">（此目的地未分區）</option>`;
-  const cityOpts = `<option value="" ${!S.regionCity?"selected":""}>全部</option>` + activeScope.cities.map(x=>`<option value="${x}" ${S.regionCity===x?"selected":""}>${x}</option>`).join("");
+  const selIds = activeScopeList().map(s=>s.id);
+  const cities = activeScopeCities();
+  if(S.regionCity && cities.length && !cities.includes(S.regionCity)) S.regionCity = "";
+  if(!cities.length) S.regionCity = "";
+  const chips = catalog.length
+    ? catalog.map(s=>{ const on=selIds.includes(s.id); return `<button type="button" class="rg-chip${on?" on":""}" onclick="toggleRegionScope('${s.id}')">${on?"✓ ":""}${s.label}</button>`; }).join("")
+    : `<span class="meta">此目的地未分區</span>`;
+  const cityOpts = `<option value="" ${!S.regionCity?"selected":""}>全部</option>` + cities.map(c=>`<option value="${c}" ${S.regionCity===c?"selected":""}>${c}</option>`).join("");
   const durOpts = (window.TripDurationPresets||[]).map(x=>`<option value="${x.id}" ${x.days===S.days?"selected":""}>${x.label}</option>`).join("");
-  ["regionScope","setupRegionScope"].forEach(id=>{ const el=$(id); if(el) el.innerHTML=scopeOpts; });
+  ["regionChips","setupRegionChips"].forEach(id=>{ const el=$(id); if(el) el.innerHTML=chips; });
   ["regionCity","setupRegionCity"].forEach(id=>{ const el=$(id); if(el) el.innerHTML=cityOpts; });
   const dur=$("tripDurationPreset"); if(dur) dur.innerHTML=durOpts;
 }
-function setRegionScope(v){ S.regionScope=v; S.regionCity=""; renderAll(); save(); }
+/* 切換某地區的勾選狀態，可同時選多個地區（至少保留一個） */
+function toggleRegionScope(id){
+  const scopes = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
+  let set = (S.regionScopes||[]).slice();
+  set = set.includes(id) ? set.filter(x=>x!==id) : set.concat(id);
+  if(!set.length) set = [id];
+  S.regionScopes = scopes.map(s=>s.id).filter(x=>set.includes(x));   // 依目錄順序
+  S.regionScope = S.regionScopes[0] || "";
+  S.regionCity = ""; renderAll(); save();
+}
 function setRegionCity(v){ S.regionCity=v; renderAll(); save(); }
 function setDurationPreset(v){
   const p=(window.TripDurationPresets||[]).find(x=>x.id===v);
@@ -1564,8 +1589,7 @@ function askMap(q){ if(confirm(`要開啟地圖查看「${q}」嗎？`)) window.
 /* ════════════════ 推薦路線 ════════════════ */
 function renderRoutes(){
   const d = DB[S.dest];
-  const scope = activeRegionScope();
-  const scopeLabel = (scope && scope.label) ? scope.label : "";
+  const scopeLabel = activeScopesLabel();
   $("routesTitle").textContent = `${d.flag} ${d.name}${scopeLabel?`・${scopeLabel}`:""}行程靈感與順路模板`;
   const rankedRoutes = window.SortPlanService
     ? SortPlanService.rankTemplates(d.routes, S.prefs)
@@ -1934,6 +1958,20 @@ function toggleCheck(k){ S.checks[k]=!S.checks[k]; renderPacking(); save(); }
 function addCustomItem(){ const v=$("customItem").value.trim(); if(!v) return; (S.custom=S.custom||[]).push(v); $("customItem").value=""; renderPacking(); save(); }
 function delCustom(i){ S.custom.splice(i,1); renderPacking(); save(); }
 function resetChecks(){ if(confirm("確定要清除所有勾選？")){ S.checks={}; renderPacking(); save(); } }
+/* 全部清除、重新開始（清除前自動把目前資料備份到本機，可還原一次） */
+function resetAll(){
+  if(!confirm("⚠️ 確定要清除全部資料、重新開始嗎？\n\n會刪除所有目的地的行程、航班住宿、票券、記帳、日誌、照片、攜帶清單與設定。\n\n（清除前會自動把目前資料備份在本機，可按『還原上次清除』救回一次；重要資料建議先用「下載紀錄檔」另外存檔。）")) return;
+  try{ const cur=localStorage.getItem(LS_KEY); if(cur) localStorage.setItem(BACKUP_KEY, cur); }catch(e){}
+  S = defaultState();
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){}
+  location.reload();
+}
+function restoreBackup(){
+  let raw=null; try{ raw=localStorage.getItem(BACKUP_KEY); }catch(e){}
+  if(!raw){ alert("找不到可還原的備份（只有用過『清除全部』或匯入動作後才會有）。"); return; }
+  if(!confirm("要還原『上一次清除／匯入前』的資料嗎？目前的資料會被覆蓋。")) return;
+  try{ localStorage.setItem(LS_KEY, raw); location.reload(); }catch(e){ alert("還原失敗。"); }
+}
 function updProg(){
   const boxes=[...document.querySelectorAll("#packMust input,#packNice input,#packCustom input")];
   const done=boxes.filter(b=>b.checked).length;
