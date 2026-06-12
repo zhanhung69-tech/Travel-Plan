@@ -7,12 +7,14 @@
 <meta name="theme-color" content="#0e7490">
 <title>旅遊規劃系統 — 國內 / 日本 / 韓國 / 泰國</title>
 <style>
-  :root{
+/* Extracted from index.html during architecture refactor. */
+:root{
     --bg:#f4f6fa; --card:#ffffff; --ink:#1e2a3a; --sub:#5b6b7e; --line:#e3e9f1;
     --accent:#0e7490; --accent2:#0891b2; --warn:#b45309; --ok:#15803d; --bad:#b91c1c;
     --chip:#e0f2fe; --gold:#fef3c7; --radius:14px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{max-width:100%; overflow-x:hidden;}
   body{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif; background:var(--bg); color:var(--ink); line-height:1.6;}
   header{background:linear-gradient(135deg,#0e7490,#155e75); color:#fff; padding:18px 26px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;}
   header h1{font-size:1.35rem; letter-spacing:1px;}
@@ -33,8 +35,8 @@
   section.panel.show{display:block;}
   h2{font-size:1.12rem; color:var(--accent); margin-bottom:12px; border-left:4px solid var(--accent); padding-left:10px;}
   h3{font-size:1rem; margin:14px 0 8px;}
-  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px;}
-  .card{border:1px solid var(--line); border-radius:12px; padding:14px; background:#fbfdff; position:relative;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); gap:12px;}
+  .card{border:1px solid var(--line); border-radius:12px; padding:14px; background:#fbfdff; position:relative; min-width:0;}
   .card h4{font-size:.98rem; margin-bottom:6px; padding-right:54px;}
   .card .meta{font-size:.82rem; color:var(--sub);}
   .tag{display:inline-block; background:var(--chip); color:#075985; border-radius:6px; padding:1px 8px; font-size:.75rem; margin-right:4px; margin-bottom:3px;}
@@ -63,6 +65,13 @@
   .btn.small{padding:5px 10px; font-size:.8rem;}
   .btn.big{padding:14px 28px; font-size:1.05rem; border-radius:12px;}
   .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:center;}
+  .check-toggle{align-self:flex-end; display:flex; gap:8px; align-items:center; min-height:38px; padding:8px 12px; border:1px solid var(--line); border-radius:10px; background:#f8fafc; font-size:.88rem; font-weight:700; color:var(--ink);}
+  .check-toggle input{width:auto!important; min-width:0!important; flex:0 0 auto;}
+  .filter-bar{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr)); gap:10px; align-items:end; margin-bottom:14px;}
+  .filter-bar .field,.custom-place-form .field{display:flex; flex-direction:column; gap:4px;}
+  .filter-bar label{font-size:.78rem; color:var(--sub); font-weight:700;}
+  .filter-bar select,.custom-place-form input,.custom-place-form select{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; font-size:.9rem;}
+  .custom-place-form{display:grid; grid-template-columns:1.2fr .8fr .7fr 1.4fr auto; gap:8px; align-items:center; border:1px dashed #7dd3fc; background:#f0f9ff; border-radius:12px; padding:10px; margin-bottom:14px;}
   .note-li{margin-left:1.2em; margin-bottom:6px; font-size:.93rem;}
   .alert{background:#fff7ed; border:1px solid #fdba74; border-radius:10px; padding:10px 14px; font-size:.88rem; margin-bottom:12px;}
   .savebar{position:fixed; right:16px; bottom:14px; background:#1e2a3a; color:#fff; padding:7px 14px; border-radius:999px; font-size:.78rem; opacity:0; transition:.3s; pointer-events:none; z-index:50;}
@@ -77,7 +86,7 @@
   .itin-row input{padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-size:.9rem; width:100%;}
   .itin-empty{color:var(--sub); font-size:.85rem; padding:4px 2px;}
   /* ── 路線懶人包 ── */
-  .route-card{border:2px solid var(--line); border-radius:14px; margin-bottom:16px; overflow:hidden; background:#fbfdff;}
+  .route-card{border:2px solid var(--line); border-radius:14px; margin-bottom:16px; overflow:hidden; background:#fbfdff; min-width:0;}
   .route-head{padding:14px 16px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; background:linear-gradient(90deg,#f0f9ff,#e0f2fe);}
   .route-head h4{font-size:1.05rem; color:#075985;}
   .route-head .meta{font-size:.82rem; color:var(--sub); margin-top:2px;}
@@ -207,9 +216,23 @@
   @media(max-width:680px){
     header{padding:14px 16px;}
     header h1{font-size:1.2rem;}
+    header p{font-size:.78rem;}
+    .wrap{padding:10px; max-width:100vw;}
+    .setup{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:12px; align-items:stretch;}
+    .setup .field{min-width:0;}
+    .setup .field:first-child{grid-column:1/-1;}
+    .setup input,.setup select{width:100%; min-width:0;}
+    .check-toggle{grid-column:1/-1; align-self:stretch;}
+    .dest-btns{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+    .dest-btn{width:100%; padding:9px 8px; text-align:center;}
     nav.tabs{flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px;}
     .tab{white-space:nowrap; flex:0 0 auto;}
     section.panel{padding:14px;}
+    .grid{grid-template-columns:1fr;}
+    .card h4{padding-right:0;}
+    .badge-must{position:static; display:inline-block; margin-bottom:6px;}
+    .custom-place-form{grid-template-columns:1fr;}
+    .filter-bar{grid-template-columns:1fr;}
     .budget-scroll{overflow-x:auto;}
     #budgetTable{min-width:520px;}
     .itin-hd{display:none;}
@@ -217,18 +240,21 @@
     .itin-row>*:nth-child(n+3){grid-column:1/-1;}
     .itin-row .hide-m{display:block;}
     .itin-row .itin-del{min-height:38px; padding:7px 16px;}
-    .tr-grid{grid-template-columns:1fr 1fr;}
+    .tr-grid{grid-template-columns:1fr;}
+    .wiz{padding:20px 18px; max-height:88vh;}
+    .opt-grid{grid-template-columns:1fr;}
     .ritem .desc{padding-left:0;}
     .ritem .time{min-width:auto;}
     .btn.small{padding:7px 12px;}
   }
+
 </style>
 </head>
 <body>
 <header>
   <div>
     <h1>🧳 旅遊規劃系統</h1>
-    <p>目的地資訊 ・ 推薦路線懶人包 ・ 預算試算 ・ 攜帶清單 ・ 匯出文件與行事曆</p>
+    <p>探索靈感 ・ AI 順路模板 ・ 共編準備 ・ 預算記帳 ・ 旅後匯出</p>
   </div>
   <button class="wiz-open" onclick="openWiz()">🧭 規劃精靈：一步步引導我</button>
 </header>
@@ -264,11 +290,13 @@
         <option value="solo">🧍 個人旅行</option>
       </select>
     </div>
+    <div class="field"><label>我的暱稱</label><input id="userAlias" placeholder="例如：張雅萍組長"></div>
+    <label class="check-toggle"><input type="checkbox" id="recommendPlan"> 需要系統推薦安排行程</label>
   </div>
 
   <nav class="tabs" id="tabs">
     <button class="tab active" data-t="overview">📋 總覽</button>
-    <button class="tab" data-t="routes">🗺️ 推薦路線</button>
+    <button class="tab" data-t="routes">✨ 探索靈感</button>
     <button class="tab" data-t="budget">💰 預算試算</button>
     <button class="tab" data-t="itinerary">🗓️ 我的行程</button>
     <button class="tab" data-t="expense">💸 記帳分帳</button>
@@ -286,8 +314,8 @@
   </section>
 
   <section class="panel" id="p-routes">
-    <h2 id="routesTitle">最佳旅遊路線懶人包</h2>
-    <div class="alert">💡 每條路線已排好<b>逐日順路行程</b>，含 ★必去景點、🍜必吃美食、點對點交通建議。按「⚡ 套用」即自動排入「我的行程」，再依喜好微調即可。</div>
+    <h2 id="routesTitle">行程靈感與順路模板</h2>
+    <div class="alert">💡 先從旅遊靈感開始：每條模板已排好<b>逐日順路行程</b>，含 ★必去景點、🍜必吃美食、點對點交通建議。按「⚡ 複製到我的旅程」即可排入「我的行程」，再依喜好微調。</div>
     <div id="routeCards"></div>
   </section>
 
@@ -309,7 +337,7 @@
 
   <section class="panel" id="p-itinerary">
     <h2>我的逐日行程</h2>
-    <div class="alert">從「🗺️ 推薦路線」一鍵套用最快；也可在「📍 景點美食購物」按＋加入，或在各天手動新增。手機上每筆行程會展開成「開始／結束／內容／交通／備註」，可直接點欄位修改。</div>
+    <div class="alert">從「✨ 探索靈感」複製模板最快；也可在「📍 景點美食購物」按＋加入，或在各天手動新增。手機上每筆行程會展開成「開始／結束／內容／交通／備註」，可直接點欄位修改。</div>
     <div id="travelInfo"></div>
     <h3>🗓️ 逐日行程（點下方日期切換，不用一直滑）</h3>
     <div class="day-chips" id="dayChips"></div>
@@ -358,6 +386,23 @@
   </section>
 
   <section class="panel" id="p-spots">
+    <div class="filter-bar">
+      <div class="field"><label>需求導向</label><select id="regionScope" onchange="setRegionScope(this.value)"></select></div>
+      <div class="field"><label>縣市 / 城市</label><select id="regionCity" onchange="setRegionCity(this.value)"></select></div>
+      <div class="field"><label>幾日幾夜</label><select id="tripDurationPreset" onchange="setDurationPreset(this.value)"></select></div>
+      <button class="btn ghost" onclick="openMapForCurrentPlan()">🗺️ 用 Google Map 查看目前行程</button>
+    </div>
+    <div class="custom-place-form">
+      <input id="customPlaceName" placeholder="新增景點 / 美食 / 購物名稱">
+      <input id="customPlaceArea" placeholder="地區 / 縣市">
+      <select id="customPlaceKind">
+        <option value="spot">景點</option>
+        <option value="food">美食</option>
+        <option value="shop">購物</option>
+      </select>
+      <input id="customPlaceDesc" placeholder="備註、特色或營業資訊">
+      <button class="btn" onclick="addCustomPlace()">＋ 新增到資料庫</button>
+    </div>
     <h2 id="spotsTitle">可玩景點（★＝必去）</h2>
     <div class="grid" id="spotCards"></div>
     <h2 style="margin-top:20px;">美食推薦（🍜＝必吃）</h2>
@@ -423,7 +468,22 @@
 <footer id="appFooter">旅遊規劃系統 ・ 資料儲存於本機瀏覽器 ・ 出發前請以官方公告為準</footer>
 
 <script>
-/* ════════════════ 目的地資料庫 ════════════════ */
+/* Global runtime configuration.
+   Keep this file loaded before catalog.js and app.js. */
+(function () {
+  window.TripPlannerConfig = Object.freeze({
+    appVersion: "3.1",
+    dataDate: "2026-06",
+    schemaVersion: 3,
+    storageKey: "twTrip.planner.v3",
+    legacyStorageKeys: ["tripPlanner.v2", "tripPlanner.v1"],
+    backupStorageKey: "twTrip.planner.v3.bak"
+  });
+})();
+
+</script>
+<script>
+/* Static trip catalog extracted from app.js during architecture refactor. */
 const DB = {
 /* ──────── 台灣 ──────── */
 tw:{name:"台灣國內", flag:"🇹🇼", cur:"TWD", rate:1, dom:true,
@@ -1026,14 +1086,151 @@ const TRIP_TYPES = {
 };
 
 /* ════════════════ 版本與狀態 ════════════════ */
-const APP_VERSION = "3.0";          // 系統版本（改版時更新）
-const DATA_DATE   = "2026-06";      // 資料更新月份
-const LS_KEY  = "twTrip.planner.v3";          // 帶命名空間的儲存鍵
-const OLD_KEYS = ["tripPlanner.v2", "tripPlanner.v1"]; // 舊鍵（自動遷移）
+
+</script>
+<script>
+/* Region hierarchy for demand-led trip planning. */
+(function () {
+  window.RegionCatalog = Object.freeze({
+    tw: {
+      scopes: [
+        { id: "north", label: "北部", cities: ["台北", "新北", "基隆", "桃園", "新竹", "宜蘭"] },
+        { id: "central", label: "中部", cities: ["苗栗", "台中", "彰化", "南投", "雲林"] },
+        { id: "south", label: "南部", cities: ["嘉義", "台南", "高雄", "屏東"] },
+        { id: "east", label: "東部 / 離島", cities: ["花蓮", "台東", "澎湖", "金門", "馬祖"] }
+      ]
+    },
+    jp: {
+      scopes: [
+        { id: "tokyo", label: "東京圈", cities: ["東京", "橫濱", "鎌倉", "川越", "日光"] },
+        { id: "osaka", label: "大阪 / 關西", cities: ["大阪", "京都", "奈良", "神戶", "姬路"] },
+        { id: "hokkaido", label: "北海道", cities: ["札幌", "小樽", "函館", "旭川", "富良野"] },
+        { id: "kyushu", label: "九州", cities: ["福岡", "熊本", "長崎", "鹿兒島", "由布院"] }
+      ]
+    },
+    kr: {
+      scopes: [
+        { id: "seoul", label: "首爾圈", cities: ["首爾", "仁川", "水原", "坡州"] },
+        { id: "busan", label: "釜山 / 慶尚", cities: ["釜山", "慶州", "大邱", "鎮海"] },
+        { id: "jeju", label: "濟州", cities: ["濟州市", "西歸浦"] }
+      ]
+    },
+    th: {
+      scopes: [
+        { id: "bangkok", label: "曼谷圈", cities: ["曼谷", "大城", "芭達雅"] },
+        { id: "north", label: "北部", cities: ["清邁", "清萊", "拜縣"] },
+        { id: "islands", label: "海島", cities: ["普吉", "喀比", "蘇梅", "PP 島"] }
+      ]
+    }
+  });
+
+  window.TripDurationPresets = Object.freeze([
+    { id: "1d", label: "一日遊", days: 1 },
+    { id: "2d1n", label: "2 天 1 夜", days: 2 },
+    { id: "3d2n", label: "3 天 2 夜", days: 3 },
+    { id: "5d4n", label: "5 天 4 夜", days: 5 },
+    { id: "7d6n", label: "7 天 6 夜", days: 7 },
+    { id: "custom", label: "自訂天數", days: null }
+  ]);
+})();
+
+</script>
+<script>
+/* Local-first storage boundary for future migration to IndexedDB/cloud sync. */
+(function () {
+  function readJson(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      console.warn("[TripStorage] read failed", key, error);
+      return null;
+    }
+  }
+
+  function writeJson(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.warn("[TripStorage] write failed", key, error);
+      return false;
+    }
+  }
+
+  function backup(key, backupKey) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return false;
+      localStorage.setItem(backupKey, raw);
+      return true;
+    } catch (error) {
+      console.warn("[TripStorage] backup failed", key, error);
+      return false;
+    }
+  }
+
+  window.TripStorageService = Object.freeze({
+    readJson,
+    writeJson,
+    backup
+  });
+})();
+
+</script>
+<script>
+/* Route sorting boundary.
+   The current app still uses route templates; this service gives the next
+   refactor a stable place to implement AI/map-backed sorting. */
+(function () {
+  function scoreTemplate(route, preferences) {
+    const tags = Array.isArray(route.tags) ? route.tags : [];
+    const prefs = Array.isArray(preferences) ? preferences : [];
+    return prefs.reduce((score, pref) => score + (tags.includes(pref) ? 10 : 0), 0);
+  }
+
+  function rankTemplates(routes, preferences) {
+    return (Array.isArray(routes) ? routes : [])
+      .map((route, index) => ({
+        route,
+        index,
+        score: scoreTemplate(route, preferences)
+      }))
+      .sort((a, b) => b.score - a.score || a.index - b.index);
+  }
+
+  function summarizePlan(days) {
+    const list = Array.isArray(days) ? days : [];
+    const stopCount = list.reduce((sum, day) => sum + ((day.items || []).length), 0);
+    return {
+      days: list.length,
+      stopCount
+    };
+  }
+
+  window.SortPlanService = Object.freeze({
+    rankTemplates,
+    scoreTemplate,
+    summarizePlan
+  });
+})();
+
+</script>
+<script>
+/* Extracted from index.html during architecture refactor. */
+/* ════════════════ 目的地資料庫 ════════════════ */
+/* Static trip catalog is loaded from src/data/catalog.js. */
+const APP_CONFIG = window.TripPlannerConfig || {};
+const APP_VERSION = APP_CONFIG.appVersion || "3.1";          // 系統版本（改版時更新）
+const DATA_DATE   = APP_CONFIG.dataDate || "2026-06";        // 資料更新月份
+const LS_KEY  = APP_CONFIG.storageKey || "twTrip.planner.v3"; // 帶命名空間的儲存鍵
+const OLD_KEYS = APP_CONFIG.legacyStorageKeys || ["tripPlanner.v2", "tripPlanner.v1"]; // 舊鍵（自動遷移）
+const BACKUP_KEY = APP_CONFIG.backupStorageKey || `${LS_KEY}.bak`;
 
 function defaultState(){
   return {dest:"jp", startDate:"", days:5, adults:2, kids:0, fx:null, style:1,
           prices:{}, itin:[], checks:{}, custom:[], prefs:[],
+          userAlias:"", wantsRecommendation:false, regionScope:"", regionCity:"", customPlaces:{},
           flights:[], hotels:[], tickets:[], itinBackup:null,
           members:["我"], expenses:[], expDraft:null, itinDay:0, expDay:1,
           tripType:"family", party:[], journal:{}, photos:[],
@@ -1051,6 +1248,11 @@ function mergeState(p){
   if(!Array.isArray(m.itin)) m.itin = [];
   if(!Array.isArray(m.custom)) m.custom = [];
   if(!Array.isArray(m.prefs)) m.prefs = [];
+  if(!m.customPlaces || typeof m.customPlaces!=="object" || Array.isArray(m.customPlaces)) m.customPlaces = {};
+  if(typeof m.userAlias!=="string") m.userAlias = "";
+  if(typeof m.wantsRecommendation!=="boolean") m.wantsRecommendation = false;
+  if(typeof m.regionScope!=="string") m.regionScope = "";
+  if(typeof m.regionCity!=="string") m.regionCity = "";
   if(!Array.isArray(m.flights)) m.flights = [];
   if(!Array.isArray(m.hotels)) m.hotels = [];
   if(!Array.isArray(m.tickets)) m.tickets = [];
@@ -1083,7 +1285,8 @@ function showSave(msg, err){
 function save(){
   S.schemaVersion=3;
   try{
-    localStorage.setItem(LS_KEY, JSON.stringify(S));
+    if(window.TripStorageService) TripStorageService.writeJson(LS_KEY, S);
+    else localStorage.setItem(LS_KEY, JSON.stringify(S));
     showSave("✓ 已自動儲存", false);
   }catch(e){
     // 隱私模式 / 容量滿 / 暫存環境會走到這裡，不再靜默
@@ -1093,9 +1296,21 @@ function save(){
 }
 function load(){
   let raw=null;
-  try{ raw=localStorage.getItem(LS_KEY); }catch(e){}
+  try{
+    if(window.TripStorageService){
+      const stored = TripStorageService.readJson(LS_KEY);
+      raw = stored ? JSON.stringify(stored) : null;
+    }else{
+      raw=localStorage.getItem(LS_KEY);
+    }
+  }catch(e){}
   if(!raw){ // 從舊鍵遷移
-    for(const k of OLD_KEYS){ try{ const o=localStorage.getItem(k); if(o){ raw=o; break; } }catch(e){} }
+    for(const k of OLD_KEYS){
+      try{
+        const o = window.TripStorageService ? TripStorageService.readJson(k) : localStorage.getItem(k);
+        if(o){ raw=typeof o==="string"?o:JSON.stringify(o); break; }
+      }catch(e){}
+    }
   }
   if(raw){ try{ S=mergeState(JSON.parse(raw)); }catch(e){ S=defaultState(); } }
 }
@@ -1121,6 +1336,14 @@ function init(){
   });
   $("style").value = S.style; $("style").onchange = ()=>{S.style=+$("style").value; renderBudget(); save();};
   $("tripType").value = S.tripType; $("tripType").onchange = ()=>{S.tripType=$("tripType").value; renderAll(); save();};
+  $("userAlias").value = S.userAlias || "";
+  $("userAlias").oninput = ()=>{ S.userAlias=$("userAlias").value.trim(); debSave(); };
+  $("recommendPlan").checked = !!S.wantsRecommendation;
+  $("recommendPlan").onchange = ()=>{
+    S.wantsRecommendation = $("recommendPlan").checked;
+    if(S.wantsRecommendation){ S.wizDone=false; openWiz(); }
+    save();
+  };
   // 列印前展開全部天數，印完還原
   let _pd=0;
   window.addEventListener("beforeprint", ()=>{ _pd=S.itinDay; S.itinDay=0; renderItin(); });
@@ -1128,7 +1351,7 @@ function init(){
   $("fxRate").oninput = ()=>{S.fx=+$("fxRate").value||0; renderBudget(); save();};
   $("customItem").onkeydown = e=>{ if(e.key==="Enter") addCustomItem(); };
   // 暫存防丟：打字中切出 App / 滑掉頁面，立刻把畫面上未提交的內容寫進 localStorage
-  const flushNow = ()=>{ flushInputs(); try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} };
+  const flushNow = ()=>{ flushInputs(); try{ window.TripStorageService ? TripStorageService.writeJson(LS_KEY, S) : localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} };
   document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="hidden") flushNow(); });
   window.addEventListener("pagehide", flushNow);
   // 版本號與分享網址
@@ -1146,7 +1369,7 @@ function init(){
   });
   renderAll();
   updateBackupBanner();
-  if(!S.wizDone) openWiz();   // 第一次使用自動開啟引導
+  if(S.wantsRecommendation && !S.wizDone) openWiz();   // 只有勾選推薦安排才自動開啟引導
 }
 function showTab(t){
   document.querySelectorAll(".tab").forEach(x=>{ const on=x.dataset.t===t; x.classList.toggle("active",on); x.setAttribute("aria-selected", on?"true":"false"); });
@@ -1169,10 +1392,11 @@ function renderAll(){
   $("ov-cards").innerHTML = wx + d.facts.map(f=>`<div class="card"><h4>${f[0]}</h4><p class="meta">${f[1]}</p></div>`).join("");
   $("ov-transport").innerHTML = d.transport.map(t=>card(t)).join("");
   $("ov-stay").innerHTML = d.stay.map(t=>card(t)).join("");
+  renderRegionControls();
   $("spotsTitle").textContent = `${d.flag} ${d.name}可玩景點（★＝必去）`;
-  $("spotCards").innerHTML = d.spots.map((s,i)=>spotCard(s,"spot",i)).join("");
-  $("foodCards").innerHTML = d.foods.map((s,i)=>spotCard(s,"food",i)).join("");
-  $("shopCards").innerHTML = (d.shops||[]).map((s,i)=>spotCard(s,"shop",i)).join("");
+  $("spotCards").innerHTML = getPlaceList("spot").map((s,i)=>spotCard(s,"spot",i)).join("");
+  $("foodCards").innerHTML = getPlaceList("food").map((s,i)=>spotCard(s,"food",i)).join("");
+  $("shopCards").innerHTML = getPlaceList("shop").map((s,i)=>spotCard(s,"shop",i)).join("");
   $("notesTitle").textContent = `${d.flag} ${d.name}注意事項`;
   $("noteList").innerHTML = d.notes.map(n=>`<li class="note-li">${n}</li>`).join("");
   $("liveLinks").innerHTML = d.links.map(l=>`<li class="note-li"><a href="${l[1]}" target="_blank" rel="noopener noreferrer">${l[0]}</a></li>`).join("");
@@ -1195,20 +1419,73 @@ function mapUrl(q){
 }
 const stripName = s => (s||"").replace(/^[🍜🛍️📍🚄✈️🏨★\s]+/,"").trim();
 const card = t => `<div class="card"><h4>${t.n}</h4><p class="meta">${t.d}</p><div style="margin-top:6px">${(t.t||[]).map(x=>`<span class="tag">${x}</span>`).join("")}</div></div>`;
+function customPlaceBucket(kind){
+  S.customPlaces = S.customPlaces || {};
+  S.customPlaces[S.dest] = S.customPlaces[S.dest] || {spot:[], food:[], shop:[]};
+  S.customPlaces[S.dest][kind] = S.customPlaces[S.dest][kind] || [];
+  return S.customPlaces[S.dest][kind];
+}
+function getPlaceList(kind){
+  const d=DB[S.dest];
+  const base = kind==="spot" ? d.spots : kind==="food" ? d.foods : (d.shops||[]);
+  return base.concat(customPlaceBucket(kind));
+}
+function renderRegionControls(){
+  const scopeSel=$("regionScope"), citySel=$("regionCity"), durationSel=$("tripDurationPreset");
+  if(!scopeSel || !citySel || !durationSel) return;
+  const catalog = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
+  if(!S.regionScope && catalog[0]) S.regionScope = catalog[0].id;
+  const activeScope = catalog.find(x=>x.id===S.regionScope) || catalog[0] || {cities:[]};
+  if(!S.regionCity && activeScope.cities[0]) S.regionCity = activeScope.cities[0];
+  scopeSel.innerHTML = catalog.map(x=>`<option value="${x.id}" ${S.regionScope===x.id?"selected":""}>${x.label}</option>`).join("");
+  citySel.innerHTML = activeScope.cities.map(x=>`<option value="${x}" ${S.regionCity===x?"selected":""}>${x}</option>`).join("");
+  durationSel.innerHTML = (window.TripDurationPresets||[]).map(x=>`<option value="${x.id}" ${x.days===S.days?"selected":""}>${x.label}</option>`).join("");
+}
+function setRegionScope(v){ S.regionScope=v; S.regionCity=""; renderRegionControls(); save(); }
+function setRegionCity(v){ S.regionCity=v; save(); }
+function setDurationPreset(v){
+  const p=(window.TripDurationPresets||[]).find(x=>x.id===v);
+  if(p && p.days){ S.days=p.days; renderAll(); save(); }
+}
+function addCustomPlace(){
+  const name=$("customPlaceName").value.trim();
+  const area=$("customPlaceArea").value.trim() || S.regionCity || S.regionScope || "";
+  const kind=$("customPlaceKind").value;
+  const desc=$("customPlaceDesc").value.trim();
+  if(!name){ alert("請先輸入景點、餐廳或購物點名稱"); return; }
+  customPlaceBucket(kind).push({n:name, a:area, d:desc||"自訂加入的地點。", go:"", must:0, custom:1, t:["自訂"]});
+  ["customPlaceName","customPlaceArea","customPlaceDesc"].forEach(id=>$(id).value="");
+  save(); renderAll(); showTab("spots");
+}
+function delCustomPlace(kind,idx){
+  if(!confirm("確定刪除這個自訂地點？已加入行程的項目不會被刪除。")) return;
+  customPlaceBucket(kind).splice(idx,1);
+  save(); renderAll();
+}
+function openMapForCurrentPlan(){
+  const names = getItin().sort((a,b)=>a.day-b.day || a.time.localeCompare(b.time)).map(x=>stripName(x.title)).filter(Boolean);
+  const q = names.length ? names.slice(0,8).join(" to ") : [S.regionCity, DB[S.dest].name].filter(Boolean).join(" ");
+  window.open(mapUrl(q), "_blank", "noopener");
+}
 function spotCard(s,kind,i){
   const badge = s.must ? (kind==="food" ? `<span class="badge-must badge-eat">🍜 必吃</span>` : kind==="shop" ? `<span class="badge-must badge-shop">🛍️ 必逛</span>` : `<span class="badge-must">★ 必去</span>`) : "";
-  const go = s.go ? `<div class="go-chip">🚌 ${s.go}</div>` : "";
-  const shopInfo = kind==="shop" ? `<p class="meta" style="margin-top:4px">🕐 ${s.hours}<br><b>必買：</b>${s.buy}</p>` : "";
+  const go = s.go ? `<div class="go-chip">🚌 ${esc(s.go)}</div>` : "";
+  const shopInfo = kind==="shop" ? `<p class="meta" style="margin-top:4px">🕐 ${esc(s.hours||"")}<br><b>必買：</b>${esc(s.buy||"")}</p>` : "";
   const hotTag = s.hot ? `<span class="tag" style="background:#fce7f3;color:#be185d">📸 網紅打卡</span>` : "";
-  return `<div class="card">${badge}<h4 class="spot-title" title="點一下可開地圖" onclick="askMap('${esc(s.n)} ${esc(s.a)}')">${s.n}</h4><span class="tag">${s.a}</span>${hotTag}<p class="meta" style="margin-top:6px">${s.d}</p>${shopInfo}${go}<div class="btn-row"><button class="btn small ghost" onclick="quickAdd('${kind}',${i})">＋ 加入行程</button><a class="map-link" href="${mapUrl(s.n+" "+s.a)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a></div></div>`;
+  const customIdx = s.custom ? customPlaceBucket(kind).indexOf(s) : -1;
+  const delBtn = customIdx>=0 ? `<button class="btn small danger" onclick="delCustomPlace('${kind}',${customIdx})">刪除</button>` : "";
+  return `<div class="card">${badge}<h4>${esc(s.n)}</h4><span class="tag">${esc(s.a)}</span>${hotTag}${s.custom?'<span class="tag">自訂</span>':""}<p class="meta" style="margin-top:6px">${esc(s.d)}</p>${shopInfo}${go}<div class="btn-row"><button class="btn small ghost" onclick="quickAdd('${kind}',${i})">＋ 加入行程</button><a class="map-link" href="${mapUrl(s.n+" "+s.a)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a>${delBtn}</div></div>`;
 }
 function askMap(q){ if(confirm(`要開啟地圖查看「${q}」嗎？`)) window.open(mapUrl(q), "_blank", "noopener"); }
 
 /* ════════════════ 推薦路線 ════════════════ */
 function renderRoutes(){
   const d = DB[S.dest];
-  $("routesTitle").textContent = `${d.flag} ${d.name}最佳旅遊路線懶人包`;
-  $("routeCards").innerHTML = d.routes.map((r,ri)=>{
+  $("routesTitle").textContent = `${d.flag} ${d.name}行程靈感與順路模板`;
+  const rankedRoutes = window.SortPlanService
+    ? SortPlanService.rankTemplates(d.routes, S.prefs)
+    : d.routes.map((route, index)=>({route, index, score:0}));
+  $("routeCards").innerHTML = rankedRoutes.map(({route:r,index:ri,score})=>{
     const musts = r.plan.flatMap(p=>p.items).filter(i=>i.must);
     const days = r.plan.map((p,di)=>`
       <details class="rday" ${di===0?"open":""}>
@@ -1227,10 +1504,10 @@ function renderRoutes(){
       <div class="route-head">
         <div>
           <h4>${r.n}</h4>
-          <div class="meta">⏱️ ${r.days} 天｜${r.mode?`${r.mode}｜`:""}🗓️ 最佳季節：${r.best}｜含 ${musts.length} 個必去必吃</div>
+          <div class="meta">⏱️ ${r.days} 天｜${r.mode?`${r.mode}｜`:""}🗓️ 最佳季節：${r.best}｜含 ${musts.length} 個必去必吃${score?`｜偏好符合 ${score}`:""}</div>
           <div style="margin-top:4px">${r.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
         </div>
-        <button class="btn" onclick="applyRoute(${ri})">⚡ 套用到我的行程${fitNote}</button>
+        <button class="btn" onclick="applyRoute(${ri})">⚡ 複製到我的旅程${fitNote}</button>
       </div>
       <div class="route-body">${days}</div>
     </div>`;
@@ -1326,7 +1603,11 @@ function setPrice(key,val){ (S.prices[S.dest]=S.prices[S.dest]||{})[key]=+val||0
 function getItin(){ if(!Array.isArray(S.itin)) S.itin=[]; return S.itin.filter(x=>x.dest===S.dest); }
 function dayDate(day){ const d=new Date(S.startDate+"T00:00:00"); d.setDate(d.getDate()+day-1); return d; }
 function addMin(t,m){ let[h,mi]=(t||"09:00").split(":").map(Number); let x=Math.min(h*60+mi+m, 23*60+59); return String(Math.floor(x/60)).padStart(2,"0")+":"+String(x%60).padStart(2,"0"); }
-const esc = s => (s||"").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const esc = s => String(s||"")
+  .replace(/&/g,"&amp;")
+  .replace(/"/g,"&quot;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;");
 /* ── 參與人員 ── */
 function syncMembers(){ S.members = S.party.length ? S.party.map(p=>(p.name||"").trim()||"成員") : ["我"]; }
 function partyBox(p,gi){
@@ -1394,10 +1675,15 @@ function flightBox(f,gi){
   <div class="tr-grid">
     <div><span class="mini-label">方向</span><select onchange="updFlight(${gi},'dir',this.value)"><option ${f.dir==="去程"?"selected":""}>去程</option><option ${f.dir==="回程"?"selected":""}>回程</option></select></div>
     <div><span class="mini-label">航空/班號</span><input value="${esc(f.no)}" placeholder="如 CI100" oninput="updFlight(${gi},'no',this.value)"></div>
+    <div><span class="mini-label">出發地點</span><input value="${esc(f.from)}" placeholder="如 桃園 TPE" oninput="updFlight(${gi},'from',this.value)"></div>
+    <div><span class="mini-label">抵達地點</span><input value="${esc(f.to)}" placeholder="如 成田 NRT" oninput="updFlight(${gi},'to',this.value)"></div>
     <div><span class="mini-label">日期</span><input type="date" value="${esc(f.date)}" oninput="updFlight(${gi},'date',this.value)"></div>
     <div><span class="mini-label">起飛</span><input type="time" value="${esc(f.dep)}" oninput="updFlight(${gi},'dep',this.value)"></div>
     <div><span class="mini-label">抵達</span><input type="time" value="${esc(f.arr)}" oninput="updFlight(${gi},'arr',this.value)"></div>
     <div><span class="mini-label">訂位代碼</span><input value="${esc(f.code)}" placeholder="PNR" oninput="updFlight(${gi},'code',this.value)"></div>
+    <div><span class="mini-label">手提行李</span><input value="${esc(f.cabinBag)}" placeholder="如 7kg / 1 件" oninput="updFlight(${gi},'cabinBag',this.value)"></div>
+    <div><span class="mini-label">托運行李</span><input value="${esc(f.checkedBag)}" placeholder="如 23kg / 2 件" oninput="updFlight(${gi},'checkedBag',this.value)"></div>
+    <div class="full"><span class="mini-label">行李備註</span><input value="${esc(f.baggageNote)}" placeholder="嬰兒車、液體限制、登機箱尺寸、不可托運物品…" oninput="updFlight(${gi},'baggageNote',this.value)"></div>
   </div></div>`;
 }
 function hotelBox(o,gi){
@@ -1411,7 +1697,7 @@ function hotelBox(o,gi){
     <div><span class="mini-label">飯店電話</span><input value="${esc(o.tel)}" oninput="updHotel(${gi},'tel',this.value)"></div>
   </div></div>`;
 }
-function addFlight(){ S.flights.push({dest:S.dest,dir:"去程",no:"",date:S.startDate||"",dep:"",arr:"",code:""}); save(); renderTravelInfo(); }
+function addFlight(){ S.flights.push({dest:S.dest,dir:"去程",no:"",from:"",to:"",date:S.startDate||"",dep:"",arr:"",code:"",cabinBag:"",checkedBag:"",baggageNote:""}); save(); renderTravelInfo(); }
 function addHotel(){ S.hotels.push({dest:S.dest,name:"",addr:"",cin:"",cout:"",code:"",tel:""}); save(); renderTravelInfo(); }
 function updFlight(gi,k,v){ S.flights[gi][k]=v; debSave(); }
 function updHotel(gi,k,v){ S.hotels[gi][k]=v; debSave(); }
@@ -1478,14 +1764,14 @@ function updJournal(k,v){ S.journal[k]=v; debSave(); }
 function setItinDay(d){ S.itinDay=d; save(); renderItin(); }
 function addItinDay(day){ S.itin.push({dest:S.dest, day, time:"09:00", end:"10:30", title:"", go:"", note:""}); save(); renderItin(); }
 function quickAdd(kind,i){
-  const d=DB[S.dest], s=kind==="spot"?d.spots[i]:kind==="food"?d.foods[i]:d.shops[i];
+  const s=getPlaceList(kind)[i];
   const pre = kind==="food"?"🍜 ":kind==="shop"?"🛍️ ":"📍 ";
   // 預設加到「目前天數內最後一天」的最後一筆之後，避免全擠在 Day1 09:00 重疊
   const day = Math.max(S.days,1);
   const dayItems = getItin().filter(x=>x.day===day);
   const lastEnd = dayItems.length ? dayItems.map(x=>x.end||x.time).sort().pop() : "09:00";
   const start = dayItems.length ? lastEnd : "09:00";
-  S.itin.push({dest:S.dest, day, time:start, end:addMin(start,90), title:pre+(s.must?"★":"")+s.n, go:s.go||"", note:kind==="shop"?`必買：${s.buy}`:s.a});
+  S.itin.push({dest:S.dest, day, time:start, end:addMin(start,90), title:pre+(s.must?"★":"")+s.n, go:s.go||"", note:kind==="shop"?`必買：${s.buy||s.d||""}`:s.a});
   save(); renderItin();
   if(confirm(`已加入 Day ${day}：${s.n}\n要順便開啟地圖看位置嗎？`)) window.open(mapUrl(s.n+" "+s.a), "_blank", "noopener");
 }
@@ -1732,7 +2018,13 @@ function renderSettle(){
 /* ════════════════ 規劃精靈 ════════════════ */
 let wizStep = 0, wizSel = {dest:null, routeIdx:null};
 function openWiz(){ wizStep=0; wizSel={dest:S.dest, routeIdx:null}; $("wizNext").style.display=""; $("wizOverlay").classList.add("show"); renderWiz(); }
-function closeWiz(){ $("wizOverlay").classList.remove("show"); S.wizDone=true; save(); }
+function closeWiz(){
+  $("wizOverlay").classList.remove("show");
+  S.wizDone=true;
+  S.wantsRecommendation=false;
+  const rec=$("recommendPlan"); if(rec) rec.checked=false;
+  save();
+}
 function wizGo(dir){
   if(dir>0 && !wizValidate()) return;
   if(wizStep===2) wizCollectStep2();   // 離開第 2 步時收集（不論前進或後退）
@@ -1980,7 +2272,7 @@ function importTripPack(p){
   if(!dest){ alert("共編包的目的地無法識別。"); return; }
   const mine=S.itin.filter(x=>x.dest===dest).length;
   if(!confirm(`這是「${DB[dest].name}」的共編行程包（${p.days||"?"} 天、${(p.itin||[]).length} 筆行程、${(p.expenses||[]).length} 筆記帳）。\n匯入會【取代】你在此目的地的行程／航班住宿／票券／記帳／日誌${mine?`（你目前有 ${mine} 筆行程）`:""}，並更新成員名單。\n你的其他目的地資料不受影響，且目前資料會先自動備援。確定匯入？`)) return;
-  try{ localStorage.setItem(LS_KEY+".bak", JSON.stringify(S)); }catch(e){}
+  try{ window.TripStorageService ? TripStorageService.backup(LS_KEY, BACKUP_KEY) : localStorage.setItem(BACKUP_KEY, JSON.stringify(S)); }catch(e){}
   const keep=x=>x.dest!==dest;
   S.itin=S.itin.filter(keep).concat((Array.isArray(p.itin)?p.itin:[]).map(x=>({...x,dest})));
   S.flights=S.flights.filter(keep).concat(Array.isArray(p.flights)?p.flights:[]);
@@ -2011,7 +2303,7 @@ function importJSON(input){
     if(!p || typeof p!=="object" || Array.isArray(p)){ alert("這不是有效的檔案。"); return; }
     if(p._kind==="tripShare"){ importTripPack(p); return; }   // 共編包 → 只換該目的地
     if(!confirm("這是完整備份檔，還原會覆蓋目前【全部】資料。\n（目前資料會先自動存到備援，可救回）確定還原？")) return;
-    try{ localStorage.setItem(LS_KEY+".bak", JSON.stringify(S)); }catch(e){}
+    try{ window.TripStorageService ? TripStorageService.backup(LS_KEY, BACKUP_KEY) : localStorage.setItem(BACKUP_KEY, JSON.stringify(S)); }catch(e){}
     S = mergeState(p);
     syncMembers&&S.party.length&&syncMembers();
     save(); renderAll();
@@ -2021,6 +2313,7 @@ function importJSON(input){
 }
 
 init();
+
 </script>
 </body>
 </html>
