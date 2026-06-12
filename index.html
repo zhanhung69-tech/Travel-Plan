@@ -290,7 +290,7 @@
         <option value="solo">🧍 個人旅行</option>
       </select>
     </div>
-    <div class="field"><label>我的暱稱</label><input id="userAlias" placeholder="例如：張雅萍組長"></div>
+    <div class="field"><label>我的暱稱</label><input id="userAlias" placeholder=""></div>
     <label class="check-toggle"><input type="checkbox" id="recommendPlan"> 需要系統推薦安排行程</label>
   </div>
 
@@ -1393,10 +1393,11 @@ function renderAll(){
   $("ov-transport").innerHTML = d.transport.map(t=>card(t)).join("");
   $("ov-stay").innerHTML = d.stay.map(t=>card(t)).join("");
   renderRegionControls();
-  $("spotsTitle").textContent = `${d.flag} ${d.name}可玩景點（★＝必去）`;
-  $("spotCards").innerHTML = getPlaceList("spot").map((s,i)=>spotCard(s,"spot",i)).join("");
-  $("foodCards").innerHTML = getPlaceList("food").map((s,i)=>spotCard(s,"food",i)).join("");
-  $("shopCards").innerHTML = getPlaceList("shop").map((s,i)=>spotCard(s,"shop",i)).join("");
+  $("spotsTitle").textContent = `${d.flag} ${d.name}${S.regionCity?`\u30fb${S.regionCity}`:""}\u53ef\u73a9\u666f\u9ede\uff08\u2605\uff1d\u5fc5\u53bb\uff09`;
+  const spotList = getPlaceList("spot"), foodList = getPlaceList("food"), shopList = getPlaceList("shop");
+  $("spotCards").innerHTML = spotList.length ? spotList.map((s,i)=>spotCard(s,"spot",i)).join("") : emptyPlaceCard("spot");
+  $("foodCards").innerHTML = foodList.length ? foodList.map((s,i)=>spotCard(s,"food",i)).join("") : emptyPlaceCard("food");
+  $("shopCards").innerHTML = shopList.length ? shopList.map((s,i)=>spotCard(s,"shop",i)).join("") : emptyPlaceCard("shop");
   $("notesTitle").textContent = `${d.flag} ${d.name}注意事項`;
   $("noteList").innerHTML = d.notes.map(n=>`<li class="note-li">${n}</li>`).join("");
   $("liveLinks").innerHTML = d.links.map(l=>`<li class="note-li"><a href="${l[1]}" target="_blank" rel="noopener noreferrer">${l[0]}</a></li>`).join("");
@@ -1425,24 +1426,43 @@ function customPlaceBucket(kind){
   S.customPlaces[S.dest][kind] = S.customPlaces[S.dest][kind] || [];
   return S.customPlaces[S.dest][kind];
 }
+function activeRegionScope(){
+  const scopes = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
+  return scopes.find(x=>x.id===S.regionScope) || scopes[0] || {cities:[]};
+}
+function placeMatchesRegion(place){
+  const area = String(place.a || "").trim();
+  const city = String(S.regionCity || "").trim();
+  const scope = activeRegionScope();
+  if(city) return area===city || area.includes(city) || city.includes(area);
+  if(scope && Array.isArray(scope.cities) && scope.cities.length) return scope.cities.some(c=>area===c || area.includes(c) || c.includes(area));
+  return true;
+}
+function emptyPlaceCard(kind){
+  const label = kind==="food" ? "??" : kind==="shop" ? "???" : "??";
+  const city = S.regionCity || activeRegionScope().label || DB[S.dest].name;
+  return `<div class="card empty-place"><h4>?????${esc(city)}??${label}??</h4><p class="meta">??????????????????????????????????????</p></div>`;
+}
 function getPlaceList(kind){
   const d=DB[S.dest];
   const base = kind==="spot" ? d.spots : kind==="food" ? d.foods : (d.shops||[]);
-  return base.concat(customPlaceBucket(kind));
+  return base.concat(customPlaceBucket(kind)).filter(placeMatchesRegion);
 }
 function renderRegionControls(){
   const scopeSel=$("regionScope"), citySel=$("regionCity"), durationSel=$("tripDurationPreset");
   if(!scopeSel || !citySel || !durationSel) return;
   const catalog = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
-  if(!S.regionScope && catalog[0]) S.regionScope = catalog[0].id;
-  const activeScope = catalog.find(x=>x.id===S.regionScope) || catalog[0] || {cities:[]};
-  if(!S.regionCity && activeScope.cities[0]) S.regionCity = activeScope.cities[0];
+  let activeScope = catalog.find(x=>x.id===S.regionScope);
+  if(!activeScope && catalog[0]){ S.regionScope = catalog[0].id; activeScope = catalog[0]; }
+  activeScope = activeScope || {cities:[]};
+  if(activeScope.cities.length && !activeScope.cities.includes(S.regionCity)) S.regionCity = activeScope.cities[0];
+  if(!activeScope.cities.length) S.regionCity = "";
   scopeSel.innerHTML = catalog.map(x=>`<option value="${x.id}" ${S.regionScope===x.id?"selected":""}>${x.label}</option>`).join("");
   citySel.innerHTML = activeScope.cities.map(x=>`<option value="${x}" ${S.regionCity===x?"selected":""}>${x}</option>`).join("");
   durationSel.innerHTML = (window.TripDurationPresets||[]).map(x=>`<option value="${x.id}" ${x.days===S.days?"selected":""}>${x.label}</option>`).join("");
 }
-function setRegionScope(v){ S.regionScope=v; S.regionCity=""; renderRegionControls(); save(); }
-function setRegionCity(v){ S.regionCity=v; save(); }
+function setRegionScope(v){ S.regionScope=v; S.regionCity=""; renderAll(); save(); }
+function setRegionCity(v){ S.regionCity=v; renderAll(); save(); }
 function setDurationPreset(v){
   const p=(window.TripDurationPresets||[]).find(x=>x.id===v);
   if(p && p.days){ S.days=p.days; renderAll(); save(); }
