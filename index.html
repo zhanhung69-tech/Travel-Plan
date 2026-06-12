@@ -270,6 +270,8 @@
       <label>目的地</label>
       <div class="dest-btns" id="destBtns"></div>
     </div>
+    <div class="field"><label>地區（選完目的地再選）</label><select id="setupRegionScope" onchange="setRegionScope(this.value)"></select></div>
+    <div class="field"><label>縣市 / 城市</label><select id="setupRegionCity" onchange="setRegionCity(this.value)"></select></div>
     <div class="field"><label>出發日期</label><input type="date" id="startDate"></div>
     <div class="field"><label>天數（1–15）</label><input type="number" id="days" min="1" max="15" value="5"></div>
     <div class="field"><label>大人</label><input type="number" id="adults" min="1" max="20" value="2"></div>
@@ -297,11 +299,11 @@
   <nav class="tabs" id="tabs">
     <button class="tab active" data-t="overview">📋 總覽</button>
     <button class="tab" data-t="routes">✨ 探索靈感</button>
-    <button class="tab" data-t="budget">💰 預算試算</button>
+    <button class="tab" data-t="spots">📍 景點美食購物</button>
     <button class="tab" data-t="itinerary">🗓️ 我的行程</button>
+    <button class="tab" data-t="budget">💰 預算試算</button>
     <button class="tab" data-t="expense">💸 記帳分帳</button>
     <button class="tab" data-t="packing">🎒 攜帶物品</button>
-    <button class="tab" data-t="spots">📍 景點美食購物</button>
     <button class="tab" data-t="notes">⚠️ 注意事項</button>
     <button class="tab" data-t="export">📤 匯出 / 同步</button>
   </nav>
@@ -1483,6 +1485,13 @@ function activeRegionScope(){
   const scopes = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
   return scopes.find(x=>x.id===S.regionScope) || scopes[0] || {cities:[]};
 }
+/* 路線模板是否屬於目前所選地區：用模板裡提到的城市名比對該地區的縣市清單 */
+function routeMatchesScope(r){
+  const scope = activeRegionScope();
+  if(!scope || !Array.isArray(scope.cities) || !scope.cities.length) return true;
+  const txt = (r.n||"") + " " + (r.plan||[]).map(p=>(p.t||"")+" "+(p.items||[]).map(i=>(i.n||"")+" "+(i.go||"")+" "+(i.note||"")).join(" ")).join(" ");
+  return scope.cities.some(c=>txt.includes(c));
+}
 function placeMatchesRegion(place){
   const area = String(place.a || "").trim();
   const city = String(S.regionCity || "").trim();
@@ -1502,17 +1511,18 @@ function getPlaceList(kind){
   return base.concat(customPlaceBucket(kind)).filter(placeMatchesRegion);
 }
 function renderRegionControls(){
-  const scopeSel=$("regionScope"), citySel=$("regionCity"), durationSel=$("tripDurationPreset");
-  if(!scopeSel || !citySel || !durationSel) return;
   const catalog = (window.RegionCatalog && RegionCatalog[S.dest]) ? RegionCatalog[S.dest].scopes : [];
   let activeScope = catalog.find(x=>x.id===S.regionScope);
   if(!activeScope && catalog[0]){ S.regionScope = catalog[0].id; activeScope = catalog[0]; }
   activeScope = activeScope || {cities:[]};
   if(S.regionCity && activeScope.cities.length && !activeScope.cities.includes(S.regionCity)) S.regionCity = "";
   if(!activeScope.cities.length) S.regionCity = "";
-  scopeSel.innerHTML = catalog.map(x=>`<option value="${x.id}" ${S.regionScope===x.id?"selected":""}>${x.label}</option>`).join("");
-  citySel.innerHTML = `<option value="" ${!S.regionCity?"selected":""}>全部</option>` + activeScope.cities.map(x=>`<option value="${x}" ${S.regionCity===x?"selected":""}>${x}</option>`).join("");
-  durationSel.innerHTML = (window.TripDurationPresets||[]).map(x=>`<option value="${x.id}" ${x.days===S.days?"selected":""}>${x.label}</option>`).join("");
+  const scopeOpts = catalog.map(x=>`<option value="${x.id}" ${S.regionScope===x.id?"selected":""}>${x.label}</option>`).join("") || `<option value="">（此目的地未分區）</option>`;
+  const cityOpts = `<option value="" ${!S.regionCity?"selected":""}>全部</option>` + activeScope.cities.map(x=>`<option value="${x}" ${S.regionCity===x?"selected":""}>${x}</option>`).join("");
+  const durOpts = (window.TripDurationPresets||[]).map(x=>`<option value="${x.id}" ${x.days===S.days?"selected":""}>${x.label}</option>`).join("");
+  ["regionScope","setupRegionScope"].forEach(id=>{ const el=$(id); if(el) el.innerHTML=scopeOpts; });
+  ["regionCity","setupRegionCity"].forEach(id=>{ const el=$(id); if(el) el.innerHTML=cityOpts; });
+  const dur=$("tripDurationPreset"); if(dur) dur.innerHTML=durOpts;
 }
 function setRegionScope(v){ S.regionScope=v; S.regionCity=""; renderAll(); save(); }
 function setRegionCity(v){ S.regionCity=v; renderAll(); save(); }
@@ -1554,11 +1564,16 @@ function askMap(q){ if(confirm(`要開啟地圖查看「${q}」嗎？`)) window.
 /* ════════════════ 推薦路線 ════════════════ */
 function renderRoutes(){
   const d = DB[S.dest];
-  $("routesTitle").textContent = `${d.flag} ${d.name}行程靈感與順路模板`;
+  const scope = activeRegionScope();
+  const scopeLabel = (scope && scope.label) ? scope.label : "";
+  $("routesTitle").textContent = `${d.flag} ${d.name}${scopeLabel?`・${scopeLabel}`:""}行程靈感與順路模板`;
   const rankedRoutes = window.SortPlanService
     ? SortPlanService.rankTemplates(d.routes, S.prefs)
     : d.routes.map((route, index)=>({route, index, score:0}));
-  $("routeCards").innerHTML = rankedRoutes.map(({route:r,index:ri,score})=>{
+  const inScope = rankedRoutes.filter(o=>routeMatchesScope(o.route));
+  const list = inScope.length ? inScope : rankedRoutes;
+  const notice = inScope.length ? "" : `<div class="route-empty-note" style="background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:10px 12px;border-radius:10px;margin-bottom:12px;font-size:.9rem">💡「${scopeLabel||d.name}」目前還沒有現成的順路模板。下方先顯示 ${d.name} 其他地區的模板供參考；你也可以到「📍 景點美食購物」挑該地區景點後，自己排進「🗓️ 我的行程」。</div>`;
+  $("routeCards").innerHTML = notice + list.map(({route:r,index:ri,score})=>{
     const musts = r.plan.flatMap(p=>p.items).filter(i=>i.must);
     const days = r.plan.map((p,di)=>`
       <details class="rday" ${di===0?"open":""}>
