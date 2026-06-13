@@ -26,6 +26,12 @@
   .setup label{font-size:.78rem; color:var(--sub); font-weight:700;}
   .setup input,.setup select{padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:.95rem; min-width:90px; background:#fff;}
   .setup-toggle{display:none;}  /* 桌機/平板：永遠展開，不顯示收合鈕 */
+  .itin-row input.time24{text-align:center; font-variant-numeric:tabular-nums; letter-spacing:.5px;}
+  .pay-tag{display:inline-block; background:#ede9fe; color:#6d28d9; border-radius:6px; padding:0 7px; font-size:.74rem; font-weight:700; margin:0 2px;}
+  .settle-toggle{display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;}
+  .settle-toggle button{padding:6px 14px; border-radius:999px; border:2px solid var(--line); background:#fff; cursor:pointer; font-size:.83rem; font-weight:700; color:var(--sub);}
+  .settle-toggle button.on{border-color:#0e7490; background:#0e7490; color:#fff;}
+  .settle-cur{margin-top:8px; padding-top:6px; border-top:1px dashed var(--line);}
   .dest-btns{display:flex; gap:8px; flex-wrap:wrap;}
   .dest-btn{padding:9px 16px; border-radius:999px; border:2px solid var(--line); background:#fff; cursor:pointer; font-size:.95rem; font-weight:700; color:var(--sub); transition:.15s;}
   .dest-btn.active{border-color:var(--accent); background:var(--accent); color:#fff;}
@@ -390,6 +396,7 @@
       <div class="field"><label>我的暱稱</label><input id="userAlias" placeholder=""></div>
       <label class="check-toggle"><input type="checkbox" id="recommendPlan"> 需要系統推薦安排行程</label>
     </div>
+    <div id="travelInfo"></div>
     <h2 id="ov-title">行程總覽</h2>
     <div id="ov-summary" class="ov-summary"></div>
     <div class="btn-row" style="margin-bottom:14px">
@@ -427,7 +434,6 @@
   <section class="panel" id="p-itinerary">
     <h2>我的逐日行程</h2>
     <div class="alert">從「✨ 探索靈感」複製模板最快；也可在「📍 景點美食購物」按＋加入，或在各天手動新增。手機上每筆行程會展開成「開始／結束／內容／交通／備註」，可直接點欄位修改。</div>
-    <div id="travelInfo"></div>
     <h3>🗓️ 逐日行程（點下方日期切換，不用一直滑）</h3>
     <div class="day-chips" id="dayChips"></div>
     <div id="itinList"></div>
@@ -1550,7 +1556,7 @@ function defaultState(){
           endDate:"", prices:{}, itin:[], checks:{}, custom:[], prefs:[],
           userAlias:"", wantsRecommendation:false, regionScope:"", regionScopes:[], regionCity:"", customPlaces:{},
           flights:[], hotels:[], tickets:[], itinBackup:null,
-          members:["我"], expenses:[], expDraft:null, itinDay:0, expDay:1,
+          members:["我"], expenses:[], expDraft:null, itinDay:0, expDay:1, settleMode:"twd",
           tripType:"family", party:[], journal:{}, photos:[],
           wizDone:false, lastBackup:0, schemaVersion:3};
 }
@@ -1580,7 +1586,9 @@ function mergeState(p){
   if(!Array.isArray(m.expenses)) m.expenses = [];
   m.expenses = m.expenses.filter(e=>e && typeof e==="object" && Array.isArray(e.sharers));
   if(typeof m.itinDay!=="number") m.itinDay = 0;
-  if(typeof m.expDay!=="number" || m.expDay<1) m.expDay = 1;
+  if(typeof m.expDay!=="number" || m.expDay<0) m.expDay = 1;   // 0＝出發前
+  if(m.settleMode!=="currency") m.settleMode = "twd";
+  m.expenses.forEach(e=>{ if(typeof e.day!=="number"||e.day<0) e.day=1; });  // 舊資料防呆
   if(!TRIP_TYPES[m.tripType]) m.tripType = "family";
   if(!Array.isArray(m.party)) m.party = [];
   m.party = m.party.filter(p=>p && typeof p==="object");
@@ -2262,8 +2270,8 @@ function renderItin(){
         const tag = bad ? `<span class="hide-m" style="grid-column:1/-1;color:var(--bad);font-size:.74rem">⚠️ 結束時間早於開始時間</span>`
                   : overlap ? `<span class="hide-m" style="grid-column:1/-1;color:var(--warn);font-size:.74rem">⚠️ 與前一個行程時段重疊</span>` : "";
         html += `<div class="itin-row"${(bad||overlap)?' style="background:#fff7ed;border-radius:8px;padding:2px 0"':''}>
-          <input type="time" value="${it.time}" onchange="updItin(${gi},'time',this.value)">
-          <input type="time" value="${endV}" onchange="updItin(${gi},'end',this.value)">
+          <input type="text" inputmode="numeric" maxlength="5" class="time24" title="24 小時制，例如 09:30（也可直接打 0930）" value="${it.time}" placeholder="00:00" onchange="updItinTime(${gi},'time',this.value)">
+          <input type="text" inputmode="numeric" maxlength="5" class="time24" title="24 小時制，例如 18:00（也可直接打 1800）" value="${endV}" placeholder="00:00" onchange="updItinTime(${gi},'end',this.value)">
           <input value="${esc(it.title)}" placeholder="行程內容…" oninput="liveItin(${gi},'title',this.value)" onchange="updItin(${gi},'title',this.value)">
           <input class="hide-m" value="${esc(it.go)}" placeholder="交通方式…" oninput="liveItin(${gi},'go',this.value)" onchange="updItin(${gi},'go',this.value)" style="border-style:dashed;border-color:#34d399;background:#f0fdf4">
           <input class="hide-m" value="${esc(it.note)}" placeholder="備註" oninput="liveItin(${gi},'note',this.value)" onchange="updItin(${gi},'note',this.value)">
@@ -2284,6 +2292,22 @@ function renderItin(){
   }
   $("itinList").innerHTML = warn + html;
 }
+/* 24 小時制時間正規化：接受 09:30 / 9:30 / 0930 / 930 / 9 等，回傳零補的 HH:MM */
+function normTime(v, fb){
+  if(v==null) return fb||"";
+  v=String(v).trim().replace(/[：．。.\s]/g, ":");
+  let h, m;
+  if(v.indexOf(":")>=0){ const a=v.split(":"); h=a[0]; m=a[1]; }
+  else if(/^\d{3,4}$/.test(v)){ h=v.slice(0, v.length-2); m=v.slice(-2); }
+  else if(/^\d{1,2}$/.test(v)){ h=v; m="0"; }
+  else return fb||"";
+  h=parseInt(h,10); m=parseInt(m,10);
+  if(isNaN(h)) return fb||"";
+  if(isNaN(m)) m=0;
+  h=Math.min(Math.max(h,0),23); m=Math.min(Math.max(m,0),59);
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+}
+function updItinTime(gi,k,v){ if(!S.itin[gi]) return; S.itin[gi][k]=normTime(v, k==="time"?"09:00":"10:30"); save(); renderItin(); }
 function updJournal(k,v){ S.journal[k]=v; debSave(); }
 function setItinDay(d){ S.itinDay=d; save(); renderItin(); }
 function addItinDay(day){ S.itin.push({dest:S.dest, day, time:"09:00", end:"10:30", title:"", go:"", note:""}); save(); renderItin(); }
@@ -2594,8 +2618,35 @@ function renderRisks(){
 /* ════════════════ 記帳分帳 ════════════════ */
 let LAST_BUDGET = 0;
 const EXP_CATS = ["🍜 餐飲","🚇 交通","🎫 門票","🛍️ 購物","🏨 住宿","📦 其他"];
+const PAY_METHODS = ["💵 現金","💳 刷卡","🚃 Suica","📱 行動支付"];
+const CUR_SYM = {TWD:"NT$", JPY:"¥", KRW:"₩", THB:"฿"};
+function fmtCur(v,cur){ return (CUR_SYM[cur]||(cur+" "))+Math.round(v).toLocaleString(); }
 function expOf(){ return (S.expenses||[]).filter(e=>e.dest===S.dest); }
 function toTWD(amt,cur){ const d=DB[S.dest]; const fx=S.fx??d.rate; return cur==="TWD"?amt:amt*fx; }
+function expDayLabel(day){ return day===0 ? "🧳 出發前花費" : "Day "+day; }
+function expItemHTML(e){
+  const gi=S.expenses.indexOf(e);
+  const orig=e.cur==="TWD"?"":`${e.cur} ${(+e.amt).toLocaleString()}（≈`;
+  const rcpt=e.rcpt?` <button class="rcpt-link" onclick="showImg(S.expenses[${gi}].rcpt)">📎 收據</button>`:"";
+  const payTag=e.pay?`<span class="pay-tag">${e.pay}</span>`:"";
+  return `<div class="exp-item"><span>${e.cat||""}${payTag} <b>${esc(e.name)}</b>${rcpt}</span>
+    <span class="amt">${orig}${fmt(toTWD(e.amt,e.cur))}${orig?"）":""} <button class="btn small danger" onclick="delExpense(${gi})">✕</button></span>
+    <span class="who">💳 ${esc(e.payer)} 先墊 ・ ${e.sharers.length} 人分攤（${e.sharers.map(esc).join("/")}）・ 每人 ${fmt(toTWD(e.amt,e.cur)/e.sharers.length)}</span></div>`;
+}
+/* 最少轉帳次數：輸入餘額表（正=應收、負=應付），回傳 [{from,to,amt}] */
+function minimalMoves(bal, eps){
+  eps = eps||0.5;
+  const debt=Object.entries(bal).filter(([,v])=>v<-eps).map(([m,v])=>({m,v:-v})).sort((a,b)=>b.v-a.v);
+  const cred=Object.entries(bal).filter(([,v])=>v>eps).map(([m,v])=>({m,v})).sort((a,b)=>b.v-a.v);
+  const moves=[]; let i=0,j=0;
+  while(i<debt.length && j<cred.length){
+    const x=Math.min(debt[i].v,cred[j].v);
+    moves.push({from:debt[i].m, to:cred[j].m, amt:x});
+    debt[i].v-=x; cred[j].v-=x;
+    if(debt[i].v<eps)i++; if(cred[j].v<eps)j++;
+  }
+  return moves;
+}
 function draft(k,v){ S.expDraft=Object.assign({},S.expDraft||{},{[k]:v}); debSave(); }
 function renderExpense(){
   const d=DB[S.dest], list=expOf();
@@ -2611,7 +2662,7 @@ function renderExpense(){
     const over=total>LAST_BUDGET;
     $("expBudgetBar").innerHTML=`預算 ${fmt(LAST_BUDGET)}｜已花 <b style="color:${over?"#b91c1c":"#15803d"}">${fmt(total)}（${Math.round(total/LAST_BUDGET*100)}%）</b>${over?"　⚠️ 已超出預算！":""}<div class="track"><div class="fill" style="width:${pct}%${over?";background:#ef4444":""}"></div></div>`;
   } else $("expBudgetBar").innerHTML="";
-  $("expDayView").innerHTML=Array.from({length:Math.max(S.days,1)},(_,i)=>{
+  $("expDayView").innerHTML=`<option value="0" ${S.expDay===0?"selected":""}>🧳 出發前花費</option>`+Array.from({length:Math.max(S.days,1)},(_,i)=>{
     const dt=S.startDate?dayDate(i+1).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric"}):"";
     return `<option value="${i+1}" ${S.expDay===i+1?"selected":""}>Day ${i+1}（${dt}）</option>`;}).join("");
   // 成員
@@ -2621,11 +2672,12 @@ function renderExpense(){
   const df=S.expDraft||{};
   const sharers=Array.isArray(df.sharers)?df.sharers:S.members.slice();
   $("expForm").innerHTML=`
-    <div><span class="mini-label">哪一天</span><select id="efDay">${Array.from({length:Math.max(S.days,1)},(_,i)=>`<option value="${i+1}" ${(df.day||S.expDay)===i+1?"selected":""}>Day ${i+1}</option>`).join("")}</select></div>
+    <div><span class="mini-label">哪一天</span><select id="efDay"><option value="0" ${(df.day??S.expDay)===0?"selected":""}>🧳 出發前</option>${Array.from({length:Math.max(S.days,1)},(_,i)=>`<option value="${i+1}" ${(df.day??S.expDay)===i+1?"selected":""}>Day ${i+1}</option>`).join("")}</select></div>
     <div><span class="mini-label">分類</span><select id="efCat" onchange="draft('cat',this.value)">${EXP_CATS.map(c=>`<option ${df.cat===c?"selected":""}>${c}</option>`).join("")}</select></div>
-    <div class="full"><span class="mini-label">項目</span><input id="efName" placeholder="如 一蘭拉麵、地鐵券、伴手禮…" value="${esc(df.name||"")}" oninput="draft('name',this.value)"></div>
+    <div class="full"><span class="mini-label">項目</span><input id="efName" placeholder="如 一蘭拉麵、地鐵券、機票訂金…" value="${esc(df.name||"")}" oninput="draft('name',this.value)"></div>
     <div><span class="mini-label">金額</span><input id="efAmt" type="number" min="0" placeholder="0" value="${df.amt||""}" oninput="draft('amt',this.value)"></div>
     <div><span class="mini-label">幣別</span><select id="efCur" onchange="draft('cur',this.value)"><option ${df.cur==="TWD"?"selected":""}>TWD</option>${S.dest!=="tw"?`<option ${(df.cur||d.cur)===d.cur?"selected":""}>${d.cur}</option>`:""}</select></div>
+    <div><span class="mini-label">付款方式</span><select id="efPay" onchange="draft('pay',this.value)">${PAY_METHODS.map(p=>`<option ${(df.pay||PAY_METHODS[0])===p?"selected":""}>${p}</option>`).join("")}</select></div>
     <div><span class="mini-label">誰先墊錢</span><select id="efPayer">${S.members.map(m=>`<option ${df.payer===m?"selected":""}>${esc(m)}</option>`).join("")}</select></div>
     <div class="full"><span class="mini-label">誰要分攤（點選切換）</span><div class="share-pick" id="efShare">${S.members.map(m=>`<button class="share-chip ${sharers.includes(m)?"on":""}" onclick="this.classList.toggle('on');draftShare()">${esc(m)}</button>`).join("")}</div></div>
     <div class="full"><span class="mini-label">📎 收據／發票照片（選填，自動壓縮存證）</span><input type="file" accept="image/*" id="efRcpt" onchange="pickRcpt(this)"><span id="efRcptOk" style="font-size:.78rem;color:#15803d">${window._rcpt?"✓ 已附上收據":""}</span></div>
@@ -2634,20 +2686,16 @@ function renderExpense(){
   if(!list.length){ $("expList").innerHTML=`<p class="itin-empty">還沒有紀錄。旅途中隨手記，回國直接看誰該給誰多少。</p>`; }
   else{
     let h="";
+    const groupHTML=(day,items)=>{
+      const sub=items.reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+      return `<h3 style="margin-top:10px">${expDayLabel(day)} <small style="color:var(--sub);font-weight:400">小計 ${fmt(sub)}</small></h3>`+items.map(expItemHTML).join("");
+    };
     for(let day=Math.max(S.days,1); day>=1; day--){
       const items=list.filter(e=>e.day===day);
-      if(!items.length) continue;
-      const sub=items.reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
-      h+=`<h3 style="margin-top:10px">Day ${day} <small style="color:var(--sub);font-weight:400">小計 ${fmt(sub)}</small></h3>`;
-      h+=items.map(e=>{
-        const gi=S.expenses.indexOf(e);
-        const orig=e.cur==="TWD"?"":`${e.cur} ${(+e.amt).toLocaleString()}（≈`;
-        const rcpt=e.rcpt?` <button class="rcpt-link" onclick="showImg(S.expenses[${gi}].rcpt)">📎 收據</button>`:"";
-        return `<div class="exp-item"><span>${e.cat||""} <b>${esc(e.name)}</b>${rcpt}</span>
-          <span class="amt">${orig}${fmt(toTWD(e.amt,e.cur))}${orig?"）":""} <button class="btn small danger" onclick="delExpense(${gi})">✕</button></span>
-          <span class="who">💳 ${esc(e.payer)} 先墊 ・ ${e.sharers.length} 人分攤（${e.sharers.map(esc).join("/")}）・ 每人 ${fmt(toTWD(e.amt,e.cur)/e.sharers.length)}</span></div>`;
-      }).join("");
+      if(items.length) h+=groupHTML(day,items);
     }
+    const pre=list.filter(e=>e.day===0);   // 出發前花費（機票訂金、eSIM、保險…）放最後
+    if(pre.length) h+=groupHTML(0,pre);
     $("expList").innerHTML=h;
   }
   renderSettle();
@@ -2679,38 +2727,48 @@ function addExpense(){
   if(!name){ alert("請輸入項目名稱"); return; }
   if(!amt||amt<=0){ alert("請輸入金額"); return; }
   if(!sharers.length){ alert("至少選一位分攤者"); return; }
-  const rec={dest:S.dest, day:+$("efDay").value, name, amt, cur:$("efCur").value, cat:$("efCat").value, payer:$("efPayer").value, sharers};
+  const rec={dest:S.dest, day:+$("efDay").value, name, amt, cur:$("efCur").value, cat:$("efCat").value, pay:$("efPay").value, payer:$("efPayer").value, sharers};
   if(window._rcpt){ rec.rcpt=window._rcpt; window._rcpt=null; }
   S.expenses.push(rec);
   S.expDraft=null;            // 清掉草稿
   save(); renderExpense();
 }
 function delExpense(gi){ S.expenses.splice(gi,1); save(); renderExpense(); }
+function setSettleMode(m){ S.settleMode = (m==="currency")?"currency":"twd"; save(); renderSettle(); }
 function renderSettle(){
   const list=expOf();
-  if(!list.length){ $("settleBox").innerHTML="💡 記帳後這裡會自動算出「誰該給誰多少錢」。"; return; }
-  const bal={};
-  S.members.forEach(m=>bal[m]=0);
-  list.forEach(e=>{
-    const twd=toTWD(e.amt,e.cur);
-    bal[e.payer]=(bal[e.payer]||0)+twd;
-    e.sharers.forEach(s=>bal[s]=(bal[s]||0)-twd/e.sharers.length);
-  });
-  let h=`<b>💰 分帳結算（台幣）</b><br>`;
-  h+=Object.entries(bal).map(([m,v])=>`${esc(m)}：${v>=0?`<b class="get">應收 ${fmt(v)}</b>`:`<b class="give">應付 ${fmt(-v)}</b>`}`).join("｜")+"<br>";
-  // 最少轉帳次數的建議
-  const debt=Object.entries(bal).filter(([,v])=>v<-1).map(([m,v])=>({m,v:-v})).sort((a,b)=>b.v-a.v);
-  const cred=Object.entries(bal).filter(([,v])=>v>1).map(([m,v])=>({m,v})).sort((a,b)=>b.v-a.v);
-  const moves=[];
-  let i=0,j=0;
-  while(i<debt.length&&j<cred.length){
-    const x=Math.min(debt[i].v,cred[j].v);
-    moves.push(`${esc(debt[i].m)} → 給 ${esc(cred[j].m)} <b>${fmt(x)}</b>`);
-    debt[i].v-=x; cred[j].v-=x;
-    if(debt[i].v<1)i++; if(cred[j].v<1)j++;
+  const mode=S.settleMode||"twd";
+  const toggle=`<div class="settle-toggle">
+    <button class="${mode==="twd"?"on":""}" onclick="setSettleMode('twd')">💰 全部換算台幣</button>
+    <button class="${mode==="currency"?"on":""}" onclick="setSettleMode('currency')">💴 分幣別（台幣 / 外幣分開）</button>
+  </div>`;
+  if(!list.length){ $("settleBox").innerHTML=toggle+"💡 記帳後這裡會自動算出「誰該給誰多少錢」。"; return; }
+
+  if(mode==="twd"){
+    const bal={}; S.members.forEach(m=>bal[m]=0);
+    list.forEach(e=>{ const twd=toTWD(e.amt,e.cur); bal[e.payer]=(bal[e.payer]||0)+twd; e.sharers.forEach(s=>bal[s]=(bal[s]||0)-twd/e.sharers.length); });
+    let h=toggle+`<b>💰 分帳結算（全部換算台幣）</b><br>`;
+    h+=Object.entries(bal).map(([m,v])=>`${esc(m)}：${v>=0?`<b class="get">應收 ${fmt(v)}</b>`:`<b class="give">應付 ${fmt(-v)}</b>`}`).join("｜");
+    const moves=minimalMoves(bal,1);
+    h+= moves.length ? `<div style="margin-top:6px">👉 建議轉帳：${moves.map(mv=>`${esc(mv.from)} → 給 ${esc(mv.to)} <b>${fmt(mv.amt)}</b>`).join("；")}</div>`
+                     : `<div style="margin-top:6px">🎉 目前剛好平帳，不用互相轉錢！</div>`;
+    $("settleBox").innerHTML=h;
+    return;
   }
-  if(moves.length) h+=`<div style="margin-top:6px">👉 建議轉帳：${moves.join("；")}</div>`;
-  else h+=`<div style="margin-top:6px">🎉 目前剛好平帳，不用互相轉錢！</div>`;
+
+  // 分幣別：各幣別獨立結算，不換匯（台幣付台幣、日幣付日幣）
+  const curs=[...new Set(list.map(e=>e.cur))];
+  let h=toggle+`<b>💴 分帳結算（分幣別，不換匯）</b><div style="font-size:.8rem;color:var(--sub);margin:2px 0 4px">每種幣別各自結算，旅伴各還各的幣別、不受匯率波動影響。</div>`;
+  curs.forEach(cur=>{
+    const bal={}; S.members.forEach(m=>bal[m]=0);
+    list.filter(e=>e.cur===cur).forEach(e=>{ const a=+e.amt; bal[e.payer]=(bal[e.payer]||0)+a; e.sharers.forEach(s=>bal[s]=(bal[s]||0)-a/e.sharers.length); });
+    h+=`<div class="settle-cur"><b>${cur}</b>　`;
+    h+=Object.entries(bal).map(([m,v])=>`${esc(m)}：${v>=0?`<b class="get">應收 ${fmtCur(v,cur)}</b>`:`<b class="give">應付 ${fmtCur(-v,cur)}</b>`}`).join("｜");
+    const moves=minimalMoves(bal,0.5);
+    h+= moves.length ? `<div style="margin-top:4px">👉 ${moves.map(mv=>`${esc(mv.from)} → 給 ${esc(mv.to)} <b>${fmtCur(mv.amt,cur)}</b>`).join("；")}</div>`
+                     : `<div style="margin-top:4px">🎉 此幣別已平帳</div>`;
+    h+=`</div>`;
+  });
   $("settleBox").innerHTML=h;
 }
 
@@ -2951,8 +3009,11 @@ function copyAppUrl(){
 function todayStr(){ const n=new Date(); const p=x=>String(x).padStart(2,"0"); return `${n.getFullYear()}${p(n.getMonth()+1)}${p(n.getDate())}`; }
 function exportJSON(){
   S.lastBackup=Date.now();
-  const data=Object.assign({_app:"twTrip", _version:APP_VERSION}, S);
-  dl(`旅遊規劃備份_${todayStr()}.json`, JSON.stringify(data,null,2), "application/json");
+  const ap=activePlan();
+  const planName=(ap&&ap.name)?ap.name:"";
+  const data=Object.assign({_app:"twTrip", _version:APP_VERSION, _planName:planName}, S);
+  const safe=planName?planName.replace(/[\\/:*?"<>|]/g,"_").trim():"";
+  dl(`旅遊規劃備份_${safe?safe+"_":""}${todayStr()}.json`, JSON.stringify(data,null,2), "application/json");
   updateBackupBanner(); save();
 }
 /* 共編行程包：只打包「這一趟」的資料，輪流編輯用 */
@@ -3007,7 +3068,9 @@ function importJSON(input){
     try{ window.TripStorageService ? TripStorageService.backup(PLANS_KEY, BACKUP_KEY) : localStorage.setItem(BACKUP_KEY, localStorage.getItem(PLANS_KEY)||""); }catch(e){}
     S = mergeState(p);
     syncMembers&&S.party.length&&syncMembers();
-    save(); renderAll();
+    const ap=activePlan();   // 還原備份檔內保存的「旅行名稱」
+    if(ap && typeof p._planName==="string" && p._planName.trim()) ap.name=p._planName.trim();
+    save(); renderPlanBar(); renderAll();
     alert("已還原備份！");
   };
   r.readAsText(f);
