@@ -25,6 +25,7 @@
   .setup .field{display:flex; flex-direction:column; gap:4px;}
   .setup label{font-size:.78rem; color:var(--sub); font-weight:700;}
   .setup input,.setup select{padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:.95rem; min-width:90px; background:#fff;}
+  .setup-toggle{display:none;}  /* 桌機/平板：永遠展開，不顯示收合鈕 */
   .dest-btns{display:flex; gap:8px; flex-wrap:wrap;}
   .dest-btn{padding:9px 16px; border-radius:999px; border:2px solid var(--line); background:#fff; cursor:pointer; font-size:.95rem; font-weight:700; color:var(--sub); transition:.15s;}
   .dest-btn.active{border-color:var(--accent); background:var(--accent); color:#fff;}
@@ -249,7 +250,11 @@
     header h1{font-size:1.2rem;}
     header p{font-size:.78rem;}
     .wrap{padding:10px; max-width:100vw;}
-    .setup{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:12px; align-items:stretch;}
+    .setup-toggle{display:flex; width:100%; justify-content:space-between; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:13px 14px; margin-bottom:10px; font-weight:800; font-size:.92rem; color:var(--accent); cursor:pointer; text-align:left; line-height:1.4;}
+    .setup-toggle .arr{transition:transform .2s; flex:0 0 auto;}
+    .setup-toggle.open .arr{transform:rotate(180deg);}
+    .setup{display:none; grid-template-columns:1fr 1fr; gap:10px; padding:12px; align-items:stretch;}
+    .setup.open{display:grid;}  /* 手機：預設收合，點按鈕展開 */
     .setup .field{min-width:0;}
     .setup .field:first-child{grid-column:1/-1;}
     .setup input,.setup select{width:100%; min-width:0;}
@@ -317,61 +322,11 @@
     <button class="btn small ghost" type="button" onclick="delPlan()">🗑️ 刪除</button>
     <span class="plan-hint">共 <b id="planCount">1</b> 個計畫，各自獨立存檔、不會互相影響</span>
   </div>
-  <div class="cloud-bar" id="cloudBar">
-    <div id="cloudLoginRow" class="cloud-bar-row">
-      <span class="cloud-bar-title">☁️ 雲端帳號</span>
-      <input id="cloudUser" placeholder="帳號（英數字3-20碼）" autocomplete="off">
-      <input id="cloudPass" type="password" placeholder="密碼（6碼以上）" autocomplete="new-password">
-      <button class="btn small" type="button" onclick="cloudLogin()">登入</button>
-      <button class="btn small ghost" type="button" onclick="cloudRegister()">註冊新帳號</button>
-    </div>
-    <div id="cloudActions" class="cloud-bar-row" style="display:none">
-      <span class="cloud-bar-title" id="cloudStatusShort"></span>
-      <button class="btn small" type="button" onclick="cloudPushAll()">⬆️ 上傳</button>
-      <button class="btn small ghost" type="button" onclick="cloudPull()">⬇️ 下載</button>
-      <button class="btn small ghost" type="button" onclick="cloudShare()">🔗 分享連結</button>
-      <button class="btn small ghost" id="cloudShareSave" type="button" onclick="cloudSaveShare()" style="display:none">🔄 存到分享</button>
-      <button class="btn small ghost" type="button" onclick="cloudLogout()">登出</button>
-    </div>
-    <div class="cloud-hint" id="cloudHint"></div>
-  </div>
   <div class="print-only" id="printHead"></div>
   <div class="backup-banner" id="backupBanner">
     <span>💾 你的行程只存在這台裝置的瀏覽器，建議備份一份以免清資料時遺失。</span>
     <span><button class="btn small" onclick="exportJSON()">立即備份</button> <button class="btn small ghost" onclick="dismissBanner()">知道了</button></span>
   </div>
-  <div class="setup">
-    <div class="field" style="flex:1 1 100%;">
-      <label>目的地</label>
-      <div class="dest-btns" id="destBtns"></div>
-    </div>
-    <div class="field" style="flex:1 1 100%;"><label>地區（可複選，選 2 個以上一起玩）</label><div class="region-chips" id="setupRegionChips"></div></div>
-    <div class="field"><label>縣市 / 城市</label><select id="setupRegionCity" onchange="setRegionCity(this.value)"></select></div>
-    <div class="field"><label>出發日期</label><input type="date" id="startDate"></div>
-    <div class="field"><label>返回日期</label><input type="date" id="endDate"></div>
-    <div class="field"><label>天數（依日期自動算）</label><input type="number" id="days" min="1" max="30" value="5"></div>
-    <div class="field"><label>大人</label><input type="number" id="adults" min="1" max="20" value="2"></div>
-    <div class="field"><label>小孩（半價計）</label><input type="number" id="kids" min="0" max="20" value="0"></div>
-    <div class="field"><label>匯率（1 外幣 = ? 台幣）</label><input type="number" id="fxRate" step="0.001" min="0"></div>
-    <div class="field"><label>旅行風格</label>
-      <select id="style">
-        <option value="0.8">省錢背包</option>
-        <option value="1" selected>標準舒適</option>
-        <option value="1.5">豪華享受</option>
-      </select>
-    </div>
-    <div class="field"><label>出遊類型</label>
-      <select id="tripType">
-        <option value="family">👨‍👩‍👧 親人家族遊</option>
-        <option value="friends">🍻 朋友出遊</option>
-        <option value="couple">💑 情侶旅行</option>
-        <option value="solo">🧍 個人旅行</option>
-      </select>
-    </div>
-    <div class="field"><label>我的暱稱</label><input id="userAlias" placeholder=""></div>
-    <label class="check-toggle"><input type="checkbox" id="recommendPlan"> 需要系統推薦安排行程</label>
-  </div>
-
   <nav class="tabs" id="tabs">
     <button class="tab active" data-t="overview">📋 總覽</button>
     <button class="tab" data-t="routes">✨ 探索靈感</button>
@@ -385,6 +340,56 @@
   </nav>
 
   <section class="panel show" id="p-overview">
+    <div class="cloud-bar" id="cloudBar">
+      <div id="cloudLoginRow" class="cloud-bar-row">
+        <span class="cloud-bar-title">☁️ 雲端帳號</span>
+        <input id="cloudUser" placeholder="帳號（英數字3-20碼）" autocomplete="off">
+        <input id="cloudPass" type="password" placeholder="密碼（6碼以上）" autocomplete="new-password">
+        <button class="btn small" type="button" onclick="cloudLogin()">登入</button>
+        <button class="btn small ghost" type="button" onclick="cloudRegister()">註冊新帳號</button>
+      </div>
+      <div id="cloudActions" class="cloud-bar-row" style="display:none">
+        <span class="cloud-bar-title" id="cloudStatusShort"></span>
+        <button class="btn small" type="button" onclick="cloudPushAll()">⬆️ 上傳</button>
+        <button class="btn small ghost" type="button" onclick="cloudPull()">⬇️ 下載</button>
+        <button class="btn small ghost" type="button" onclick="cloudShare()">🔗 分享連結</button>
+        <button class="btn small ghost" id="cloudShareSave" type="button" onclick="cloudSaveShare()" style="display:none">🔄 存到分享</button>
+        <button class="btn small ghost" type="button" onclick="cloudLogout()">登出</button>
+      </div>
+      <div class="cloud-hint" id="cloudHint"></div>
+    </div>
+    <button type="button" class="setup-toggle" id="setupToggle" onclick="toggleSetup()">⚙️ 旅程基本設定（目的地・日期・人數・風格）<span class="arr">▼</span></button>
+    <div class="setup" id="setupBox">
+      <div class="field" style="flex:1 1 100%;">
+        <label>目的地</label>
+        <div class="dest-btns" id="destBtns"></div>
+      </div>
+      <div class="field" style="flex:1 1 100%;"><label>地區（可複選，選 2 個以上一起玩）</label><div class="region-chips" id="setupRegionChips"></div></div>
+      <div class="field"><label>縣市 / 城市</label><select id="setupRegionCity" onchange="setRegionCity(this.value)"></select></div>
+      <div class="field"><label>出發日期</label><input type="date" id="startDate"></div>
+      <div class="field"><label>返回日期</label><input type="date" id="endDate"></div>
+      <div class="field"><label>天數（依日期自動算）</label><input type="number" id="days" min="1" max="30" value="5"></div>
+      <div class="field"><label>大人</label><input type="number" id="adults" min="1" max="20" value="2"></div>
+      <div class="field"><label>小孩（半價計）</label><input type="number" id="kids" min="0" max="20" value="0"></div>
+      <div class="field"><label>匯率（1 外幣 = ? 台幣）</label><input type="number" id="fxRate" step="0.001" min="0"></div>
+      <div class="field"><label>旅行風格</label>
+        <select id="style">
+          <option value="0.8">省錢背包</option>
+          <option value="1" selected>標準舒適</option>
+          <option value="1.5">豪華享受</option>
+        </select>
+      </div>
+      <div class="field"><label>出遊類型</label>
+        <select id="tripType">
+          <option value="family">👨‍👩‍👧 親人家族遊</option>
+          <option value="friends">🍻 朋友出遊</option>
+          <option value="couple">💑 情侶旅行</option>
+          <option value="solo">🧍 個人旅行</option>
+        </select>
+      </div>
+      <div class="field"><label>我的暱稱</label><input id="userAlias" placeholder=""></div>
+      <label class="check-toggle"><input type="checkbox" id="recommendPlan"> 需要系統推薦安排行程</label>
+    </div>
     <h2 id="ov-title">行程總覽</h2>
     <div id="ov-summary" class="ov-summary"></div>
     <div class="btn-row" style="margin-bottom:14px">
@@ -1721,6 +1726,7 @@ function init(){
   if(S.wantsRecommendation && !S.wizDone) openWiz();   // 只有勾選推薦安排才自動開啟引導
 }
 function toggleSidebar(){ document.body.classList.toggle("nav-hidden"); }
+function toggleSetup(){ const s=$("setupBox"), t=$("setupToggle"); const open=s.classList.toggle("open"); if(t) t.classList.toggle("open",open); }
 function showTab(t){
   document.querySelectorAll(".tab").forEach(x=>{ const on=x.dataset.t===t; x.classList.toggle("active",on); x.setAttribute("aria-selected", on?"true":"false"); });
   document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"));
