@@ -45,6 +45,11 @@
   .plan-bar .plan-hint{color:var(--sub); font-size:.78rem; margin-left:auto;}
   .cloud-form{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0;}
   .cloud-form input{padding:8px 10px; border:1px solid var(--line); border-radius:8px; min-width:140px; flex:1 1 160px; font-size:.9rem;}
+  .cloud-bar{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 12px; margin-bottom:12px;}
+  .cloud-bar-row{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .cloud-bar-title{font-weight:700;}
+  .cloud-bar input{padding:7px 10px; border:1px solid var(--line); border-radius:8px; min-width:100px; flex:0 1 150px; font-size:.9rem;}
+  .cloud-hint{font-size:.8rem; margin-top:6px; line-height:1.5;}
   @media(min-width:980px){
     body{padding-left:212px; transition:padding-left .22s;}
     body.nav-hidden{padding-left:0;}
@@ -208,7 +213,7 @@
   .day-move{padding:4px 2px; border:1px solid var(--line); border-radius:6px; font-size:.78rem; color:var(--sub); background:#fff; max-width:58px;}
   .print-only{display:none;}
   @media print{
-    header,nav.tabs,.setup,.btn,.btn-row,.savebar,.wiz-overlay,.backup-banner,.map-link,.warn-row,.url-share,.alert,.nav-toggle,.nav-backdrop,.plan-bar{display:none!important;}
+    header,nav.tabs,.setup,.btn,.btn-row,.savebar,.wiz-overlay,.backup-banner,.map-link,.warn-row,.url-share,.alert,.nav-toggle,.nav-backdrop,.plan-bar,.cloud-bar{display:none!important;}
     body{padding-left:0!important;}
     #p-routes,#p-spots,#p-export,#p-notes{display:none!important;}
     section.panel{display:block!important; border:none; padding:0; page-break-inside:avoid; margin-bottom:14px;}
@@ -288,6 +293,24 @@
     <button class="btn small ghost" type="button" onclick="renamePlan()">✏️ 改名</button>
     <button class="btn small ghost" type="button" onclick="delPlan()">🗑️ 刪除</button>
     <span class="plan-hint">共 <b id="planCount">1</b> 個計畫，各自獨立存檔、不會互相影響</span>
+  </div>
+  <div class="cloud-bar" id="cloudBar">
+    <div id="cloudLoginRow" class="cloud-bar-row">
+      <span class="cloud-bar-title">☁️ 雲端帳號</span>
+      <input id="cloudUser" placeholder="帳號" autocomplete="off">
+      <input id="cloudPass" type="password" placeholder="密碼" autocomplete="new-password">
+      <button class="btn small" type="button" onclick="cloudLogin()">登入</button>
+      <button class="btn small ghost" type="button" onclick="cloudRegister()">註冊新帳號</button>
+    </div>
+    <div id="cloudActions" class="cloud-bar-row" style="display:none">
+      <span class="cloud-bar-title" id="cloudStatusShort"></span>
+      <button class="btn small" type="button" onclick="cloudPushAll()">⬆️ 上傳</button>
+      <button class="btn small ghost" type="button" onclick="cloudPull()">⬇️ 下載</button>
+      <button class="btn small ghost" type="button" onclick="cloudShare()">🔗 分享連結</button>
+      <button class="btn small ghost" id="cloudShareSave" type="button" onclick="cloudSaveShare()" style="display:none">🔄 存到分享</button>
+      <button class="btn small ghost" type="button" onclick="cloudLogout()">登出</button>
+    </div>
+    <div class="cloud-hint" id="cloudHint"></div>
   </div>
   <div class="print-only" id="printHead"></div>
   <div class="backup-banner" id="backupBanner">
@@ -472,27 +495,7 @@
       <div class="card"><h4>📋 複製行程文字（LINE 分享）</h4><p class="meta">把逐日行程＋預算摘要變成漂亮的文字訊息，直接貼到 LINE 群組給親朋好友。</p><div class="btn-row"><button class="btn" onclick="copyShareText()">複製行程文字</button></div></div>
       <div class="card"><h4>🤝 共編行程包（輪流編輯）</h4><p class="meta">把這趟行程（含成員、航班住宿、票券、記帳、日誌）打包傳給旅伴；對方匯入後修改，再傳回來給你匯入——輪流接力編輯。匯入前會自動備份，可救回。</p><div class="btn-row"><button class="btn" onclick="exportTripPack()">匯出共編包</button><button class="btn ghost" onclick="document.getElementById('importFile').click()">匯入共編包</button></div></div>
       <div class="card"><h4>💾 旅程紀錄檔（備份 / 還原）</h4><p class="meta">完整 JSON 紀錄檔：行程、記帳、日誌、照片全打包。旅行結束存一份封存，下次規劃同地點時匯入參考。<br><span id="storUse" style="color:var(--sub);font-size:.78rem"></span></p><div class="btn-row"><button class="btn ghost" onclick="exportJSON()">下載紀錄檔</button><button class="btn ghost" onclick="document.getElementById('importFile').click()">匯入 / 還原</button><input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)"></div></div>
-      <div class="card" id="cloudCard">
-        <h4>☁️ 雲端帳號同步（跨裝置・分享共編）</h4>
-        <p class="meta">用你自己部署的 Google Apps Script 後端（免費，資料存在你自己的 Google 雲端硬碟）。帳號只需帳號＋密碼，<b>不收集生日／身分證／電話／護照</b>。部署方式見專案檔 <code>gas_backend.gs</code>。可選用，不登入也能在本機正常使用。</p>
-        <div class="cloud-form">
-          <input id="cloudUrl" placeholder="雲端網址（GAS 部署後的 /exec 網址）" style="flex:1 1 100%">
-        </div>
-        <div class="cloud-form" id="cloudLoginRow">
-          <input id="cloudUser" placeholder="帳號（3-20 英數）" autocomplete="off">
-          <input id="cloudPass" type="password" placeholder="密碼（至少 6 碼）" autocomplete="new-password">
-          <button class="btn" type="button" onclick="cloudLogin()">登入</button>
-          <button class="btn ghost" type="button" onclick="cloudRegister()">註冊新帳號</button>
-        </div>
-        <p class="meta" id="cloudStatus"></p>
-        <div id="cloudActions" class="btn-row" style="display:none">
-          <button class="btn" type="button" onclick="cloudPushAll()">⬆️ 上傳到雲端</button>
-          <button class="btn ghost" type="button" onclick="cloudPull()">⬇️ 從雲端下載</button>
-          <button class="btn ghost" type="button" onclick="cloudShare()">🔗 建立分享連結</button>
-          <button class="btn ghost" type="button" onclick="cloudLogout()">登出</button>
-        </div>
-        <div class="btn-row"><button class="btn" id="cloudShareSave" type="button" onclick="cloudSaveShare()" style="display:none">🔄 儲存到分享（把共享計畫的修改回傳）</button></div>
-      </div>
+      <div class="card"><h4>☁️ 雲端帳號同步</h4><p class="meta">登入／註冊、上傳、下載、🔗 分享連結等功能已移到<b>頁面最上方</b>的「☁️ 雲端帳號」列，隨時看得到。資料存在你部署的 Google Apps Script（你自己的雲端硬碟），帳號只需帳號＋密碼、不收集生日／身分證／電話／護照；照片不上雲。</p></div>
       <div class="card"><h4>🗑️ 清除全部、重新開始</h4><p class="meta">一鍵清空所有目的地的行程、航班住宿、票券、記帳、日誌、照片與設定，回到全新狀態重新規劃。清除前會自動在本機備份一份，可按「還原上次清除」救回一次。<b>重要資料請先用左方「下載紀錄檔」另存。</b></p><div class="btn-row"><button class="btn danger" onclick="resetAll()">🗑️ 清除全部重來</button><button class="btn ghost" onclick="restoreBackup()">↩️ 還原上次清除</button></div></div>
     </div>
     <h3>👨‍👩‍👧 怎麼讓朋友也使用這套系統？</h3>
@@ -1573,6 +1576,7 @@ function save(){
     // 隱私模式 / 容量滿 / 暫存環境會走到這裡，不再靜默
     showSave("⚠️ 儲存失敗！請到「匯出/同步」按『備份』保存", true);
   }
+  if(typeof cloudAutoPush==="function") cloudAutoPush();   // 登入時自動保留到雲端
   updateBackupBanner();
 }
 function load(){
@@ -2327,14 +2331,31 @@ function delPlan(){
 }
 /* ════════════════ 雲端同步（GAS 後端） ════════════════ */
 function renderCloud(){
-  if($("cloudUrl") && !$("cloudUrl").value) $("cloudUrl").value = CLOUD.url||"";
-  if($("cloudUser") && CLOUD.user && !$("cloudUser").value) $("cloudUser").value = CLOUD.user;
-  const on = !!CLOUD.token;
-  if($("cloudActions")) $("cloudActions").style.display = on ? "" : "none";
+  const on = !!CLOUD.token, ap=activePlan(), shared = ap && ap.share;
   if($("cloudLoginRow")) $("cloudLoginRow").style.display = on ? "none" : "";
-  if($("cloudStatus")) $("cloudStatus").textContent = on ? `✅ 已登入：${CLOUD.user}（資料存在你的 Google 雲端硬碟）` : "尚未登入（可選用，不登入也能在本機使用）";
-  const ap=activePlan(), shared = ap && ap.share;
+  if($("cloudActions")) $("cloudActions").style.display = on ? "" : "none";
+  if($("cloudUser") && CLOUD.user && !$("cloudUser").value) $("cloudUser").value = CLOUD.user;
+  if($("cloudStatusShort")) $("cloudStatusShort").textContent = on ? `✅ ${CLOUD.user}（雲端保留中）` : "☁️ 雲端帳號";
   if($("cloudShareSave")) $("cloudShareSave").style.display = shared ? "" : "none";
+  const hint=$("cloudHint");
+  if(hint){
+    hint.textContent = on
+      ? "已登入：你的計畫會自動保留到雲端，換手機／換裝置登入就能取回。"
+      : "⚠️ 未登入：資料只存在這台裝置的瀏覽器。行程編輯後，請到「📤 匯出/同步 → 💾 下載紀錄檔」備份，避免清快取或換裝置時資料遺失。建議登入，計畫會自動雲端保留。";
+    hint.style.color = on ? "var(--sub)" : "#b45309";
+  }
+}
+/* 登入後自動把目前計畫保留到雲端（防抖，避免每次輸入都打網路）；共享計畫則自動回存分享 */
+function cloudAutoPush(){
+  const ap=activePlan(); if(!ap) return;
+  if(!CLOUD.token && !ap.share) return;
+  clearTimeout(cloudAutoPush._t);
+  cloudAutoPush._t = setTimeout(async ()=>{
+    try{ const a=activePlan(); if(!a) return;
+      if(CLOUD.token) await cloudPost("savePlan",{ user:CLOUD.user, token:CLOUD.token, plan:a });
+      if(a.share) await cloudPost("saveShare",{ shareId:a.share.id, plan:a });
+    }catch(e){}
+  }, 12000);
 }
 async function cloudPost(action, payload){
   const url = ($("cloudUrl") && $("cloudUrl").value.trim()) || CLOUD.url;
