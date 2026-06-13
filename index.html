@@ -50,6 +50,12 @@
   .cloud-bar-title{font-weight:700;}
   .cloud-bar input{padding:7px 10px; border:1px solid var(--line); border-radius:8px; min-width:100px; flex:0 1 150px; font-size:.9rem;}
   .cloud-hint{font-size:.8rem; margin-top:6px; line-height:1.5;}
+  .add-target-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:8px 12px; margin-bottom:12px; font-size:.9rem;}
+  .add-target-bar select{padding:5px 8px; border:1px solid var(--line); border-radius:6px; font-weight:700;}
+  .ov-summary{background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:12px 16px; margin-bottom:12px; line-height:1.8;}
+  .auto-itin-wrap{margin:2px 0 10px;}
+  .auto-itin{background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:6px 10px; margin-bottom:4px; font-size:.88rem; color:#3730a3;}
+  .auto-itin-note{font-size:.72rem; color:var(--sub); margin-top:2px;}
   @media(min-width:980px){
     body{padding-left:212px; transition:padding-left .22s;}
     body.nav-hidden{padding-left:0;}
@@ -271,7 +277,24 @@
     .ritem .time{min-width:auto;}
     .btn.small{padding:7px 12px;}
   }
-
+  /* ── 三平台版面保險：避免 ☰ 壓標題、新元件在小螢幕溢出壓線壓字 ── */
+  @media(max-width:979px){
+    header{padding-left:64px;}                 /* 讓出左上角 ☰ 按鈕空間，不壓到標題 */
+  }
+  .plan-bar select,.cloud-bar input{max-width:100%;}
+  .plan-bar,.cloud-bar,.add-target-bar,.filter-bar{min-width:0;}
+  @media(max-width:680px){
+    header{padding-left:56px;}
+    .plan-bar{gap:6px; padding:8px 10px;}
+    .plan-bar .plan-hint{margin-left:0; flex-basis:100%;}   /* 提示換行不擠 */
+    .plan-bar select{max-width:60vw;}
+    .cloud-bar{padding:8px 10px;}
+    .cloud-bar input{flex:1 1 calc(50% - 5px); min-width:0;} /* 帳號／密碼各半行 */
+    .cloud-bar-row .btn{flex:1 1 auto;}
+    .add-target-bar{font-size:.85rem; padding:8px 10px;}
+    .total-bar{gap:10px 14px;}
+    .total-bar>div{flex:1 1 40%;}                            /* 四項各佔半行不重疊 */
+  }
 </style>
 </head>
 <body>
@@ -297,8 +320,8 @@
   <div class="cloud-bar" id="cloudBar">
     <div id="cloudLoginRow" class="cloud-bar-row">
       <span class="cloud-bar-title">☁️ 雲端帳號</span>
-      <input id="cloudUser" placeholder="帳號" autocomplete="off">
-      <input id="cloudPass" type="password" placeholder="密碼" autocomplete="new-password">
+      <input id="cloudUser" placeholder="帳號（英數字3-20碼）" autocomplete="off">
+      <input id="cloudPass" type="password" placeholder="密碼（6碼以上）" autocomplete="new-password">
       <button class="btn small" type="button" onclick="cloudLogin()">登入</button>
       <button class="btn small ghost" type="button" onclick="cloudRegister()">註冊新帳號</button>
     </div>
@@ -363,6 +386,11 @@
 
   <section class="panel show" id="p-overview">
     <h2 id="ov-title">行程總覽</h2>
+    <div id="ov-summary" class="ov-summary"></div>
+    <div class="btn-row" style="margin-bottom:14px">
+      <button class="btn" onclick="window.print()">🖨️ 預覽 / 匯出 PDF</button>
+      <span class="meta" style="align-self:center;color:var(--sub);font-size:.82rem">會開啟瀏覽器列印視窗可先預覽，目的地選「另存為 PDF」即可。帳號／設定列不會印出。</span>
+    </div>
     <div class="grid" id="ov-cards"></div>
     <h3>🚆 交通方式</h3><div class="grid" id="ov-transport"></div>
     <h3>🏨 住宿選擇</h3><div class="grid" id="ov-stay"></div>
@@ -462,6 +490,11 @@
       <button class="btn" type="button" onclick="addCustomPlaceToItin()">＋ 直接加到我的行程</button>
     </div>
     <p class="meta" style="margin:-2px 0 10px;color:var(--sub);font-size:.82rem">💡 在 Google 地圖找到想去的店家，複製連結貼上面就能取出店名。「存到我的清單」只會存在你這台裝置／帳號，不影響內建資料庫。</p>
+    <div class="add-target-bar">
+      <span>👉 點下方景點的「<b>＋ 加入行程</b>」會加到：</span>
+      <label>第 <select id="spotAddDay"></select> 天</label>
+      <button class="btn small" type="button" onclick="showTab('itinerary')">📅 前往我的行程</button>
+    </div>
     <h2 id="spotsTitle">可玩景點（★＝必去）</h2>
     <div class="grid" id="spotCards"></div>
     <h2 style="margin-top:20px;">美食推薦（🍜＝必吃）</h2>
@@ -1714,6 +1747,7 @@ function renderAll(){
   renderRegionControls();
   const regLbl = S.regionCity || activeScopesLabel();
   $("spotsTitle").textContent = `${d.flag} ${d.name}${regLbl?`\u30fb${regLbl}`:""}\u53ef\u73a9\u666f\u9ede\uff08\u2605\uff1d\u5fc5\u53bb\uff09`;
+  const sd=$("spotAddDay"); if(sd){ const cur=Math.min(+sd.value||1, Math.max(S.days,1)); sd.innerHTML=Array.from({length:Math.max(S.days,1)},(_,k)=>`<option value="${k+1}" ${k+1===cur?"selected":""}>${k+1}</option>`).join(""); }
   const spotList = getPlaceList("spot"), foodList = getPlaceList("food"), shopList = getPlaceList("shop");
   $("spotCards").innerHTML = spotList.length ? spotList.map((s,i)=>spotCard(s,"spot",i)).join("") : emptyPlaceCard("spot");
   $("foodCards").innerHTML = foodList.length ? foodList.map((s,i)=>spotCard(s,"food",i)).join("") : emptyPlaceCard("food");
@@ -1725,7 +1759,11 @@ function renderAll(){
   // 列印用標題（含類型、成員、實際花費）
   const spent = (S.expenses||[]).filter(e=>e.dest===S.dest).reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
   const names = (S.party||[]).map(p=>p.name).filter(Boolean).join("、") || "我";
-  $("printHead").innerHTML = `<b>${d.flag} ${d.name}旅遊計畫</b>｜${TRIP_TYPES[S.tripType].label}｜${S.startDate||"未定"} 出發｜${S.days} 天<br>👥 成員：${esc(names)}${spent?`｜💸 實際花費 ${fmt(spent)}`:""}`;
+  const _styleTxt = {0.8:"省錢背包",1:"標準舒適",1.5:"豪華享受"}[S.style]||"";
+  const _reg = activeScopesLabel();
+  const _sum = `<b>${d.flag} ${d.name}${_reg?`・${_reg}`:""}旅遊計畫</b>　${TRIP_TYPES[S.tripType].label}<br>📅 ${S.startDate||"未定"}${S.endDate?` ～ ${S.endDate}`:""}（${S.days} 天）　👥 ${S.adults} 大${S.kids?` ${S.kids} 小`:""}：${esc(names)}　🧭 ${_styleTxt}${spent?`　💸 實際花費 ${fmt(spent)}`:""}`;
+  $("printHead").innerHTML = _sum;
+  if($("ov-summary")) $("ov-summary").innerHTML = _sum;
   renderRoutes(); renderBudget(); renderPacking(); renderTravelInfo(); renderItin(); renderExpense(); renderRisks();
   const su=$("storUse"); if(su){ const kb=storUsedKB(); su.textContent=`📦 已用空間約 ${kb} KB / 5000 KB（照片會佔最多，滿了先備份再刪舊照片）`; }
 }
@@ -1893,7 +1931,7 @@ function spotCard(s,kind,i){
   const hotTag = s.hot ? `<span class="tag" style="background:#fce7f3;color:#be185d">📸 網紅打卡</span>` : "";
   const customIdx = s.custom ? customPlaceBucket(kind).indexOf(s) : -1;
   const delBtn = customIdx>=0 ? `<button class="btn small danger" onclick="delCustomPlace('${kind}',${customIdx})">刪除</button>` : "";
-  return `<div class="card">${badge}<h4>${esc(s.n)}</h4><span class="tag">${esc(s.a)}</span>${hotTag}${s.custom?'<span class="tag">自訂</span>':""}<p class="meta" style="margin-top:6px">${esc(s.d)}</p>${shopInfo}${go}<div class="btn-row"><button class="btn small ghost" onclick="quickAdd('${kind}',${i})">＋ 加入行程</button><a class="map-link" href="${mapUrl(s.n+" "+s.a)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a>${delBtn}</div></div>`;
+  return `<div class="card">${badge}<h4>${esc(s.n)}</h4><span class="tag">${esc(s.a)}</span>${hotTag}${s.custom?'<span class="tag">自訂</span>':""}<p class="meta" style="margin-top:6px">${esc(s.d)}</p>${shopInfo}${go}<div class="btn-row"><button class="btn small" onclick="quickAdd('${kind}',${i})">＋ 加入行程</button><a class="map-link" href="${mapUrl(s.n+" "+s.a)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a>${delBtn}</div></div>`;
 }
 function askMap(q){ if(confirm(`要開啟地圖查看「${q}」嗎？`)) window.open(mapUrl(q), "_blank", "noopener"); }
 
@@ -2030,6 +2068,16 @@ function setPrice(key,val){ (S.prices[S.dest]=S.prices[S.dest]||{})[key]=+val||0
 function getItin(){ if(!Array.isArray(S.itin)) S.itin=[]; return S.itin.filter(x=>x.dest===S.dest); }
 function dayDate(day){ const d=new Date(S.startDate+"T00:00:00"); d.setDate(d.getDate()+day-1); return d; }
 function addMin(t,m){ let[h,mi]=(t||"09:00").split(":").map(Number); let x=Math.min(h*60+mi+m, 23*60+59); return String(Math.floor(x/60)).padStart(2,"0")+":"+String(x%60).padStart(2,"0"); }
+/* 把任意輸入正規化成 24 小時制 HH:MM（不分上下午）。"1430"→14:30、"9:5"→09:05、"14"→14:00 */
+function fmt24(v){
+  v=String(v||"").trim(); if(!v) return "";
+  let h, m;
+  if(v.indexOf(":")>=0){ const p=v.split(":"); h=parseInt(String(p[0]).replace(/\D/g,""),10); m=parseInt(String(p[1]||"").replace(/\D/g,""),10); }
+  else { const dig=v.replace(/\D/g,""); if(!dig) return ""; if(dig.length<=2){ h=+dig; m=0; } else { h=+dig.slice(0,dig.length-2); m=+dig.slice(-2); } }
+  if(isNaN(h)) return ""; if(isNaN(m)) m=0;
+  h=Math.min(23,Math.max(0,h)); m=Math.min(59,Math.max(0,m));
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+}
 const esc = s => String(s||"")
   .replace(/&/g,"&amp;")
   .replace(/"/g,"&quot;")
@@ -2069,7 +2117,7 @@ function delParty(gi){
 
 /* ── 航班 / 住宿 ── */
 function renderTravelInfo(){
-  const fl=(S.flights||[]).filter(x=>x.dest===S.dest).sort((a,b)=>(a.dir==="回程"?1:0)-(b.dir==="回程"?1:0) || ((a.date||"")+(a.dep||"")).localeCompare((b.date||"")+(b.dep||""))), ho=(S.hotels||[]).filter(x=>x.dest===S.dest);
+  const fl=(S.flights||[]).filter(x=>x.dest===S.dest).sort((a,b)=> ((a.date||"9999")+(a.dep||"99:99")).localeCompare((b.date||"9999")+(b.dep||"99:99"))), ho=(S.hotels||[]).filter(x=>x.dest===S.dest);
   const tk=(S.tickets||[]).filter(x=>x.dest===S.dest);
   let h=`<h3 style="margin-top:0">👥 行程參與人員（${TRIP_TYPES[S.tripType].label}） <button class="btn small" onclick="addParty()">＋ 加成員</button></h3>`;
   h += `<p class="meta" style="margin:-4px 0 8px;color:var(--sub);font-size:.83rem">💡 ${TRIP_TYPES[S.tripType].tip}。成員會自動同步到「💸 記帳分帳」。</p>`;
@@ -2108,9 +2156,9 @@ function flightBox(f,gi){
     <div><span class="mini-label">抵達地點</span><input value="${esc(f.to)}" placeholder="如 成田 NRT" oninput="updFlight(${gi},'to',this.value)"></div>
     <div><span class="mini-label">轉機機場</span><input value="${esc(f.via)}" placeholder="直飛免填／如 香港 HKG" oninput="updFlight(${gi},'via',this.value);clearTimeout(debSave._t2);debSave._t2=setTimeout(renderTravelInfo,600)"></div>
     <div><span class="mini-label">轉機停留</span><input value="${esc(f.layover)}" placeholder="如 2h30m" oninput="updFlight(${gi},'layover',this.value)"></div>
-    <div><span class="mini-label">日期</span><input type="date" value="${esc(f.date)}" oninput="updFlight(${gi},'date',this.value)"></div>
-    <div><span class="mini-label">起飛</span><input type="time" value="${esc(f.dep)}" oninput="updFlight(${gi},'dep',this.value)"></div>
-    <div><span class="mini-label">抵達</span><input type="time" value="${esc(f.arr)}" oninput="updFlight(${gi},'arr',this.value)"></div>
+    <div><span class="mini-label">日期</span><input type="date" value="${esc(f.date)}" oninput="updFlight(${gi},'date',this.value)" onchange="updFlight(${gi},'date',this.value);renderTravelInfo();renderItin()"></div>
+    <div><span class="mini-label">起飛（24時制）</span><input type="text" inputmode="numeric" maxlength="5" value="${esc(f.dep)}" placeholder="如 09:30" oninput="updFlight(${gi},'dep',this.value)" onblur="this.value=fmt24(this.value);updFlight(${gi},'dep',this.value);renderTravelInfo();renderItin()"></div>
+    <div><span class="mini-label">抵達（24時制）</span><input type="text" inputmode="numeric" maxlength="5" value="${esc(f.arr)}" placeholder="如 14:05" oninput="updFlight(${gi},'arr',this.value)" onblur="this.value=fmt24(this.value);updFlight(${gi},'arr',this.value)"></div>
     <div><span class="mini-label">訂位代碼</span><input value="${esc(f.code)}" placeholder="PNR" oninput="updFlight(${gi},'code',this.value)"></div>
     <div><span class="mini-label">手提行李</span><input value="${esc(f.cabinBag)}" placeholder="如 7kg / 1 件" oninput="updFlight(${gi},'cabinBag',this.value)"></div>
     <div><span class="mini-label">托運行李</span><input value="${esc(f.checkedBag)}" placeholder="如 23kg / 2 件" oninput="updFlight(${gi},'checkedBag',this.value)"></div>
@@ -2130,8 +2178,8 @@ function hotelBox(o,gi){
       </div></div>
     <div class="full"><span class="mini-label">飯店名稱</span><input value="${esc(o.name)}" placeholder="飯店名" oninput="updHotel(${gi},'name',this.value)"></div>
     <div class="full"><span class="mini-label">地址 ${mapLink}</span><input value="${esc(o.addr)}" placeholder="地址" oninput="updHotel(${gi},'addr',this.value)"></div>
-    <div><span class="mini-label">入住</span><input type="date" value="${esc(o.cin)}" oninput="updHotel(${gi},'cin',this.value)"></div>
-    <div><span class="mini-label">退房</span><input type="date" value="${esc(o.cout)}" oninput="updHotel(${gi},'cout',this.value)"></div>
+    <div><span class="mini-label">入住</span><input type="date" value="${esc(o.cin)}" oninput="updHotel(${gi},'cin',this.value)" onchange="updHotel(${gi},'cin',this.value);renderItin()"></div>
+    <div><span class="mini-label">退房</span><input type="date" value="${esc(o.cout)}" oninput="updHotel(${gi},'cout',this.value)" onchange="updHotel(${gi},'cout',this.value);renderItin()"></div>
     <div><span class="mini-label">訂房代碼</span><input value="${esc(o.code)}" oninput="updHotel(${gi},'code',this.value)"></div>
     <div><span class="mini-label">飯店電話</span><input value="${esc(o.tel)}" oninput="updHotel(${gi},'tel',this.value)"></div>
   </div></div>`;
@@ -2140,8 +2188,8 @@ function addFlight(){ S.flights.push({dest:S.dest,dir:"去程",no:"",from:"",to:
 function addHotel(){ S.hotels.push({dest:S.dest,name:"",addr:"",cin:"",cout:"",code:"",tel:"",link:"",lat:"",lng:""}); save(); renderTravelInfo(); }
 function updFlight(gi,k,v){ S.flights[gi][k]=v; debSave(); }
 function updHotel(gi,k,v){ S.hotels[gi][k]=v; debSave(); }
-function delFlight(gi){ S.flights.splice(gi,1); save(); renderTravelInfo(); }
-function delHotel(gi){ S.hotels.splice(gi,1); save(); renderTravelInfo(); }
+function delFlight(gi){ S.flights.splice(gi,1); save(); renderTravelInfo(); renderItin(); }
+function delHotel(gi){ S.hotels.splice(gi,1); save(); renderTravelInfo(); renderItin(); }
 /* 從貼上的 Google／Naver 地圖連結解析店家名稱與座標，自動帶入住宿欄位 */
 function importHotelFromMap(gi){
   const inp=$("hotelMapPaste"+gi);
@@ -2161,6 +2209,19 @@ function importHotelFromMap(gi){
   else showSave("已從地圖帶入"+(name?("："+name):"座標"));
 }
 
+/* 把「我的航班／住宿」依日期自動帶進當天行程（不另存，避免重複打資料） */
+function buildAutoItin(day){
+  if(!S.startDate) return "";
+  const dTo=d=> d ? daysBetweenISO(S.startDate,d) : null;
+  const fls=(S.flights||[]).filter(f=>f.dest===S.dest && f.date && dTo(f.date)===day).sort((a,b)=>(a.dep||"").localeCompare(b.dep||""));
+  const hin=(S.hotels||[]).filter(o=>o.dest===S.dest && o.cin && dTo(o.cin)===day);
+  const hout=(S.hotels||[]).filter(o=>o.dest===S.dest && o.cout && dTo(o.cout)===day);
+  let r="";
+  fls.forEach(f=>{ r+=`<div class="auto-itin">✈️ <b>${esc(f.dep||"--:--")}</b>　${esc(f.no||"航班")}　${esc(f.from||"")} → ${esc(f.to||"")}${f.arr?`（抵達 ${esc(f.arr)}）`:""}　<span class="tag">${esc(f.dir||"")}</span>${f.via?`<span class="tag">轉 ${esc(f.via)}</span>`:""}</div>`; });
+  hin.forEach(o=>{ r+=`<div class="auto-itin">🏨 入住 ${esc(o.name||"住宿")}${(o.link||o.addr)?`　<a class="map-link" style="margin:0" href="${o.link||mapUrl(o.addr)}" target="_blank" rel="noopener noreferrer">🗺️</a>`:""}</div>`; });
+  hout.forEach(o=>{ r+=`<div class="auto-itin">🏨 退房 ${esc(o.name||"住宿")}</div>`; });
+  return r ? `<div class="auto-itin-wrap">${r}<div class="auto-itin-note">↑ 自動帶入自「✈️ 我的航班／🏨 住宿」，在上方那區編輯就會同步</div></div>` : "";
+}
 /* ── 逐日行程 ── */
 function renderItin(){
   const list=getItin();
@@ -2184,7 +2245,7 @@ function renderItin(){
     if(view!==0 && day!==view) continue;
     const items=list.filter(it=>it.day===day).sort((a,b)=>a.time.localeCompare(b.time));
     const dateTxt=S.startDate?dayDate(day).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric",weekday:"short"}):"";
-    html += `<div class="day-block"><div class="day-head"><span>Day ${day}｜${dateTxt}</span><button class="btn small" style="background:rgba(255,255,255,.2)" onclick="addItinDay(${day})">＋ 新增</button></div><div class="day-body">`;
+    html += `<div class="day-block"><div class="day-head"><span>Day ${day}｜${dateTxt}</span><button class="btn small" style="background:rgba(255,255,255,.2)" onclick="addItinDay(${day})">＋ 新增</button></div><div class="day-body">` + buildAutoItin(day);
     if(items.length===0){ html += `<p class="itin-empty">尚無安排 — 按「＋新增」、或從「🗺️ 推薦路線」「📍 景點美食購物」加入。</p>`; }
     else{
       html += `<div class="itin-row itin-hd"><span>開始</span><span>結束</span><span>行程內容</span><span class="hide-m">🚌 交通建議</span><span class="hide-m">備註</span><span></span></div>`;
@@ -2223,14 +2284,14 @@ function addItinDay(day){ S.itin.push({dest:S.dest, day, time:"09:00", end:"10:3
 function quickAdd(kind,i){
   const s=getPlaceList(kind)[i];
   const pre = kind==="food"?"🍜 ":kind==="shop"?"🛍️ ":"📍 ";
-  // 預設加到「目前天數內最後一天」的最後一筆之後，避免全擠在 Day1 09:00 重疊
-  const day = Math.max(S.days,1);
+  // 加到使用者在上方選的「第幾天」（沒選就放最後一天），接在那天最後一筆之後，避免時間重疊
+  const sd=$("spotAddDay");
+  const day = Math.min(Math.max(sd ? (+sd.value||1) : Math.max(S.days,1), 1), Math.max(S.days,1));
   const dayItems = getItin().filter(x=>x.day===day);
-  const lastEnd = dayItems.length ? dayItems.map(x=>x.end||x.time).sort().pop() : "09:00";
-  const start = dayItems.length ? lastEnd : "09:00";
+  const start = dayItems.length ? dayItems.map(x=>x.end||x.time).sort().pop() : "09:00";
   S.itin.push({dest:S.dest, day, time:start, end:addMin(start,90), title:pre+(s.must?"★":"")+s.n, go:s.go||"", note:kind==="shop"?`必買：${s.buy||s.d||""}`:s.a});
   save(); renderItin();
-  if(confirm(`已加入 Day ${day}：${s.n}\n要順便開啟地圖看位置嗎？`)) window.open(mapUrl(s.n+" "+s.a), "_blank", "noopener");
+  showSave(`✓ 已加到 Day ${day}：${s.n}　按上方「前往我的行程」可調整`);
 }
 function updItin(gi,k,v){ S.itin[gi][k]=v; save(); renderItin(); }
 function moveItin(gi,day){ S.itin[gi].day=day; save(); renderItin(); }
@@ -2367,16 +2428,28 @@ async function cloudPost(action, payload){
   if(!j.ok) throw new Error(j.error||"雲端錯誤");
   return j;
 }
+function cloudCreds(forReg){
+  const u=($("cloudUser")?$("cloudUser").value:"").trim();
+  const p=$("cloudPass")?$("cloudPass").value:"";
+  if(!u || !p){ alert("請先輸入帳號與密碼。"); return null; }
+  if(forReg){
+    if(!/^[A-Za-z0-9_]{3,20}$/.test(u)){ alert("帳號請用 3–20 碼英文字母／數字／底線，不能用中文或空白。\n例如：wang123、yaping2026"); return null; }
+    if(p.length<6){ alert("密碼請至少 6 碼。"); return null; }
+  }
+  return {u,p};
+}
 async function cloudRegister(){
+  const v=cloudCreds(true); if(!v) return;
   try{
-    const j=await cloudPost("register",{ user:$("cloudUser").value.trim(), pass:$("cloudPass").value });
+    const j=await cloudPost("register",{ user:v.u, pass:v.p });
     CLOUD.user=j.user; CLOUD.token=j.token; saveCloud(); $("cloudPass").value=""; renderCloud();
     if(confirm("註冊成功並已登入！要立刻把目前的計畫上傳到雲端嗎？")) cloudPushAll();
   }catch(e){ alert("註冊失敗："+e.message); }
 }
 async function cloudLogin(){
+  const v=cloudCreds(false); if(!v) return;
   try{
-    const j=await cloudPost("login",{ user:$("cloudUser").value.trim(), pass:$("cloudPass").value });
+    const j=await cloudPost("login",{ user:v.u, pass:v.p });
     CLOUD.user=j.user; CLOUD.token=j.token; saveCloud(); $("cloudPass").value=""; renderCloud();
     if(confirm("登入成功！要從雲端下載你的計畫嗎？（會與本機計畫合併）")) cloudPull();
   }catch(e){ alert("登入失敗："+e.message); }
