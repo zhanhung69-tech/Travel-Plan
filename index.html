@@ -60,6 +60,23 @@
   .add-target-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:8px 12px; margin-bottom:12px; font-size:.9rem;}
   .add-target-bar select{padding:5px 8px; border:1px solid var(--line); border-radius:6px; font-weight:700;}
   .ov-summary{background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:12px 16px; margin-bottom:12px; line-height:1.8;}
+  .ops-dashboard{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr)); gap:10px; margin:0 0 14px;}
+  .ops-card{border:1px solid var(--line); border-radius:10px; background:#fbfdff; padding:12px; min-width:0;}
+  .ops-card strong{display:block; font-size:1.25rem; color:var(--accent); line-height:1.2;}
+  .ops-card span{display:block; font-size:.78rem; color:var(--sub); margin-top:3px;}
+  .ops-card button{margin-top:8px;}
+  .ops-meter{height:7px; background:#e3e9f1; border-radius:999px; overflow:hidden; margin-top:8px;}
+  .ops-meter div{height:100%; background:linear-gradient(90deg,#0e7490,#22c55e);}
+  .resource-actions{display:flex; gap:8px; flex-wrap:wrap; margin:0 0 14px;}
+  .resource-card h4{padding-right:0;}
+  .resource-card ul{margin-top:8px;}
+  .resource-card li{margin-left:1.2em; margin-bottom:6px; font-size:.9rem;}
+  .resource-card a{color:var(--accent); font-weight:700;}
+  .health-score{display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:50%; background:#ecfdf5; color:#047857; font-weight:800; margin-right:8px;}
+  .health-score.mid{background:#fef3c7; color:#b45309;}
+  .health-score.low{background:#fee2e2; color:#b91c1c;}
+  .health-list{margin-top:8px;}
+  .health-list li{margin-left:1.2em; margin-bottom:4px; font-size:.86rem; color:var(--sub);}
   .auto-itin-wrap{margin:2px 0 10px;}
   .auto-itin{background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:6px 10px; margin-bottom:4px; font-size:.88rem; color:#3730a3;}
   .auto-itin-note{font-size:.72rem; color:var(--sub); margin-top:2px;}
@@ -228,7 +245,7 @@
   @media print{
     header,nav.tabs,.setup,.btn,.btn-row,.savebar,.wiz-overlay,.backup-banner,.map-link,.warn-row,.url-share,.alert,.nav-toggle,.nav-backdrop,.plan-bar,.cloud-bar{display:none!important;}
     body{padding-left:0!important;}
-    #p-routes,#p-spots,#p-export,#p-notes{display:none!important;}
+    #p-routes,#p-spots,#p-resources,#p-export,#p-notes{display:none!important;}
     section.panel{display:block!important; border:none; padding:0; page-break-inside:avoid; margin-bottom:14px;}
     .print-only{display:block!important; margin-bottom:12px; font-size:1rem;}
     .day-head,.total-bar,.sticky-board{color:#000!important; background:#fff!important; border:1.5px solid #000!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; position:static!important;}
@@ -341,6 +358,7 @@
     <button class="tab" data-t="budget">💰 預算試算</button>
     <button class="tab" data-t="expense">💸 記帳分帳</button>
     <button class="tab" data-t="packing">🎒 攜帶物品</button>
+    <button class="tab" data-t="resources">🧰 資源中心</button>
     <button class="tab" data-t="notes">⚠️ 注意事項</button>
     <button class="tab" data-t="export">📤 匯出 / 同步</button>
   </nav>
@@ -399,6 +417,7 @@
     <div id="travelInfo"></div>
     <h2 id="ov-title">行程總覽</h2>
     <div id="ov-summary" class="ov-summary"></div>
+    <div id="opsDashboard" class="ops-dashboard"></div>
     <div class="btn-row" style="margin-bottom:14px">
       <button class="btn" onclick="window.print()">🖨️ 預覽 / 匯出 PDF</button>
       <span class="meta" style="align-self:center;color:var(--sub);font-size:.82rem">會開啟瀏覽器列印視窗可先預覽，目的地選「另存為 PDF」即可。帳號／設定列不會印出。</span>
@@ -480,6 +499,15 @@
     </div>
   </section>
 
+  <section class="panel" id="p-resources">
+    <h2 id="resourceTitle">旅行資源中心</h2>
+    <div class="alert">把出發前、旅途中、旅後常用的官方查詢與操作入口集中在這裡。外部資訊仍以官方網站即時公告為準。</div>
+    <div class="resource-actions" id="resourceActions"></div>
+    <div class="grid" id="resourceCards"></div>
+    <h3>資料庫健康度</h3>
+    <div class="grid" id="dataHealthCards"></div>
+  </section>
+
   <section class="panel" id="p-spots">
     <div class="filter-bar">
       <div class="field" style="flex:1 1 100%;"><label>地區（可複選）</label><div class="region-chips" id="regionChips"></div></div>
@@ -518,6 +546,8 @@
     <h2 id="riskTitle">本次行程風險評估</h2>
     <div class="alert">依你的<b>出發日期、目的地、預算與已花費</b>自動評估，等級僅供參考，出發前仍以官方即時資訊為準。</div>
     <div class="grid" id="riskCards"></div>
+    <h2 style="margin-top:20px">資料庫補強建議</h2>
+    <div class="grid" id="notesDataHealthCards"></div>
     <h2 id="notesTitle" style="margin-top:20px">注意事項</h2>
     <ul id="noteList"></ul>
     <h3>🔗 即時資訊查詢（出發前必看）</h3>
@@ -577,7 +607,7 @@
    Keep this file loaded before catalog.js and app.js. */
 (function () {
   window.TripPlannerConfig = Object.freeze({
-    appVersion: "3.1",
+    appVersion: "3.3",
     dataDate: "2026-06",
     schemaVersion: 3,
     storageKey: "twTrip.planner.v3",
@@ -586,7 +616,6 @@
     cloudUrl: "https://script.google.com/macros/s/AKfycbxdlE5zbQ3szYWJcX33AKTujWPt0bQts0z70DTVTKZnDWpTceHFbsreD55GFozakvqBbg/exec"
   });
 })();
-
 </script>
 <script>
 /* Static trip catalog extracted from app.js during architecture refactor. */
@@ -1446,7 +1475,6 @@ const TRIP_TYPES = {
     { id: "custom", label: "自訂天數", days: null }
   ]);
 })();
-
 </script>
 <script>
 /* Local-first storage boundary for future migration to IndexedDB/cloud sync. */
@@ -1489,7 +1517,6 @@ const TRIP_TYPES = {
     backup
   });
 })();
-
 </script>
 <script>
 /* Route sorting boundary.
@@ -1527,14 +1554,13 @@ const TRIP_TYPES = {
     summarizePlan
   });
 })();
-
 </script>
 <script>
 /* Extracted from index.html during architecture refactor. */
 /* ════════════════ 目的地資料庫 ════════════════ */
 /* Static trip catalog is loaded from src/data/catalog.js. */
 const APP_CONFIG = window.TripPlannerConfig || {};
-const APP_VERSION = APP_CONFIG.appVersion || "3.1";          // 系統版本（改版時更新）
+const APP_VERSION = APP_CONFIG.appVersion || "3.3";          // 系統版本（改版時更新）
 const DATA_DATE   = APP_CONFIG.dataDate || "2026-06";        // 資料更新月份
 const LS_KEY  = APP_CONFIG.storageKey || "twTrip.planner.v3"; // 帶命名空間的儲存鍵
 const OLD_KEYS = APP_CONFIG.legacyStorageKeys || ["tripPlanner.v2", "tripPlanner.v1"]; // 舊鍵（自動遷移）
@@ -1778,7 +1804,7 @@ function renderAll(){
   const _sum = `<b>${d.flag} ${d.name}${_reg?`・${_reg}`:""}旅遊計畫</b>　${TRIP_TYPES[S.tripType].label}<br>📅 ${S.startDate||"未定"}${S.endDate?` ～ ${S.endDate}`:""}（${S.days} 天）　👥 ${S.adults} 大${S.kids?` ${S.kids} 小`:""}：${esc(names)}　🧭 ${_styleTxt}${spent?`　💸 實際花費 ${fmt(spent)}`:""}`;
   $("printHead").innerHTML = _sum;
   if($("ov-summary")) $("ov-summary").innerHTML = _sum;
-  renderRoutes(); renderBudget(); renderPacking(); renderTravelInfo(); renderItin(); renderExpense(); renderRisks();
+  renderRoutes(); renderBudget(); renderPacking(); renderTravelInfo(); renderItin(); renderExpense(); renderOpsDashboard(); renderResources(); renderDataHealth(); renderRisks();
   const su=$("storUse"); if(su){ const kb=storUsedKB(); su.textContent=`📦 已用空間約 ${kb} KB / 5000 KB（照片會佔最多，滿了先備份再刪舊照片）`; }
 }
 /* 即時暫存：每次輸入就更新狀態（防抖寫入），切頁/關閉前 flushInputs 兜底 */
@@ -2582,6 +2608,124 @@ function showImg(src){
   document.body.appendChild(m);
 }
 
+/* ════════════════ 工作台總覽 / 資源中心 / 資料健康度 ════════════════ */
+function routeStopCount(routes){
+  return (routes||[]).reduce((sum,r)=>sum+(r.plan||[]).reduce((s,day)=>s+((day.items||[]).length),0),0);
+}
+function currentPackingStats(){
+  const d=DB[S.dest];
+  const items=[...(d.packMust||[]), ...(d.packNice||[]), ...(S.custom||[])];
+  const done=items.filter(item=>S.checks && S.checks[packKey(item)]).length;
+  return {done, total:items.length, pct:items.length?Math.round(done/items.length*100):0};
+}
+function renderOpsDashboard(){
+  const box=$("opsDashboard"); if(!box) return;
+  const d=DB[S.dest];
+  const itin=getItin();
+  const pack=currentPackingStats();
+  const spent=expOf().reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+  const ticketOpen=(S.tickets||[]).filter(t=>t.dest===S.dest && !t.bought).length;
+  const plannedDays=new Set(itin.map(x=>x.day)).size;
+  const budgetPct=LAST_BUDGET?Math.min(Math.round(spent/LAST_BUDGET*100),999):0;
+  const cards=[
+    {n:`${plannedDays}/${S.days}`, t:"已安排天數", hint:`共 ${itin.length} 筆行程`, tab:"itinerary", cta:"排日程"},
+    {n:`${pack.pct}%`, t:"行李完成度", hint:`${pack.done}/${pack.total} 項`, tab:"packing", cta:"檢查"},
+    {n:`${fmt(spent)}`, t:"已記帳", hint:LAST_BUDGET?`預算使用 ${budgetPct}%`:"尚未試算預算", tab:"expense", cta:"記一筆"},
+    {n:`${(S.flights||[]).filter(x=>x.dest===S.dest).length}/${(S.hotels||[]).filter(x=>x.dest===S.dest).length}`, t:"航班 / 住宿", hint:`未買票券 ${ticketOpen} 張`, tab:"overview", cta:"補資料"},
+    {n:`${(d.links||[]).length}`, t:"官方資源", hint:"簽證、天氣、交通、匯率", tab:"resources", cta:"查看"},
+    {n:`${storUsedKB()} KB`, t:"本機資料量", hint:S.lastBackup?"已有備份紀錄":"建議下載備份", tab:"export", cta:"備份"}
+  ];
+  box.innerHTML=cards.map(c=>`<div class="ops-card"><strong>${c.n}</strong><span>${c.t}</span><span>${c.hint}</span><div class="ops-meter"><div style="width:${c.t==="行李完成度"?pack.pct:Math.min(100,plannedDays/Math.max(S.days,1)*100)}%"></div></div><button class="btn small ghost" onclick="showTab('${c.tab}')">${c.cta}</button></div>`).join("");
+}
+function resourceGroups(){
+  const d=DB[S.dest];
+  const official=(d.links||[]).map(l=>({label:l[0], url:l[1]}));
+  const query=[d.name, S.regionCity || activeScopesLabel()].filter(Boolean).join(" ");
+  const planQuery=getItin().map(i=>stripName(i.title)).filter(Boolean).slice(0,8).join(" to ") || query || d.name;
+  return [
+    {title:"官方即時資訊", desc:"出發前最後確認入境、天氣、交通與警示。", items:official},
+    {title:"地圖與動線", desc:"用目前行程或目的地打開地圖，現場調整更快。", items:[
+      {label:"目前行程地圖搜尋", url:mapUrl(planQuery)},
+      {label:"目的地周邊搜尋", url:mapUrl(query || d.name)}
+    ]},
+    {title:"系統內操作", desc:"把常用動作集中到這裡，適合出發前逐項跑完。", actions:[
+      {label:"開啟規劃精靈", fn:"openWiz()"},
+      {label:"複製出發檢查", fn:"copyDepartureChecklist()"},
+      {label:"下載備份", fn:"exportJSON()"},
+      {label:"匯出行事曆", fn:"exportICS()"}
+    ]},
+    {title:"內容資產", desc:"把行程、支出、照片筆記整理成可分享成果。", actions:[
+      {label:"複製 LINE 行程", fn:"copyShareText()"},
+      {label:"列印 / 存 PDF", fn:"window.print()"},
+      {label:"匯出 CSV", fn:"exportCSV()"},
+      {label:"前往回顧日誌", fn:"showTab('itinerary')"}
+    ]}
+  ];
+}
+function renderResources(){
+  const title=$("resourceTitle"), cards=$("resourceCards"), actions=$("resourceActions");
+  if(!title || !cards || !actions) return;
+  const d=DB[S.dest];
+  title.textContent=`${d.flag} ${d.name}旅行資源中心`;
+  actions.innerHTML=`<button class="btn" onclick="copyDepartureChecklist()">複製出發檢查</button><button class="btn ghost" onclick="openMapForCurrentPlan()">開目前行程地圖</button><button class="btn ghost" onclick="showTab('export')">備份 / 匯出</button>`;
+  cards.innerHTML=resourceGroups().map(g=>{
+    const links=(g.items||[]).map(i=>`<li><a href="${i.url}" target="_blank" rel="noopener noreferrer">${esc(i.label)}</a></li>`).join("");
+    const acts=(g.actions||[]).map(a=>`<button class="btn small ghost" onclick="${a.fn}">${esc(a.label)}</button>`).join("");
+    return `<div class="card resource-card"><h4>${g.title}</h4><p class="meta">${g.desc}</p>${links?`<ul>${links}</ul>`:""}${acts?`<div class="btn-row">${acts}</div>`:""}</div>`;
+  }).join("");
+}
+function copyDepartureChecklist(){
+  const d=DB[S.dest];
+  const pack=currentPackingStats();
+  const lines=[
+    `【${d.name}出發檢查】`,
+    `日期：${S.startDate||"未定"} ～ ${S.endDate||"未定"}（${S.days} 天）`,
+    `行程：${getItin().length} 筆，行李完成 ${pack.done}/${pack.total}`,
+    "",
+    "出發前：確認護照/證件、航班住宿、票券、保險、網路、現金/信用卡。",
+    "官方資訊：",
+    ...(d.links||[]).map(l=>`- ${l[0]}：${l[1]}`),
+    "",
+    "系統操作：下載 JSON 備份、匯出 .ics 行事曆、複製 LINE 行程給旅伴。"
+  ].join("\n");
+  (navigator.clipboard?.writeText(lines) || Promise.reject()).then(
+    ()=>showSave("已複製出發檢查"),
+    ()=>prompt("複製這份出發檢查：", lines)
+  );
+}
+function dataHealth(destKey){
+  const d=DB[destKey];
+  const counts={
+    景點:(d.spots||[]).length,
+    美食:(d.foods||[]).length,
+    購物:(d.shops||[]).length,
+    路線:(d.routes||[]).length,
+    連結:(d.links||[]).length,
+    提醒:(d.notes||[]).length,
+    停靠點:routeStopCount(d.routes)
+  };
+  const goals={景點:25, 美食:15, 購物:10, 路線:4, 連結:5, 提醒:4, 停靠點:40};
+  const score=Math.round(Object.keys(goals).reduce((s,k)=>s+Math.min(counts[k]/goals[k],1),0)/Object.keys(goals).length*100);
+  const tips=[];
+  if(counts.購物<goals.購物) tips.push("補購物商圈、伴手禮與營業時間");
+  if(counts.路線<goals.路線) tips.push("補 1 日、3 日、5 日不同強度模板");
+  if(counts.連結<goals.連結) tips.push("補官方交通、天氣、入境與匯率連結");
+  if(counts.停靠點<goals.停靠點) tips.push("增加路線停靠點與交通銜接備註");
+  if(!tips.length) tips.push("資料量已完整，可優先補營業時間與票券價格");
+  return {d, counts, score, tips};
+}
+function healthCard(key, focused){
+  const h=dataHealth(key);
+  const cls=h.score>=80?"":h.score>=60?"mid":"low";
+  const counts=Object.entries(h.counts).map(([k,v])=>`<span class="tag">${k} ${v}</span>`).join("");
+  return `<div class="card"><h4><span class="health-score ${cls}">${h.score}</span>${h.d.flag} ${h.d.name}${focused?"（目前）":""}</h4><div>${counts}</div><ul class="health-list">${h.tips.map(t=>`<li>${t}</li>`).join("")}</ul></div>`;
+}
+function renderDataHealth(){
+  const all=Object.keys(DB).map(k=>healthCard(k, k===S.dest)).join("");
+  const main=$("dataHealthCards"); if(main) main.innerHTML=all;
+  const notes=$("notesDataHealthCards"); if(notes) notes.innerHTML=all;
+}
+
 /* ════════════════ 風險評估 ════════════════ */
 const RISK_DB = {
  tw:{ weather:m=>[7,8,9].includes(m)?["hi","颱風季：出發前一週緊盯氣象署颱風動態，東部與離島行程準備備案，船班高機率停駛"]:[5,6].includes(m)?["mid","梅雨季：午後雷陣雨頻繁，雨具必備，戶外行程排上午"]:[1,2].includes(m)?["mid","寒流季：山區（合歡山、阿里山）可能結冰，上山查雪鏈管制"]:["lo","天氣相對穩定，正常準備即可"],
@@ -2629,9 +2773,10 @@ function expItemHTML(e){
   const orig=e.cur==="TWD"?"":`${e.cur} ${(+e.amt).toLocaleString()}（≈`;
   const rcpt=e.rcpt?` <button class="rcpt-link" onclick="showImg(S.expenses[${gi}].rcpt)">📎 收據</button>`:"";
   const payTag=e.pay?`<span class="pay-tag">${e.pay}</span>`:"";
+  const note=e.note?`<span class="who">📝 ${esc(e.note)}</span>`:"";
   return `<div class="exp-item"><span>${e.cat||""}${payTag} <b>${esc(e.name)}</b>${rcpt}</span>
     <span class="amt">${orig}${fmt(toTWD(e.amt,e.cur))}${orig?"）":""} <button class="btn small danger" onclick="delExpense(${gi})">✕</button></span>
-    <span class="who">💳 ${esc(e.payer)} 先墊 ・ ${e.sharers.length} 人分攤（${e.sharers.map(esc).join("/")}）・ 每人 ${fmt(toTWD(e.amt,e.cur)/e.sharers.length)}</span></div>`;
+    <span class="who">💳 ${esc(e.payer)} 先墊 ・ ${e.sharers.length} 人分攤（${e.sharers.map(esc).join("/")}）・ 每人 ${fmt(toTWD(e.amt,e.cur)/e.sharers.length)}</span>${note}</div>`;
 }
 /* 最少轉帳次數：輸入餘額表（正=應收、負=應付），回傳 [{from,to,amt}] */
 function minimalMoves(bal, eps){
@@ -2675,11 +2820,12 @@ function renderExpense(){
     <div><span class="mini-label">哪一天</span><select id="efDay"><option value="0" ${(df.day??S.expDay)===0?"selected":""}>🧳 出發前</option>${Array.from({length:Math.max(S.days,1)},(_,i)=>`<option value="${i+1}" ${(df.day??S.expDay)===i+1?"selected":""}>Day ${i+1}</option>`).join("")}</select></div>
     <div><span class="mini-label">分類</span><select id="efCat" onchange="draft('cat',this.value)">${EXP_CATS.map(c=>`<option ${df.cat===c?"selected":""}>${c}</option>`).join("")}</select></div>
     <div class="full"><span class="mini-label">項目</span><input id="efName" placeholder="如 一蘭拉麵、地鐵券、機票訂金…" value="${esc(df.name||"")}" oninput="draft('name',this.value)"></div>
-    <div><span class="mini-label">金額</span><input id="efAmt" type="number" min="0" placeholder="0" value="${df.amt||""}" oninput="draft('amt',this.value)"></div>
+    <div><span class="mini-label">金額</span><input id="efAmt" type="text" inputmode="decimal" placeholder="0" value="${df.amt||""}" oninput="draft('amt',this.value)"></div>
     <div><span class="mini-label">幣別</span><select id="efCur" onchange="draft('cur',this.value)"><option ${df.cur==="TWD"?"selected":""}>TWD</option>${S.dest!=="tw"?`<option ${(df.cur||d.cur)===d.cur?"selected":""}>${d.cur}</option>`:""}</select></div>
     <div><span class="mini-label">付款方式</span><select id="efPay" onchange="draft('pay',this.value)">${PAY_METHODS.map(p=>`<option ${(df.pay||PAY_METHODS[0])===p?"selected":""}>${p}</option>`).join("")}</select></div>
     <div><span class="mini-label">誰先墊錢</span><select id="efPayer">${S.members.map(m=>`<option ${df.payer===m?"selected":""}>${esc(m)}</option>`).join("")}</select></div>
     <div class="full"><span class="mini-label">誰要分攤（點選切換）</span><div class="share-pick" id="efShare">${S.members.map(m=>`<button class="share-chip ${sharers.includes(m)?"on":""}" onclick="this.classList.toggle('on');draftShare()">${esc(m)}</button>`).join("")}</div></div>
+    <div class="full"><span class="mini-label">付款備註／刷哪張卡（選填）</span><input id="efNote" placeholder="如 玉山 Pi 卡、國泰 CUBE、Apple Pay 末四碼 1234、要請款…" value="${esc(df.note||"")}" oninput="draft('note',this.value)"></div>
     <div class="full"><span class="mini-label">📎 收據／發票照片（選填，自動壓縮存證）</span><input type="file" accept="image/*" id="efRcpt" onchange="pickRcpt(this)"><span id="efRcptOk" style="font-size:.78rem;color:#15803d">${window._rcpt?"✓ 已附上收據":""}</span></div>
     <div class="full btn-row" style="margin-top:4px"><button class="btn" onclick="addExpense()">＋ 記下這筆</button></div>`;
   // 紀錄清單（依天分組，新的在上）
@@ -2727,7 +2873,9 @@ function addExpense(){
   if(!name){ alert("請輸入項目名稱"); return; }
   if(!amt||amt<=0){ alert("請輸入金額"); return; }
   if(!sharers.length){ alert("至少選一位分攤者"); return; }
+  const note=scrubNote(($("efNote")?.value||"").trim());
   const rec={dest:S.dest, day:+$("efDay").value, name, amt, cur:$("efCur").value, cat:$("efCat").value, pay:$("efPay").value, payer:$("efPayer").value, sharers};
+  if(note) rec.note=note;
   if(window._rcpt){ rec.rcpt=window._rcpt; window._rcpt=null; }
   S.expenses.push(rec);
   S.expDraft=null;            // 清掉草稿
@@ -2957,9 +3105,9 @@ function exportCSV(){
   if(tk.length){ rows.push(["【票券】"],["名稱","日期","金額","幣別","票號","狀態"]); tk.forEach(t=>rows.push([t.name,t.date,t.amt,t.cur,t.code,t.bought?"已買":"未買"])); rows.push([]); }
   const ex=expOf();
   if(ex.length){
-    rows.push(["【記帳】"],["天","分類","項目","金額","幣別","約台幣","誰先墊","分攤者"]);
-    ex.forEach(e=>rows.push([`D${e.day}`,e.cat,e.name,e.amt,e.cur,Math.round(toTWD(e.amt,e.cur)),e.payer,e.sharers.join("/")]));
-    rows.push(["記帳總計（台幣）","",,,,Math.round(ex.reduce((s,e)=>s+toTWD(e.amt,e.cur),0))],[]);
+    rows.push(["【記帳】"],["天","分類","項目","金額","幣別","約台幣","誰先墊","分攤者","付款方式","付款備註"]);
+    ex.forEach(e=>rows.push([`D${e.day}`,e.cat,e.name,e.amt,e.cur,Math.round(toTWD(e.amt,e.cur)),e.payer,e.sharers.join("/"),e.pay||"",e.note||""]));
+    rows.push(["記帳總計（台幣）","","","","",Math.round(ex.reduce((s,e)=>s+toTWD(e.amt,e.cur),0)),"","","",""],[]);
   }
   rows.push(["【行程】"],["天","開始","結束","內容","交通","備註"]);
   getItin().sort((a,b)=>a.day-b.day||a.time.localeCompare(b.time)).forEach(it=>rows.push([`D${it.day}`,it.time,it.end||"",it.title,it.go,it.note]));
@@ -2981,6 +3129,12 @@ function shareText(){
   const fl=(S.flights||[]).filter(x=>x.dest===S.dest), ho=(S.hotels||[]).filter(x=>x.dest===S.dest);
   fl.forEach(f=>{ t+=`✈️ ${f.dir||""} ${f.no||""} ${f.date||""} ${f.dep||""}→${f.arr||""}${f.via?` 轉${f.via}${f.layover?`(${f.layover})`:""}`:""}${f.code?`（訂位 ${f.code}）`:""}\n`; });
   ho.forEach(o=>{ if(o.name) t+=`🏨 ${o.name}${o.cin?` ${o.cin}入住`:""}${o.code?`（訂房 ${o.code}）`:""}${(o.link||o.addr)?`\n   🗺️ ${o.link||mapUrl(o.addr)}`:""}\n`; });
+  const ex=expOf();
+  if(ex.length){
+    const expTotal=ex.reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
+    t+=`💸 已記帳 ${fmt(expTotal)}\n`;
+    ex.slice(-5).forEach(e=>{ t+=`   ${e.cat||""} ${e.name} ${fmt(toTWD(e.amt,e.cur))}${e.pay?`｜${e.pay}`:""}${e.note?`｜${e.note}`:""}\n`; });
+  }
   let day=0;
   list.forEach(it=>{
     if(it.day!==day){ day=it.day;
@@ -3077,7 +3231,6 @@ function importJSON(input){
 }
 
 init();
-
 </script>
 </body>
 </html>
