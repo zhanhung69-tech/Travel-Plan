@@ -15,8 +15,8 @@
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{max-width:100%; overflow-x:hidden;}
-  body{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif; background:var(--bg); color:var(--ink); line-height:1.6;}
-  header{background:linear-gradient(135deg,#0e7490,#155e75); color:#fff; padding:18px 26px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;}
+  body{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif; background:linear-gradient(180deg,#eef7fb 0,#f4f6fa 260px); color:var(--ink); line-height:1.6;}
+  header{background:linear-gradient(135deg,#0f766e,#155e75 55%,#334155); color:#fff; padding:18px 26px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; box-shadow:0 10px 28px rgba(15,76,100,.18);}
   header h1{font-size:1.35rem; letter-spacing:1px;}
   header p{opacity:.85; font-size:.85rem; margin-top:2px;}
   .wiz-open{background:#fff; color:var(--accent); border:none; border-radius:999px; padding:10px 20px; font-weight:800; font-size:.95rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.2);}
@@ -85,12 +85,13 @@
     body.nav-hidden{padding-left:0;}
     .nav-backdrop{display:none !important;}
   }
-  section.panel{display:none; background:var(--card); border:1px solid var(--line); border-radius:0 var(--radius) var(--radius) var(--radius); padding:20px;}
+  section.panel{display:none; background:rgba(255,255,255,.96); border:1px solid var(--line); border-radius:0 var(--radius) var(--radius) var(--radius); padding:20px; box-shadow:0 14px 34px rgba(31,41,55,.08);}
   section.panel.show{display:block;}
   h2{font-size:1.12rem; color:var(--accent); margin-bottom:12px; border-left:4px solid var(--accent); padding-left:10px;}
   h3{font-size:1rem; margin:14px 0 8px;}
   .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); gap:12px;}
-  .card{border:1px solid var(--line); border-radius:12px; padding:14px; background:#fbfdff; position:relative; min-width:0;}
+  .card{border:1px solid var(--line); border-radius:12px; padding:14px; background:#fbfdff; position:relative; min-width:0; transition:transform .14s ease, box-shadow .14s ease, border-color .14s ease;}
+  .card:hover{transform:translateY(-1px); box-shadow:0 8px 20px rgba(15,76,100,.08); border-color:#cbd5e1;}
   .card h4{font-size:.98rem; margin-bottom:6px; padding-right:54px;}
   .card .meta{font-size:.82rem; color:var(--sub);}
   .tag{display:inline-block; background:var(--chip); color:#075985; border-radius:6px; padding:1px 8px; font-size:.75rem; margin-right:4px; margin-bottom:3px;}
@@ -125,6 +126,63 @@
   .filter-bar .field,.custom-place-form .field{display:flex; flex-direction:column; gap:4px;}
   .filter-bar label{font-size:.78rem; color:var(--sub); font-weight:700;}
   .filter-bar select,.custom-place-form input,.custom-place-form select{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; font-size:.9rem;}
+  .shopping-guide{border:1px solid #bae6fd; background:#f8fcff; border-radius:12px; padding:12px; margin-bottom:14px;}
+  .guide-head{display:grid; grid-template-columns:1fr minmax(210px,320px) auto; gap:10px; align-items:center; margin-bottom:10px;}
+  .guide-head h3{margin:0; color:#075985;}
+  .guide-head p{margin-top:2px; color:var(--sub); font-size:.82rem;}
+  .guide-search{width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:9px; background:#fff; font-size:.9rem;}
+  .guide-groups{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr)); gap:10px;}
+  .guide-group{border-top:1px dashed #cbd5e1; padding-top:8px;}
+  .guide-label{font-size:.75rem; color:var(--sub); font-weight:800; margin-bottom:6px;}
+  .guide-chips{display:flex; gap:6px; flex-wrap:wrap;}
+  .guide-chip{padding:6px 11px; border-radius:999px; border:1.5px solid var(--line); background:#fff; cursor:pointer; font-size:.82rem; font-weight:700; color:var(--sub);}
+  .guide-chip.on{border-color:var(--accent); background:#0e7490; color:#fff;}
+  .guide-chip:focus-visible{outline:3px solid #0891b2; outline-offset:2px;}
+  .guide-stats{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;}
+  .guide-stat{display:inline-flex; align-items:center; gap:5px; border-radius:999px; background:#e0f2fe; color:#075985; padding:4px 10px; font-size:.8rem; font-weight:800;}
+  .guide-quick{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px dashed #cbd5e1;}
+  .guide-empty-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .smart-plan,.trip-now,.quick-expense{border:1px solid #bae6fd; border-radius:14px; padding:14px; margin:12px 0 16px; background:linear-gradient(135deg,#f8fcff,#ecfeff); box-shadow:0 8px 22px rgba(14,116,144,.08);}
+  .smart-plan-head,.trip-now-head,.quick-expense-head{display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;}
+  .smart-plan h3,.trip-now h3,.quick-expense h3{margin:0; color:#075985;}
+  .smart-plan p,.trip-now p,.quick-expense p{font-size:.84rem; color:var(--sub); margin-top:2px;}
+  .smart-score{min-width:150px; background:#fff; border:1px solid #cbd5e1; border-radius:12px; padding:9px 12px; text-align:right;}
+  .smart-score strong{display:block; font-size:1.28rem; color:#0e7490; line-height:1.1;}
+  .smart-score span{font-size:.76rem; color:var(--sub);}
+  .smart-controls{display:grid; grid-template-columns:minmax(160px,1fr) auto auto auto; gap:10px; align-items:center; margin-top:12px;}
+  .smart-controls label{font-size:.82rem; color:var(--sub); font-weight:800;}
+  .smart-controls label span{display:block; margin-bottom:3px;}
+  .smart-controls select,.quick-form input,.quick-form select{width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:9px; background:#fff; font-size:.9rem;}
+  .smart-check{display:flex!important; align-items:center; gap:6px; color:var(--ink)!important; background:#fff; border:1px solid var(--line); border-radius:999px; padding:8px 12px; white-space:nowrap;}
+  .smart-check input{width:auto;}
+  .smart-notes{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;}
+  .smart-notes span{background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; border-radius:999px; padding:3px 9px; font-size:.75rem; font-weight:800;}
+  .trip-pill{display:inline-flex; background:#0e7490; color:#fff; border-radius:999px; padding:2px 9px; font-size:.72rem; font-weight:900; margin-bottom:4px;}
+  .trip-progress{height:8px; background:#dbeafe; border-radius:999px; overflow:hidden; margin:10px 0 12px;}
+  .trip-progress div{height:100%; background:linear-gradient(90deg,#14b8a6,#f59e0b);}
+  .trip-now-grid{display:grid; grid-template-columns:1fr 1fr minmax(220px,.9fr); gap:10px;}
+  .trip-now-item,.trip-now-prep{background:#fff; border:1px solid var(--line); border-radius:12px; padding:11px; min-width:0;}
+  .trip-now-item b,.trip-now-prep b{display:block; color:#075985; font-size:.82rem; margin-bottom:4px;}
+  .trip-time{display:inline-block; font-weight:900; color:#0f766e; margin-right:6px; font-variant-numeric:tabular-nums;}
+  .trip-title{display:block; font-weight:900; margin:2px 0;}
+  .trip-go{display:block; color:var(--sub); font-size:.8rem;}
+  .trip-now-item.empty{color:var(--sub); background:#f8fafc;}
+  .trip-now-prep ul{margin:4px 0 8px;}
+  .trip-now-prep li{margin-left:1.1em; font-size:.82rem; color:var(--sub);}
+  .quick-presets{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
+  .quick-chip{border:1px solid #fbbf24; background:#fffbeb; color:#92400e; border-radius:999px; padding:7px 12px; font-size:.84rem; font-weight:900; cursor:pointer;}
+  .quick-chip:hover{background:#fef3c7;}
+  .quick-form{display:grid; grid-template-columns:.7fr 1.4fr .7fr .7fr .9fr 1.2fr auto; gap:8px; align-items:center;}
+  .quick-form button{white-space:nowrap;}
+  .hotel-grid{align-items:stretch;}
+  .hotel-card{position:relative; border-left:4px solid #0e7490;}
+  .hotel-card h4{padding-right:54px;}
+  .hotel-rank{position:absolute; top:12px; right:12px; min-width:42px; text-align:center; border-radius:999px; background:#fef3c7; color:#92400e; border:1px solid #f59e0b; font-size:.74rem; font-weight:900; padding:3px 7px;}
+  .hotel-stars{display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:6px 0;}
+  .hotel-star{color:#b45309; font-size:.94rem; line-height:1;}
+  .hotel-meta{display:flex; gap:6px; flex-wrap:wrap; margin-top:7px;}
+  .hotel-chip{display:inline-flex; align-items:center; border-radius:999px; background:#ecfeff; color:#155e75; border:1px solid #a5f3fc; padding:3px 9px; font-size:.76rem; font-weight:800;}
+  .hotel-card .map-link{margin-left:0;}
   .custom-place-form{display:grid; grid-template-columns:1.2fr .8fr .7fr 1.4fr auto; gap:8px; align-items:center; border:1px dashed #7dd3fc; background:#f0f9ff; border-radius:12px; padding:10px; margin-bottom:14px;}
   .note-li{margin-left:1.2em; margin-bottom:6px; font-size:.93rem;}
   .alert{background:#fff7ed; border:1px solid #fdba74; border-radius:10px; padding:10px 14px; font-size:.88rem; margin-bottom:12px;}
@@ -265,6 +323,11 @@
     .itin-row{grid-template-columns:72px 72px 1fr 110px 95px 145px;}
     .tr-grid{grid-template-columns:repeat(3,1fr);}
     .exp-form{grid-template-columns:repeat(3,1fr);}
+    .smart-controls{grid-template-columns:1fr 1fr;}
+    .trip-now-grid{grid-template-columns:1fr 1fr;}
+    .trip-now-prep{grid-column:1/-1;}
+    .quick-form{grid-template-columns:1fr 1.5fr 1fr 1fr;}
+    .quick-form button{grid-column:1/-1;}
     .setup .field input,.setup .field select{min-width:80px;}
     .btn{padding:10px 16px;}  /* 觸控目標加大 */
   }
@@ -291,6 +354,18 @@
     .badge-must{position:static; display:inline-block; margin-bottom:6px;}
     .custom-place-form{grid-template-columns:1fr;}
     .filter-bar{grid-template-columns:1fr;}
+    .guide-head{grid-template-columns:1fr;}
+    .guide-head .btn{width:100%;}
+    .guide-quick .btn{flex:1 1 100%;}
+    .smart-plan,.trip-now,.quick-expense{padding:12px; border-radius:12px;}
+    .smart-score{text-align:left; width:100%;}
+    .smart-controls{grid-template-columns:1fr;}
+    .smart-check{border-radius:10px; justify-content:flex-start;}
+    .trip-now-grid{grid-template-columns:1fr;}
+    .quick-presets{display:grid; grid-template-columns:1fr 1fr;}
+    .quick-chip{width:100%; padding:9px 8px;}
+    .quick-form{grid-template-columns:1fr 1fr;}
+    .quick-form input#qName,.quick-form input#qNote,.quick-form button{grid-column:1/-1;}
     .budget-scroll{overflow-x:auto;}
     #budgetTable{min-width:520px;}
     .itin-hd{display:none;}
@@ -425,6 +500,8 @@
     <div class="grid" id="ov-cards"></div>
     <h3>🚆 交通方式</h3><div class="grid" id="ov-transport"></div>
     <h3>🏨 住宿選擇</h3><div class="grid" id="ov-stay"></div>
+    <h3 id="hotelCatalogTitle">🏨 飯店 / 旅館推薦</h3>
+    <div class="grid hotel-grid" id="hotelCatalog"></div>
   </section>
 
   <section class="panel" id="p-routes">
@@ -453,6 +530,7 @@
   <section class="panel" id="p-itinerary">
     <h2>我的逐日行程</h2>
     <div class="alert">從「✨ 探索靈感」複製模板最快；也可在「📍 景點美食購物」按＋加入，或在各天手動新增。手機上每筆行程會展開成「開始／結束／內容／交通／備註」，可直接點欄位修改。</div>
+    <div id="tripNowPanel"></div>
     <h3>🗓️ 逐日行程（點下方日期切換，不用一直滑）</h3>
     <div class="day-chips" id="dayChips"></div>
     <div id="itinList"></div>
@@ -469,6 +547,7 @@
       <div><small>看哪一天</small><select id="expDayView" onchange="setExpDay(this.value)"></select></div>
     </div>
     <div class="budget-bar" id="expBudgetBar"></div>
+    <div id="quickExpensePanel"></div>
     <h3 style="margin-top:0">👥 旅伴成員（分帳用）</h3>
     <div id="memberList" style="margin-bottom:8px"></div>
     <div class="btn-row" style="margin-top:0;margin-bottom:14px">
@@ -509,6 +588,7 @@
   </section>
 
   <section class="panel" id="p-spots">
+    <div class="shopping-guide" id="placeGuide"></div>
     <div class="filter-bar">
       <div class="field" style="flex:1 1 100%;"><label>地區（可複選）</label><div class="region-chips" id="regionChips"></div></div>
       <div class="field"><label>縣市 / 城市</label><select id="regionCity" onchange="setRegionCity(this.value)"></select></div>
@@ -534,11 +614,12 @@
       <label>第 <select id="spotAddDay"></select> 天</label>
       <button class="btn small" type="button" onclick="showTab('itinerary')">📅 前往我的行程</button>
     </div>
+    <div id="smartPlanPanel"></div>
     <h2 id="spotsTitle">可玩景點（★＝必去）</h2>
     <div class="grid" id="spotCards"></div>
-    <h2 style="margin-top:20px;">美食推薦（🍜＝必吃）</h2>
+    <h2 id="foodTitle" style="margin-top:20px;">美食推薦（🍜＝必吃）</h2>
     <div class="grid" id="foodCards"></div>
-    <h2 style="margin-top:20px;">購物商圈（🛍️＝必逛）</h2>
+    <h2 id="shopTitle" style="margin-top:20px;">購物商圈（🛍️＝必逛）</h2>
     <div class="grid" id="shopCards"></div>
   </section>
 
@@ -607,7 +688,7 @@
    Keep this file loaded before catalog.js and app.js. */
 (function () {
   window.TripPlannerConfig = Object.freeze({
-    appVersion: "3.3",
+    appVersion: "3.6",
     dataDate: "2026-06",
     schemaVersion: 3,
     storageKey: "twTrip.planner.v3",
@@ -1384,6 +1465,667 @@ th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
  links:[["TDAC 數位入境卡（官方）","https://tdac.immigration.go.th"],["外交部領事事務局（旅遊警示）","https://www.boca.gov.tw"],["泰國觀光局中文網","https://www.tattpe.org.tw"],["Grab App","https://www.grab.com"],["泰銖匯率（台銀牌告）","https://rate.bot.com.tw/xrt"]]}
 };
 
+/* v3.5 地區資料補強：北台灣玩吃買住、旅宿候選與官方來源 */
+(function enhanceCatalogV35(){
+  function ensure(dest, key){ dest[key]=dest[key]||[]; return dest[key]; }
+  function addUnique(bucket, items){
+    items.forEach(item=>{
+      const exists=bucket.some(x=>String(x.n||"")===String(item.n||"") && String(x.a||"")===String(item.a||""));
+      if(!exists) bucket.push(item);
+    });
+  }
+  function addLinks(dest, links){
+    dest.links=dest.links||[];
+    links.forEach(link=>{
+      if(!dest.links.some(x=>x[0]===link[0] || x[1]===link[1])) dest.links.push(link);
+    });
+  }
+
+  const tw=DB.tw;
+  addUnique(ensure(tw,"spots"), [
+    {n:"西門紅樓・西門町",a:"台北",d:"紅樓古蹟、徒步街區、電影街與年輕潮流商圈，晚上人潮最旺。",must:0,hot:1,go:"捷運西門站 1 或 6 號出口"},
+    {n:"龍山寺・剝皮寮歷史街區",a:"台北",d:"艋舺信仰中心接清代街廓，適合排半日文化線。",must:1,go:"捷運龍山寺站步行"},
+    {n:"中正紀念堂・自由廣場",a:"台北",d:"台北大型廣場與國家兩廳院，整點衛兵交接是首訪經典。",must:0,hot:1,go:"捷運中正紀念堂站"},
+    {n:"松山文創園區・誠品生活",a:"台北",d:"菸廠古蹟、設計展、文創選物與信義商圈可順遊。",must:0,hot:1,go:"捷運國父紀念館站步行"},
+    {n:"華山1914文化創意產業園區",a:"台北",d:"展覽、快閃市集、餐廳與草地活動集中，雨天也有備案。",must:0,hot:1,go:"捷運忠孝新生站步行"},
+    {n:"北投溫泉博物館・地熱谷",a:"台北",d:"日式溫泉建築、青磺煙霧與新北投泡湯街，冬天最舒服。",must:1,hot:1,go:"捷運新北投站步行"},
+    {n:"陽明山擎天崗・小油坑",a:"台北",d:"草原、火山噴氣與季節花景，戶外深度線需留意天候。",must:0,hot:1,go:"捷運劍潭站轉紅5、108遊園公車"},
+    {n:"貓空纜車・樟樹步道",a:"台北",d:"纜車、茶屋、夜景與親山步道，適合下午到晚上。",must:0,hot:1,go:"捷運動物園站轉貓空纜車"},
+    {n:"臺北市立動物園",a:"台北",d:"親子首選，貓熊館、企鵝館與昆蟲館可排半天。",must:0,go:"捷運動物園站"},
+    {n:"饒河街觀光夜市・慈祐宮",a:"台北",d:"胡椒餅、藥燉排骨與彩虹橋夜景，捷運出口即到。",must:1,hot:1,go:"捷運松山站 1 號出口"},
+    {n:"三峽老街・祖師廟",a:"新北",d:"紅磚拱廊、祖師廟雕刻與金牛角伴手禮，文化與吃買一線完成。",must:0,hot:1,go:"台北搭捷運至永寧轉公車"},
+    {n:"鶯歌陶瓷博物館・陶瓷老街",a:"新北",d:"陶瓷展館、手拉坏體驗與餐具選物，親子雨天很好用。",must:0,go:"台鐵鶯歌站步行或轉公車"},
+    {n:"烏來老街・烏來瀑布",a:"新北",d:"泰雅文化、溫泉、台車與瀑布，適合台北近郊一日。",must:0,hot:1,go:"捷運新店站轉849公車"},
+    {n:"碧潭風景區",a:"新北",d:"吊橋、天鵝船、河岸餐廳與夜間光雕，少走路的半日行程。",must:0,go:"捷運新店站步行"},
+    {n:"福隆舊草嶺隧道・海岸自行車",a:"新北",d:"鐵道隧道自行車接海景，夏天可加福隆海水浴場。",must:0,hot:1,go:"台鐵福隆站租自行車"},
+    {n:"金山老街・獅頭山公園",a:"新北",d:"鴨肉老街、溫泉與北海岸步道，可接野柳或龜吼。",must:0,go:"台北搭1815客運"},
+    {n:"和平島地質公園",a:"基隆",d:"海蝕平台、豆腐岩與親水池，基隆山海線代表景點。",must:1,hot:1,go:"基隆轉運站搭101或T99濱海奇基線"},
+    {n:"潮境公園・海科館",a:"基隆",d:"海景草地、裝置藝術與海洋科技博物館，親子與拍照都順。",must:0,hot:1,go:"基隆轉運站轉公車或台灣好行"},
+    {n:"基隆塔・信二防空洞",a:"基隆",d:"港都新地標，電梯上山看港景，順走歷史防空洞。",must:0,hot:1,go:"基隆廟口步行可達"},
+    {n:"大溪老街",a:"桃園",d:"巴洛克牌樓、木器文化與豆干名店，北橫線起點。",must:1,hot:1,go:"桃園客運或台灣好行小烏來線"},
+    {n:"慈湖・兩蔣文化園區",a:"桃園",d:"湖景、落羽松與歷史園區，可接大溪老街與角板山。",must:0,go:"台灣好行小烏來線"},
+    {n:"小烏來天空步道",a:"桃園",d:"玻璃天空步道俯瞰瀑布，北橫山線人氣景點。",must:0,hot:1,go:"台灣好行小烏來線假日行駛"},
+    {n:"永安漁港・觀海橋",a:"桃園",d:"海鮮市場、夕陽與新屋綠色隧道，自駕順路。",must:0,go:"高鐵桃園站轉客運或自駕"},
+    {n:"內灣老街・內灣戲院",a:"新竹",d:"山城鐵道、客家小吃與懷舊戲院，搭內灣線最有旅行感。",must:1,hot:1,go:"台鐵新竹轉內灣線"},
+    {n:"北埔老街・金廣福公館",a:"新竹",d:"客家聚落、擂茶體驗、菜包與古蹟群，慢遊半日剛好。",must:1,hot:1,go:"高鐵新竹站轉台灣好行獅山線"},
+    {n:"十七公里海岸線・南寮漁港",a:"新竹",d:"單車道、魚鱗天梯與海港市集，風大時注意保暖。",must:0,hot:1,go:"新竹市區轉公車或騎YouBike"},
+    {n:"新竹市立動物園・玻璃工藝博物館",a:"新竹",d:"小而精緻的市區親子線，可接東門市場與城隍廟。",must:0,go:"新竹火車站步行或公車"},
+    {n:"太平山國家森林遊樂區",a:"宜蘭",d:"見晴懷古步道、蹦蹦車、翠峰湖與雲海，山區需查開放與天氣。",must:1,hot:1,go:"宜蘭或羅東出發自駕/包車"},
+    {n:"清水地熱公園",a:"宜蘭",d:"地熱煮食、溫泉泡腳與三星鄉田園風景，親子很受歡迎。",must:0,hot:1,go:"宜蘭市區自駕約50分"},
+    {n:"冬山河親水公園",a:"宜蘭",d:"河岸單車、水上活動與童玩節場地，適合家庭。",must:0,go:"台鐵羅東站轉公車"},
+    {n:"國立傳統藝術中心",a:"宜蘭",d:"仿古街區、工藝展演、戲曲與手作體驗，雨天好安排。",must:0,hot:1,go:"羅東轉乘台灣好行或計程車"},
+    {n:"幾米公園・宜蘭車站",a:"宜蘭",d:"繪本裝置、丟丟噹森林與市區散步點，火車族最方便。",must:0,hot:1,go:"台鐵宜蘭站步行"},
+    {n:"蘇澳冷泉・南方澳漁港",a:"宜蘭",d:"夏天泡冷泉、漁港海鮮與內埤海灣，宜蘭南段代表。",must:0,go:"台鐵蘇澳站/蘇澳新站"},
+    {n:"頭城老街・蘭陽博物館",a:"宜蘭",d:"老街、烏石港與斜面建築博物館，可接外澳海灘。",must:0,hot:1,go:"台鐵頭城站轉公車"}
+  ]);
+
+  addUnique(ensure(tw,"foods"), [
+    {n:"饒河街胡椒餅・藥燉排骨",a:"台北",d:"松山站出口就是夜市，胡椒餅、藥燉排骨、蚵仔麵線最具代表。",must:1,hot:1},
+    {n:"南機場夜市",a:"台北",d:"來來水餃、山內雞肉、芋頭大王與米其林小吃密度高。",must:1},
+    {n:"臨江街通化夜市",a:"台北",d:"地瓜球、米粉湯、鹽水雞與信義區夜間美食備案。",must:0},
+    {n:"阜杭豆漿・善導寺早餐",a:"台北",d:"厚燒餅、鹹豆漿與飯糰，清晨排隊但翻桌快。",must:1,hot:1},
+    {n:"永康牛肉麵・芒果冰",a:"台北",d:"牛肉麵、芒果冰、小籠包和咖啡店集中，首訪最省時間。",must:1,hot:1},
+    {n:"鼎泰豐小籠包",a:"台北",d:"國際旅客指名度最高的小籠包品牌，信義本店與百貨店都方便。",must:1},
+    {n:"北投市場滷肉飯・溫泉蛋",a:"台北",d:"泡湯前後補能量，矮仔財滷肉飯與市場小吃人氣高。",must:0},
+    {n:"九份芋圓・草仔粿",a:"新北",d:"山城必吃甜品與客家粿，黃昏配茶樓夜景最有氣氛。",must:1,hot:1},
+    {n:"三峽金牛角",a:"新北",d:"牛角麵包是三峽老街代表伴手禮，現烤更香。",must:1},
+    {n:"烏來山產・小米麻糬",a:"新北",d:"泰雅風味餐、溫泉蛋、小米麻糬和竹筒飯可搭瀑布線。",must:0},
+    {n:"金山鴨肉",a:"新北",d:"自己端菜的老街名店，適合多人點一桌。",must:1},
+    {n:"萬里蟹・龜吼漁夫市集",a:"新北",d:"秋季萬里蟹最有名，平時也可吃現流海鮮與代客料理。",must:0,hot:1},
+    {n:"基隆廟口鼎邊銼・營養三明治",a:"基隆",d:"廟口夜市招牌組合，從晚餐吃到宵夜最順。",must:1,hot:1},
+    {n:"基隆泡泡冰・天婦羅",a:"基隆",d:"海港城市代表甜點與魚漿小吃，適合雨天短停。",must:0},
+    {n:"大溪豆干・豆干滷味",a:"桃園",d:"黑豆干、豆干包和滷味是大溪老街必買必吃。",must:1},
+    {n:"中壢夜市・龍岡米干",a:"桃園",d:"中壢夜市宵夜選擇多，龍岡米干則是眷村滇緬風味代表。",must:1},
+    {n:"新竹都城隍廟米粉貢丸",a:"新竹",d:"米粉、貢丸湯、肉圓與蚵仔煎集中在廟口商圈。",must:1,hot:1},
+    {n:"內灣野薑花粽・客家麻糬",a:"新竹",d:"內灣老街代表味，搭黑糖冰與客家粄條。",must:0},
+    {n:"北埔擂茶・客家菜",a:"新竹",d:"擂茶、菜包、粄條與東方美人茶點，是北埔老街核心體驗。",must:1,hot:1},
+    {n:"羅東夜市三星蔥餅・當歸羊肉",a:"宜蘭",d:"蔥餅、羊肉湯、包心粉圓與卜肉，宜蘭夜市代表。",must:1,hot:1},
+    {n:"礁溪甕窯雞・蔥油餅",a:"宜蘭",d:"泡湯後吃甕窯雞與排隊蔥油餅，適合自駕家庭。",must:1},
+    {n:"宜蘭鴨賞・膽肝",a:"宜蘭",d:"煙燻鴨賞、膽肝與三星蔥製品是宜蘭傳統風味。",must:0},
+    {n:"正常鮮肉小籠包",a:"宜蘭",d:"宜蘭市排隊小籠包，湯汁多，適合接幾米公園。",must:0,hot:1},
+    {n:"奕順軒奶凍卷・宜蘭餅",a:"宜蘭",d:"奶凍卷、牛舌餅、宜蘭餅是回程伴手禮熱門選擇。",must:1}
+  ]);
+
+  addUnique(ensure(tw,"shops"), [
+    {n:"南門市場",a:"台北",d:"熟食、南北貨與年節禮盒集中，室內市場雨天好逛。",buy:"湖州粽、上海點心、金華火腿、醬菜",hours:"07:00–19:00",go:"捷運中正紀念堂站",must:0},
+    {n:"台北地下街・京站商圈",a:"台北",d:"車站型商圈，動漫、扭蛋、伴手禮、餐廳與轉乘都方便。",buy:"動漫周邊、扭蛋、甜點、伴手禮",hours:"11:00–21:30",go:"台北車站地下街",must:0},
+    {n:"東區商圈",a:"台北",d:"忠孝復興到國父紀念館一帶，服飾、美妝、餐酒館密集。",buy:"潮流服飾、美妝、選物、咖啡豆",hours:"12:00–22:00",go:"捷運忠孝復興/忠孝敦化站",must:0},
+    {n:"五分埔・松山商圈",a:"台北",d:"服飾批發與饒河夜市相鄰，適合傍晚採買接宵夜。",buy:"平價服飾、包包、童裝",hours:"13:00–23:00",go:"捷運松山站",must:0},
+    {n:"松菸・華山文創選物",a:"台北",d:"展覽、手作品牌、期間限定商店多，適合買有設計感的小禮。",buy:"文創小物、設計餐具、明信片、香氛",hours:"11:00–21:00",go:"捷運忠孝新生/國父紀念館站",must:0},
+    {n:"永康街商圈",a:"台北",d:"小吃、茶行、咖啡與生活選物集中，外國朋友很好帶。",buy:"茶葉、牛軋糖、甜點、文具選物",hours:"11:00–21:30",go:"捷運東門站",must:1},
+    {n:"三峽老街",a:"新北",d:"紅磚拱廊老街，金牛角與藍染工藝最有代表。",buy:"金牛角、藍染布包、茶點",hours:"10:00–20:00",go:"永寧站轉公車",must:0},
+    {n:"鶯歌陶瓷老街",a:"新北",d:"餐具、茶具、陶藝課和陶瓷博物館一線完成。",buy:"茶具、陶杯、餐盤、手作陶藝",hours:"10:00–19:00",go:"台鐵鶯歌站",must:0},
+    {n:"九份老街",a:"新北",d:"山城伴手禮、茶樓與紅燈籠街景，觀光客必逛。",buy:"芋圓、草仔粿、茶葉、明信片",hours:"10:00–20:00",go:"瑞芳轉公車",must:1},
+    {n:"金山老街",a:"新北",d:"鴨肉、地瓜、芋頭與海味伴手禮，北海岸順遊。",buy:"地瓜、芋頭酥、海味乾貨",hours:"09:00–19:00",go:"台北搭1815客運",must:0},
+    {n:"新莊廟街夜市",a:"新北",d:"白天老街、晚上夜市，古早味小吃與廟宇文化兼具。",buy:"油飯、豆花、古早味點心",hours:"17:00–00:00",go:"捷運新莊站",must:0},
+    {n:"基隆廟口・連珍糕餅",a:"基隆",d:"夜市小吃加基隆伴手禮，雨天也能短線補貨。",buy:"芋泥球、李鵠餅、海味零食",hours:"11:00–00:00",go:"基隆站步行",must:1},
+    {n:"崁仔頂魚市",a:"基隆",d:"凌晨魚市最有在地感，適合深度旅人與攝影。",buy:"現流海鮮、乾貨",hours:"約 02:00–07:00",go:"基隆站步行",must:0},
+    {n:"大溪老街",a:"桃園",d:"豆干、木藝、老街糕餅與巴洛克街屋，吃買拍照一次完成。",buy:"豆干、木器、花生糖、糕餅",hours:"10:00–20:00",go:"桃園客運/台灣好行",must:1},
+    {n:"桃園站前・統領商圈",a:"桃園",d:"火車站周邊百貨與小吃密集，短停補貨方便。",buy:"服飾、美妝、伴手禮",hours:"11:00–22:00",go:"台鐵桃園站",must:0},
+    {n:"大江購物中心",a:"桃園",d:"機捷沿線大型商場，餐廳、影城、親子空間完整。",buy:"百貨服飾、親子用品、甜點",hours:"11:00–22:00",go:"中壢轉接駁/機捷A21轉車",must:0},
+    {n:"竹北遠百・新瓦屋商圈",a:"新竹",d:"新竹高鐵生活圈，百貨、客家文化園區與餐廳集中。",buy:"百貨、美食、客家文創",hours:"11:00–22:00",go:"高鐵新竹站/竹北市區",must:0},
+    {n:"新竹城隍廟商圈",a:"新竹",d:"廟口小吃與伴手禮高密度，火車站步行可達。",buy:"米粉、貢丸、肉圓、糕餅",hours:"10:00–22:00",go:"新竹火車站步行",must:1},
+    {n:"內灣老街",a:"新竹",d:"客家米食、木工小物與山城伴手禮，搭火車最順。",buy:"野薑花粽、麻糬、客家花布、小木作",hours:"10:00–19:00",go:"台鐵內灣線",must:0},
+    {n:"北埔老街",a:"新竹",d:"擂茶、東方美人茶與古蹟聚落，是客庄代表採買點。",buy:"擂茶包、東方美人茶、菜包、客家點心",hours:"10:00–18:00",go:"台灣好行獅山線",must:1},
+    {n:"宜蘭新月廣場・宜蘭車站商圈",a:"宜蘭",d:"宜蘭市區百貨、伴手禮與幾米裝置一帶，火車族方便。",buy:"奶凍卷、牛舌餅、文創小物",hours:"11:00–22:00",go:"台鐵宜蘭站步行",must:0},
+    {n:"礁溪溫泉商圈",a:"宜蘭",d:"泡湯用品、溫泉魚、甕窯雞與伴手禮街區。",buy:"溫泉蛋、蔥油餅、鴨賞、湯屋券",hours:"10:00–22:00",go:"台鐵礁溪站步行",must:0},
+    {n:"南方澳漁港",a:"宜蘭",d:"漁港海鮮、魚鬆、海味乾貨與冷泉可順遊。",buy:"海鮮乾貨、魚鬆、小卷片",hours:"09:00–19:00",go:"台鐵蘇澳/蘇澳新站轉車",must:0},
+    {n:"頭城老街・烏石港商圈",a:"宜蘭",d:"老街文創、蘭陽博物館與港邊海鮮，適合接龜山島船班。",buy:"海鮮乾貨、文創小物、宜蘭餅",hours:"10:00–19:00",go:"台鐵頭城站",must:0}
+  ]);
+
+  addUnique(ensure(tw,"hotels"), [
+    {n:"台北文華東方酒店",a:"台北",stars:5,type:"奢華",fit:"情侶/商務",budget:"高",near:"小巨蛋、南京復興",d:"硬體與服務水準高，適合紀念日或高預算市區旅行。",must:1},
+    {n:"台北晶華酒店",a:"台北",stars:5,type:"市中心",fit:"家庭/商務",budget:"高",near:"中山商圈、林森北路",d:"中山站生活機能強，逛街吃飯交通都方便。",must:1},
+    {n:"台北君悅酒店",a:"台北",stars:5,type:"地標",fit:"首訪/商務",budget:"高",near:"台北101、世貿",d:"信義區大型飯店，適合101、象山與商圈行程。",must:1},
+    {n:"W Taipei 台北 W 飯店",a:"台北",stars:5,type:"潮流",fit:"朋友/情侶",budget:"高",near:"市政府站、信義商圈",d:"夜生活與購物便利，設計感強。",must:0},
+    {n:"北投麗禧溫泉酒店",a:"台北",stars:5,type:"溫泉",fit:"放鬆/情侶",budget:"高",near:"新北投、地熱谷",d:"北投高端溫泉度假型住宿，適合慢旅行。",must:1},
+    {n:"北投日勝生加賀屋",a:"台北",stars:5,type:"日式溫泉",fit:"長輩/情侶",budget:"高",near:"新北投站、溫泉博物館",d:"日式服務與湯屋體驗突出，適合一泊二食。",must:0},
+    {n:"台北新板希爾頓酒店",a:"新北",stars:5,type:"商務",fit:"家庭/交通",budget:"中高",near:"板橋站、高鐵、環球",d:"三鐵共構生活圈，玩台北和新北都方便。",must:0},
+    {n:"板橋凱撒大飯店",a:"新北",stars:5,type:"車站",fit:"家庭/商務",budget:"中高",near:"板橋站",d:"車站旁，適合北部多點移動。",must:0},
+    {n:"九份山城逸境/山海景觀民宿",a:"新北",stars:3,type:"景觀民宿",fit:"拍照/慢旅",budget:"中",near:"九份老街、豎崎路",d:"山城看夜景比當天來回更從容，請優先查合法民宿。",must:0},
+    {n:"長榮桂冠酒店基隆",a:"基隆",stars:4,type:"港景",fit:"家庭/商務",budget:"中高",near:"基隆港、廟口夜市",d:"港景與廟口夜市步行圈，基隆市區首選。",must:0},
+    {n:"桃園大溪笠復威斯汀度假酒店",a:"桃園",stars:5,type:"度假",fit:"親子/放鬆",budget:"高",near:"大溪、慈湖",d:"親子設施與度假感完整，適合桃園兩天一夜。",must:0},
+    {n:"COZZI Blu 和逸飯店桃園館",a:"桃園",stars:4,type:"親子商場",fit:"親子/購物",budget:"中高",near:"華泰名品城、Xpark、機捷",d:"青埔商圈機能強，親子展館與Outlet都近。",must:0},
+    {n:"新竹國賓大飯店",a:"新竹",stars:5,type:"市區",fit:"商務/家庭",budget:"中高",near:"新竹市中心、城隍廟",d:"新竹市區經典高星飯店，吃市區美食方便。",must:0},
+    {n:"新竹老爺酒店",a:"新竹",stars:5,type:"商務",fit:"商務/家庭",budget:"中高",near:"新竹科學園區",d:"園區與東區交通便利，商務旅客友善。",must:0},
+    {n:"煙波大飯店新竹湖濱館",a:"新竹",stars:4,type:"親子",fit:"家庭",budget:"中高",near:"青草湖、動物園",d:"親子設施豐富，適合帶小孩放電。",must:0},
+    {n:"礁溪老爺酒店",a:"宜蘭",stars:5,type:"溫泉度假",fit:"長輩/家庭",budget:"高",near:"礁溪溫泉區",d:"礁溪代表度假飯店，一泊二食與溫泉體驗完整。",must:1},
+    {n:"長榮鳳凰酒店礁溪",a:"宜蘭",stars:5,type:"溫泉親子",fit:"親子/放鬆",budget:"高",near:"礁溪車站、湯圍溝",d:"親子設施、湯池與餐食口碑穩定。",must:1},
+    {n:"礁溪寒沐酒店",a:"宜蘭",stars:5,type:"溫泉設計",fit:"情侶/家庭",budget:"高",near:"礁溪市區",d:"設計感與溫泉度假兼具，步行機能佳。",must:0},
+    {n:"蘭城晶英酒店",a:"宜蘭",stars:5,type:"親子市區",fit:"親子/購物",budget:"高",near:"宜蘭新月廣場、幾米公園",d:"親子設施與百貨連通，宜蘭市區住宿便利。",must:1},
+    {n:"宜蘭力麗威斯汀度假酒店",a:"宜蘭",stars:5,type:"度假",fit:"親子/放鬆",budget:"高",near:"員山、宜蘭市",d:"度假村型住宿，適合自駕慢遊宜蘭。",must:0}
+  ]);
+
+  addUnique(ensure(tw,"routes"), [
+    {n:"基隆北海岸山海 2 日",days:2,mode:"🚆 台鐵＋公車/台灣好行",tags:["美食","自然","網美","文化"],best:"4–10 月海岸天氣較穩",
+     plan:[
+      {t:"基隆港都夜市日",items:[
+       {time:"10:00",n:"和平島地質公園",k:"spot",must:1,go:"基隆轉運站搭101或T99",note:"先查潮汐與園區開放"},
+       {time:"12:30",n:"正濱漁港彩色屋",k:"spot",must:1,go:"公車短程",note:"午後拍彩色屋反光最好"},
+       {time:"15:00",n:"基隆塔・信二防空洞",k:"spot",must:0,go:"回市區步行",note:"看港景與歷史空間"},
+       {time:"18:00",n:"基隆廟口夜市",k:"food",must:1,go:"市區步行",note:"鼎邊銼、營養三明治、泡泡冰"}]},
+      {t:"潮境海科館慢遊",items:[
+       {time:"09:30",n:"潮境公園",k:"spot",must:1,go:"基隆市區轉公車",note:"海景草地與裝置藝術"},
+       {time:"11:00",n:"國立海洋科技博物館",k:"spot",must:0,go:"步行",note:"雨天備案，親子友善"},
+       {time:"13:30",n:"八斗子漁港午餐",k:"food",must:0,go:"公車/步行",note:"現流海鮮"},
+       {time:"16:00",n:"望幽谷",k:"spot",must:0,go:"計程車或公車",note:"風大注意保暖"}]}]},
+    {n:"桃竹客庄親子 2 日",days:2,mode:"🚗 自駕/台灣好行",tags:["文化","美食","親子","購物"],best:"全年，秋冬最舒服",
+     plan:[
+      {t:"桃園北橫入口",items:[
+       {time:"09:30",n:"大溪老街",k:"spot",must:1,go:"桃園客運或自駕",note:"豆干與木藝採買"},
+       {time:"12:00",n:"大溪豆干午餐",k:"food",must:1,go:"老街內",note:"老街小吃走吃"},
+       {time:"14:00",n:"慈湖・兩蔣文化園區",k:"spot",must:0,go:"台灣好行小烏來線",note:"湖景與落羽松"},
+       {time:"17:30",n:"華泰名品城・青埔晚餐",k:"spot",must:0,go:"高鐵桃園站旁",note:"Outlet 補貨"}]},
+      {t:"新竹客家與鐵道",items:[
+       {time:"09:30",n:"北埔老街・擂茶體驗",k:"spot",must:1,go:"台灣好行獅山線",note:"金廣福、姜阿新洋樓"},
+       {time:"12:00",n:"北埔客家菜",k:"food",must:1,go:"老街內",note:"粄條、菜包、擂茶"},
+       {time:"14:30",n:"內灣老街・內灣戲院",k:"spot",must:1,go:"內灣線或自駕",note:"野薑花粽與懷舊戲院"},
+       {time:"17:30",n:"新竹城隍廟口小吃",k:"food",must:1,go:"回新竹市區",note:"米粉貢丸收尾"}]}]},
+    {n:"宜蘭溫泉海線 3 日",days:3,mode:"🚗 自駕/台鐵＋計程車",tags:["放鬆","美食","親子","自然"],best:"10–4 月泡湯，夏季玩水",
+     plan:[
+      {t:"礁溪泡湯日",items:[
+       {time:"09:00",n:"台北 → 礁溪",k:"move",must:0,go:"客運約60分或台鐵",note:"假日雪隧易塞"},
+       {time:"10:30",n:"湯圍溝溫泉公園",k:"spot",must:1,go:"礁溪站步行",note:"免費泡腳"},
+       {time:"12:00",n:"礁溪甕窯雞・蔥油餅",k:"food",must:1,go:"市區/自駕",note:"熱門店避開正餐尖峰"},
+       {time:"15:00",n:"頭城老街・蘭陽博物館",k:"spot",must:0,go:"台鐵或自駕",note:"雨天改博物館"},
+       {time:"18:30",n:"礁溪溫泉飯店",k:"stay",must:0,go:"回礁溪",note:"住宿先確認湯池型態"}]},
+      {t:"羅東傳藝親子日",items:[
+       {time:"09:30",n:"國立傳統藝術中心",k:"spot",must:1,go:"羅東轉車",note:"工藝、戲曲、老街場景"},
+       {time:"12:30",n:"冬山河親水公園",k:"spot",must:0,go:"車程短",note:"夏季童玩節熱門"},
+       {time:"16:30",n:"羅東夜市",k:"food",must:1,go:"羅東站步行",note:"蔥餅、包心粉圓、當歸羊肉"}]},
+      {t:"太平山或蘇澳二選一",items:[
+       {time:"08:00",n:"太平山國家森林遊樂區",k:"spot",must:1,go:"自駕/包車",note:"山區氣溫低，先查開放"},
+       {time:"13:30",n:"清水地熱公園",k:"spot",must:0,go:"下山順遊",note:"煮食注意高溫"},
+       {time:"16:30",n:"奕順軒奶凍卷・宜蘭餅",k:"food",must:1,go:"回程採買",note:"伴手禮補貨"}]}]}
+  ]);
+
+  addLinks(tw, [
+    ["臺北旅遊網","https://www.travel.taipei"],
+    ["新北市觀光旅遊網","https://tour.ntpc.gov.tw"],
+    ["基隆旅遊網","https://travel.klcg.gov.tw"],
+    ["桃園觀光導覽網","https://travel.tycg.gov.tw"],
+    ["新竹縣旅遊網","https://travel.hsinchu.gov.tw"],
+    ["新竹市觀光旅遊網","https://tourism.hccg.gov.tw/chtravel"],
+    ["宜蘭勁好玩","https://travel.yilan.gov.tw"],
+    ["交通部觀光署旅宿網（合法旅宿/星級）","https://taiwanstay.net.tw"]
+  ]);
+
+  addUnique(ensure(DB.jp,"hotels"), [
+    {n:"東京站飯店",a:"東京",stars:5,type:"車站經典",fit:"首訪/商務",budget:"高",near:"東京站、丸之內",d:"東京站內歷史建築，跨城移動最便利。",must:1},
+    {n:"帝國飯店 東京",a:"東京",stars:5,type:"經典奢華",fit:"長輩/商務",budget:"高",near:"日比谷、銀座",d:"老牌高級飯店，逛銀座與皇居周邊方便。",must:0},
+    {n:"三井花園飯店銀座 Premier",a:"東京",stars:4,type:"景觀商務",fit:"情侶/購物",budget:"中高",near:"銀座、新橋",d:"高樓景觀與購物動線佳。",must:0},
+    {n:"Hotel The Flag 心齋橋",a:"大阪",stars:4,type:"設計",fit:"朋友/購物",budget:"中",near:"心齋橋、道頓堀",d:"步行逛街吃宵夜方便。",must:0},
+    {n:"大阪萬豪都酒店",a:"大阪",stars:5,type:"高樓景觀",fit:"情侶/家庭",budget:"高",near:"天王寺、阿倍野Harukas",d:"夜景強，適合大阪南側行程。",must:0},
+    {n:"京都 Granvia 飯店",a:"京都",stars:5,type:"車站",fit:"家庭/交通",budget:"高",near:"京都站",d:"京都站直結，巴士與JR轉乘省力。",must:1},
+    {n:"The Blossom Hakata Premier",a:"福岡",stars:4,type:"市區",fit:"美食/購物",budget:"中高",near:"博多、天神",d:"博多市區吃逛與機場移動方便。",must:0},
+    {n:"札幌 JR Tower 日航酒店",a:"札幌",stars:5,type:"車站景觀",fit:"雪季/交通",budget:"高",near:"札幌站",d:"雪季不用拖行李走太遠，景觀也好。",must:0}
+  ]);
+  addUnique(ensure(DB.kr,"hotels"), [
+    {n:"樂天酒店首爾",a:"首爾",stars:5,type:"明洞商務",fit:"首訪/購物",budget:"高",near:"明洞、乙支路",d:"地點核心，購物與地鐵都方便。",must:1},
+    {n:"首爾四季酒店",a:"首爾",stars:5,type:"奢華",fit:"情侶/商務",budget:"高",near:"光化門、景福宮",d:"宮闕文化線與高端住宿兼具。",must:0},
+    {n:"L7 弘大",a:"首爾",stars:4,type:"潮流",fit:"朋友/夜生活",budget:"中高",near:"弘大入口站",d:"弘大逛街、咖啡與夜生活最方便。",must:0},
+    {n:"Signiel Busan",a:"釜山",stars:5,type:"海景奢華",fit:"情侶/放鬆",budget:"高",near:"海雲台、LCT",d:"海景與高樓設施突出。",must:1},
+    {n:"釜山 Paradise Hotel",a:"釜山",stars:5,type:"海雲台度假",fit:"家庭/放鬆",budget:"高",near:"海雲台海水浴場",d:"溫泉與海灘度假感完整。",must:0},
+    {n:"Grand Hyatt Jeju",a:"濟州市",stars:5,type:"大型度假",fit:"家庭/購物",budget:"高",near:"濟州市區、機場",d:"房間大、餐飲多，市區移動方便。",must:0}
+  ]);
+  addUnique(ensure(DB.th,"hotels"), [
+    {n:"Mandarin Oriental Bangkok",a:"曼谷",stars:5,type:"河畔奢華",fit:"情侶/紀念日",budget:"高",near:"昭披耶河、ICONSIAM",d:"曼谷經典頂級飯店，河畔體驗強。",must:1},
+    {n:"The Standard Bangkok Mahanakhon",a:"曼谷",stars:5,type:"設計夜景",fit:"朋友/情侶",budget:"高",near:"Mahanakhon、BTS Chong Nonsi",d:"設計感強，適合夜景與餐酒行程。",must:0},
+    {n:"Grande Centre Point Terminal 21",a:"曼谷",stars:5,type:"捷運商場",fit:"家庭/購物",budget:"中高",near:"Asok站、Terminal 21",d:"BTS/MRT交會，吃逛交通超省力。",must:1},
+    {n:"Eastin Grand Hotel Phayathai",a:"曼谷",stars:5,type:"機場快線",fit:"首訪/交通",budget:"中高",near:"Phaya Thai、ARL",d:"機場快線與BTS直結，行李移動輕鬆。",must:0},
+    {n:"U Nimman Chiang Mai",a:"清邁",stars:5,type:"寧曼商圈",fit:"慢旅/咖啡",budget:"中高",near:"寧曼路、MAYA",d:"咖啡、按摩與商場步行圈。",must:0},
+    {n:"The Inside House Chiang Mai",a:"清邁",stars:5,type:"精品",fit:"情侶/慢旅",budget:"高",near:"清邁古城",d:"古城精品住宿，適合放慢節奏。",must:0},
+    {n:"The Slate Phuket",a:"普吉",stars:5,type:"設計度假",fit:"海島/情侶",budget:"高",near:"奈揚海灘、機場",d:"設計感度假村，離機場近。",must:0},
+    {n:"Centara Grand Beach Resort Phuket",a:"普吉",stars:5,type:"海灘親子",fit:"家庭/放鬆",budget:"高",near:"卡倫海灘",d:"海灘與親子設施完整。",must:0}
+  ]);
+})();
+
+/* v3.5 台灣中南東離島補強：由國內各區延伸成完整查找資料庫 */
+(function enhanceTaiwanRegionsV35(){
+  const tw=DB.tw;
+  function ensure(dest, key){ dest[key]=dest[key]||[]; return dest[key]; }
+  function addUnique(bucket, items){
+    items.forEach(item=>{
+      const exists=bucket.some(x=>String(x.n||"")===String(item.n||"") && String(x.a||"")===String(item.a||""));
+      if(!exists) bucket.push(item);
+    });
+  }
+  function addLinks(dest, links){
+    dest.links=dest.links||[];
+    links.forEach(link=>{ if(!dest.links.some(x=>x[0]===link[0] || x[1]===link[1])) dest.links.push(link); });
+  }
+
+  addUnique(ensure(tw,"spots"), [
+    {n:"南庄老街・桂花巷",a:"苗栗",d:"客庄老街、桂花釀、洗衫坑與吊橋，適合慢遊半日。",must:0,hot:1,go:"竹南/苗栗轉台灣好行南庄線"},
+    {n:"勝興車站・龍騰斷橋",a:"苗栗",d:"舊山線鐵道、斷橋古蹟與鐵道自行車，親子與拍照都好排。",must:1,hot:1,go:"三義站轉計程車或舊山線接駁"},
+    {n:"三義木雕博物館・木雕街",a:"苗栗",d:"木雕聚落、工藝展館與客家料理，雨天也能逛。",must:0,go:"台鐵三義站轉車"},
+    {n:"大湖草莓文化館",a:"苗栗",d:"冬春採草莓、草莓甜點與酒莊，家庭出遊熱門。",must:0,hot:1,go:"苗栗客運或自駕"},
+    {n:"泰安溫泉",a:"苗栗",d:"山林溫泉、溪谷與部落風味餐，適合二天一夜放鬆。",must:0,go:"苗栗市區自駕約 50 分"},
+    {n:"臺中國家歌劇院",a:"台中",d:"伊東豊雄曲牆建築，展演、餐廳與七期商圈相鄰。",must:1,hot:1,go:"台中捷運市政府站轉公車/步行"},
+    {n:"彩虹眷村",a:"台中",d:"彩繪牆面與眷村藝術，短停拍照型景點。",must:0,hot:1,go:"高鐵台中站轉公車"},
+    {n:"大坑步道・紙箱王",a:"台中",d:"市郊登山步道群，適合半日戶外；可接親子餐廳。",must:0,go:"台中市區公車或自駕"},
+    {n:"谷關溫泉",a:"台中",d:"中部溫泉鄉，泡湯、吊橋與山線景點可排二日。",must:0,go:"豐原轉客運或自駕"},
+    {n:"武陵農場",a:"台中",d:"櫻花、楓紅與高山農場，旺季需搶住宿與交通。",must:1,hot:1,go:"宜蘭/梨山/台中山線接駁，建議自駕或包車"},
+    {n:"大甲鎮瀾宮",a:"台中",d:"媽祖信仰重鎮，進香季人潮旺，可接大甲老街小吃。",must:0,go:"台鐵大甲站步行"},
+    {n:"八卦山大佛・天空步道",a:"彰化",d:"彰化市地標，可俯瞰市區並接扇形車庫。",must:0,hot:1,go:"彰化火車站轉公車/YouBike"},
+    {n:"彰化扇形車庫",a:"彰化",d:"台灣少見仍運作的鐵道扇形車庫，鐵道迷必看。",must:1,hot:1,go:"彰化火車站步行約 15 分"},
+    {n:"田尾公路花園",a:"彰化",d:"花卉苗木街、租腳踏車逛花田，適合家庭。",must:0,go:"員林/彰化轉公車或自駕"},
+    {n:"王功漁港・芳苑燈塔",a:"彰化",d:"潮間帶、蚵仔、海牛文化與夕陽，是彰化海線代表。",must:0,hot:1,go:"彰化市區自駕約 50 分"},
+    {n:"溪頭自然教育園區・妖怪村",a:"南投",d:"森林步道、神木與妖怪村商圈，避暑與親子都適合。",must:1,hot:1,go:"台中/竹山轉客運"},
+    {n:"杉林溪森林生態渡假園區",a:"南投",d:"繡球花、瀑布、森林步道與高山避暑。",must:0,go:"溪頭續行山路，建議自駕"},
+    {n:"合歡山武嶺・石門山",a:"南投",d:"台灣公路最高點、星空與日出，冬季可能管制。",must:1,hot:1,go:"清境自駕或參加日出團"},
+    {n:"九族文化村",a:"南投",d:"原民文化、遊樂園與日月潭纜車相連，親子一日完整。",must:0,go:"日月潭纜車或自駕"},
+    {n:"車埕木業展示館・水里蛇窯",a:"南投",d:"鐵道終點小鎮、木業文化與陶藝體驗，慢遊半日。",must:0,go:"集集線車埕站"},
+    {n:"北港朝天宮・北港老街",a:"雲林",d:"媽祖信仰、百年糕餅與老街小吃，文化與伴手禮集中。",must:1,hot:1,go:"嘉義/斗六轉客運"},
+    {n:"虎尾鐵橋・雲林布袋戲館",a:"雲林",d:"糖鐵遺構、布袋戲文化與虎尾老街，適合文化半日。",must:0,go:"高鐵雲林站轉公車/計程車"},
+    {n:"古坑綠色隧道・華山咖啡",a:"雲林",d:"綠蔭市集、咖啡莊園與夜景，適合自駕。",must:0,hot:1,go:"斗六/古坑自駕"},
+    {n:"西螺老街・延平老街",a:"雲林",d:"醬油、老屋、米食與大橋景觀，順路好停。",must:0,go:"國道一號西螺交流道"},
+    {n:"文化路夜市・檜意森活村",a:"嘉義",d:"嘉義市區小吃夜市與日式宿舍文創園區，阿里山前後好排。",must:1,hot:1,go:"嘉義火車站步行/YouBike"},
+    {n:"奮起湖老街・森林鐵道",a:"嘉義",d:"便當、老街與鐵道山城，是阿里山路線經典中繼。",must:1,hot:1,go:"阿里山林鐵或台灣好行"},
+    {n:"故宮南院",a:"嘉義",d:"亞洲藝術博物館、水景建築與親子展區，雨天很好用。",must:0,hot:1,go:"高鐵嘉義站轉公車"},
+    {n:"赤崁樓・祀典武廟",a:"台南",d:"台南市中心古蹟核心，步行可串國華街與神農街。",must:1,hot:1,go:"台南車站轉公車/YouBike"},
+    {n:"神農街・河樂廣場",a:"台南",d:"老屋酒吧、文創小店與夜間散步點，黃昏後氣氛最好。",must:1,hot:1,go:"台南市區步行/YouBike"},
+    {n:"四草綠色隧道・台江國家公園",a:"台南",d:"竹筏穿越紅樹林水道，親子與自然觀察熱門。",must:0,hot:1,go:"安平轉公車或自駕"},
+    {n:"奇美博物館",a:"台南",d:"歐式建築、藝術典藏與草地景觀，拍照與雨天皆宜。",must:0,hot:1,go:"台鐵保安站步行/接駁"},
+    {n:"美麗島站・六合夜市",a:"高雄",d:"光之穹頂與觀光夜市相鄰，高雄首訪容易排。",must:0,hot:1,go:"捷運美麗島站"},
+    {n:"旗津老街・彩虹教堂",a:"高雄",d:"渡輪、海鮮、燈塔與海岸自行車，半日海線經典。",must:1,hot:1,go:"捷運西子灣站轉渡輪"},
+    {n:"大港橋・駁二・棧貳庫",a:"高雄",d:"港邊文創、市集與旋轉橋，傍晚到晚上最舒服。",must:1,hot:1,go:"輕軌駁二大義站"},
+    {n:"佛光山佛陀紀念館",a:"高雄",d:"大型佛教文化園區，建築氣勢與展館完整。",must:0,go:"高鐵左營轉客運"},
+    {n:"墾丁國家公園・龍磐草原",a:"屏東",d:"海岸、草原、星空與水上活動，是南台灣度假代表。",must:1,hot:1,go:"高鐵左營轉墾丁快線"},
+    {n:"小琉球花瓶岩・海龜浮潛",a:"屏東",d:"離島浮潛與環島機車，合法業者和潮汐要先確認。",must:1,hot:1,go:"東港搭船約 25 分"},
+    {n:"東港華僑市場・大鵬灣",a:"屏東",d:"海鮮市場、黑鮪魚季與大鵬灣夕陽，可接小琉球船班。",must:0,go:"高雄轉客運或自駕"},
+    {n:"勝利星村・屏東公園",a:"屏東",d:"眷村文創、咖啡與市區散步，親子友善。",must:0,hot:1,go:"屏東火車站步行/YouBike"},
+    {n:"太魯閣晶英・布洛灣山月吊橋",a:"花蓮",d:"峽谷、吊橋與山林住宿代表，步道開放需查公告。",must:1,hot:1,go:"花蓮/新城轉車，需查園區開放"},
+    {n:"遠雄海洋公園",a:"花蓮",d:"海景主題樂園、海豚劇場與纜車，親子家庭熱門。",must:0,go:"花蓮市區接駁/自駕"},
+    {n:"雲山水・林田山林業文化園區",a:"花蓮",d:"落羽松湖景與林業聚落，縱谷慢遊很順。",must:0,hot:1,go:"花蓮縱谷自駕/包車"},
+    {n:"瑞穗牧場・舞鶴茶園",a:"花蓮",d:"鮮奶饅頭、乳製品與茶園景觀，花東縱谷中繼點。",must:0,go:"台鐵瑞穗站轉車"},
+    {n:"台東森林公園・琵琶湖",a:"台東",d:"市區單車、湖景與木麻黃綠蔭，適合輕鬆半日。",must:0,hot:1,go:"台東市區租單車"},
+    {n:"鹿野高台",a:"台東",d:"熱氣球嘉年華、滑草與縱谷視野，夏季最熱門。",must:1,hot:1,go:"台東市區自駕/包車"},
+    {n:"知本溫泉",a:"台東",d:"東台灣代表溫泉區，適合花東線末段放鬆。",must:0,go:"台東市區轉車或自駕"},
+    {n:"蘭嶼・東清灣日出",a:"台東",d:"達悟文化、拼板舟、海景與浮潛，需尊重在地禁忌。",must:1,hot:1,go:"台東富岡搭船/飛機，天候影響大"},
+    {n:"澎湖花火節・觀音亭",a:"澎湖",d:"夏季煙火與海灣步道，澎湖市區夜間核心。",must:1,hot:1,go:"馬公市區步行"},
+    {n:"吉貝沙尾・險礁嶼",a:"澎湖",d:"水上活動與沙尾地形，夏季跳島熱門。",must:0,hot:1,go:"赤崁碼頭搭船"},
+    {n:"山水沙灘・蒔裡沙灘",a:"澎湖",d:"南環海灘線，夕陽、SUP 與海景咖啡好排。",must:0,go:"馬公租機車/自駕"},
+    {n:"金門莒光樓・水頭聚落",a:"金門",d:"閩式聚落、洋樓與戰地史蹟，金門文化核心。",must:1,hot:1,go:"金城市區自駕/公車"},
+    {n:"翟山坑道・建功嶼",a:"金門",d:"戰地坑道、潮間帶小島與夕陽，需查潮汐。",must:1,hot:1,go:"金城自駕/公車"},
+    {n:"馬祖北海坑道・芹壁聚落",a:"馬祖",d:"戰地坑道、閩東石屋與藍眼淚季節景觀。",must:1,hot:1,go:"南竿/北竿搭船或島上交通"}
+  ]);
+
+  addUnique(ensure(tw,"foods"), [
+    {n:"苗栗客家粄條・薑絲大腸",a:"苗栗",d:"客家經典菜，南庄、三義、公館都容易吃到。",must:1},
+    {n:"大湖草莓甜點",a:"苗栗",d:"草莓季吃草莓冰、草莓酒、草莓大福最對味。",must:0,hot:1},
+    {n:"台中第二市場",a:"台中",d:"滷肉飯、蘿蔔糕、肉包與老派早餐，是台中市區美食核心。",must:1,hot:1},
+    {n:"大甲芋頭酥・奶油酥餅",a:"台中",d:"大甲鎮瀾宮周邊伴手禮代表，回程好買。",must:0},
+    {n:"鹿港肉包・麵線糊",a:"彰化",d:"鹿港老街必吃組合，肉包、麵線糊、蚵仔煎都集中。",must:1,hot:1},
+    {n:"員林爌肉飯・雞腳凍",a:"彰化",d:"彰化平原經典鹹香小吃，適合開車路線補餐。",must:0},
+    {n:"日月潭阿婆茶葉蛋・邵族小米酒",a:"南投",d:"玄光寺茶葉蛋、伊達邵小米酒與總統魚是日月潭代表味。",must:1},
+    {n:"竹山番薯包・紫南宮金筍",a:"南投",d:"竹山、溪頭線的在地小吃與山產料理。",must:0},
+    {n:"北港花生糖・鴨肉飯",a:"雲林",d:"朝天宮周邊花生糖、麻油與在地小吃密集。",must:1},
+    {n:"古坑咖啡・綠色隧道小吃",a:"雲林",d:"台灣咖啡代表產區，適合下午茶與夜景。",must:0,hot:1},
+    {n:"嘉義雞肉飯・砂鍋魚頭",a:"嘉義",d:"雞肉飯、砂鍋魚頭、涼麵與文化路夜市是嘉義必吃。",must:1,hot:1},
+    {n:"奮起湖便當・愛玉",a:"嘉義",d:"阿里山山城便當、甜愛玉與老街點心。",must:1},
+    {n:"國華街小吃",a:"台南",d:"碗粿、小卷米粉、春捲、米糕與甜湯，台南吃貨核心。",must:1,hot:1},
+    {n:"台南鹹粥・虱目魚",a:"台南",d:"虱目魚粥、魚肚湯與牛肉湯，是台南早餐文化。",must:1},
+    {n:"花園夜市・大東夜市",a:"台南",d:"台南大型夜市輪流營業，先查當日夜市再出門。",must:0,hot:1},
+    {n:"高雄鴨肉飯・汕頭火鍋",a:"高雄",d:"鹽埕鴨肉飯、汕頭火鍋與海產熱炒是高雄在地代表。",must:1},
+    {n:"瑞豐夜市必吃",a:"高雄",d:"天使雞排、地瓜球、牛排與飲料攤密集，年輕人最常去。",must:1,hot:1},
+    {n:"旗津海產・烤小卷",a:"高雄",d:"渡輪上島後吃海產、番茄切盤與烤小卷。",must:0},
+    {n:"東港黑鮪魚・櫻花蝦",a:"屏東",d:"黑鮪魚季、櫻花蝦與華僑市場海鮮，季節感強。",must:1,hot:1},
+    {n:"恆春綠豆蒜・墾丁滷味",a:"屏東",d:"恆春老街甜湯、洋蔥料理與墾丁大街宵夜。",must:0},
+    {n:"花蓮公正包子・炸蛋蔥油餅",a:"花蓮",d:"市區排隊小吃，接東大門夜市很順。",must:1,hot:1},
+    {n:"瑞穗鮮奶・玉里麵",a:"花蓮",d:"縱谷代表風味，乳製品與玉里麵適合中繼午餐。",must:0},
+    {n:"台東藍蜻蜓炸雞・卑南豬血湯",a:"台東",d:"台東市區在地人從小吃到大的排隊名物。",must:1,hot:1},
+    {n:"池上飯包・關山臭豆腐",a:"台東",d:"縱谷鐵道便當與關山小吃，單車路線剛好補能量。",must:1},
+    {n:"澎湖小管麵線・仙人掌冰",a:"澎湖",d:"離島海鮮、仙人掌冰與黑糖糕是澎湖基本盤。",must:1,hot:1},
+    {n:"金門廣東粥・蚵嗲",a:"金門",d:"金門早餐廣東粥、油條與蚵嗲，戰地島嶼味。",must:1},
+    {n:"馬祖老酒麵線・繼光餅",a:"馬祖",d:"老酒香氣、紅糟料理與繼光餅是馬祖代表味。",must:1}
+  ]);
+
+  addUnique(ensure(tw,"shops"), [
+    {n:"南庄老街",a:"苗栗",d:"客庄伴手禮與桂花巷小店集中。",buy:"桂花釀、客家花布、擂茶、粄條乾",hours:"10:00–18:00",go:"台灣好行南庄線",must:0},
+    {n:"三義木雕街",a:"苗栗",d:"木雕、茶盤與工藝品採買地。",buy:"木雕、茶盤、手作木器",hours:"10:00–18:00",go:"台鐵三義站轉車",must:0},
+    {n:"勤美草悟道・審計新村",a:"台中",d:"選物、甜點、文創市集與綠園道串聯。",buy:"文創小物、甜點、咖啡豆、香氛",hours:"11:00–21:00",go:"台中市區公車/YouBike",must:1},
+    {n:"逢甲商圈",a:"台中",d:"夜市與平價服飾、手機配件、飲料店密集。",buy:"平價服飾、手機配件、小吃伴手禮",hours:"16:00–00:00",go:"台中市區公車/計程車",must:1},
+    {n:"鹿港老街",a:"彰化",d:"傳統糕餅、香鋪、工藝與老街小吃。",buy:"肉包、糕餅、香包、木雕小物",hours:"10:00–20:00",go:"彰化/台中轉客運",must:1},
+    {n:"田尾公路花園",a:"彰化",d:"盆栽、花卉、園藝用品與花田咖啡。",buy:"盆栽、多肉、花束、園藝小物",hours:"09:00–18:00",go:"員林轉車或自駕",must:0},
+    {n:"伊達邵商圈",a:"南投",d:"日月潭湖畔商圈，邵族小吃與伴手禮集中。",buy:"小米酒、紅茶、茶葉蛋、山產",hours:"10:00–21:00",go:"日月潭遊湖船/環湖巴士",must:1},
+    {n:"埔里酒廠・18度C巧克力",a:"南投",d:"紹興酒伴手禮與甜點採買，清境日月潭中繼方便。",buy:"紹興香腸、酒粕點心、巧克力、冰淇淋",hours:"09:00–18:00",go:"埔里市區",must:0},
+    {n:"北港老街",a:"雲林",d:"朝天宮旁糕餅、麻油與花生糖老店。",buy:"花生糖、麻油、糕餅、香火小物",hours:"09:00–20:00",go:"北港轉運站步行",must:1},
+    {n:"西螺延平老街",a:"雲林",d:"醬油、米食與老屋街區，是雲林伴手禮好點。",buy:"醬油、米、麻糬、老街點心",hours:"09:00–18:00",go:"西螺市區",must:0},
+    {n:"嘉義文化路商圈",a:"嘉義",d:"雞肉飯、飲料、伴手禮與夜市小吃集中。",buy:"方塊酥、雞肉飯調理包、茶葉、糕餅",hours:"11:00–00:00",go:"嘉義火車站步行",must:1},
+    {n:"台南國華街・正興街",a:"台南",d:"台南小吃、老屋選物與甜點密度最高。",buy:"蝦餅、椪餅、帆布包、甜點",hours:"11:00–21:00",go:"台南市區步行/YouBike",must:1},
+    {n:"安平老街",a:"台南",d:"古堡周邊伴手禮與小吃街。",buy:"蝦餅、蜜餞、豆花、劍獅文創",hours:"10:00–20:00",go:"台南市區公車",must:1},
+    {n:"高雄漢神巨蛋・瑞豐商圈",a:"高雄",d:"百貨、夜市與巨蛋活動集中，適合晚上排。",buy:"百貨服飾、運動品牌、小吃",hours:"11:00–22:00",go:"捷運巨蛋站",must:0},
+    {n:"棧貳庫・鹽埕埔商圈",a:"高雄",d:"港邊文創、老派糕餅與咖啡店。",buy:"文創商品、明信片、糕餅、咖啡豆",hours:"10:00–21:00",go:"輕軌駁二大義站",must:0},
+    {n:"墾丁大街",a:"屏東",d:"夜市、泳裝、沙灘用品與宵夜集中。",buy:"沙灘用品、泳裝、紀念T、滷味",hours:"17:00–00:00",go:"墾丁大街",must:0},
+    {n:"東港華僑市場",a:"屏東",d:"漁港海鮮市場，小琉球前後採買方便。",buy:"櫻花蝦、黑鮪魚、海鮮乾貨",hours:"09:00–19:00",go:"東港碼頭附近",must:0},
+    {n:"花蓮金三角商圈",a:"花蓮",d:"市區伴手禮、小吃與東大門夜市銜接。",buy:"麻糬、花蓮薯、剝皮辣椒、洄瀾文創",hours:"10:00–22:00",go:"花蓮市區",must:1},
+    {n:"台東鐵花村市集",a:"台東",d:"音樂聚落、手作市集與原民文創。",buy:"洛神花、原民文創、手作飾品、明信片",hours:"14:00–22:00",go:"台東轉運站步行",must:1},
+    {n:"澎湖中央老街・馬公商圈",a:"澎湖",d:"黑糖糕、干貝醬與海味乾貨集中。",buy:"黑糖糕、干貝醬、小管片、仙人掌商品",hours:"09:00–21:00",go:"馬公市區步行",must:1},
+    {n:"金門後浦商圈・模範街",a:"金門",d:"貢糖、高粱酒、鋼刀與風獅爺小物。",buy:"貢糖、鋼刀、高粱酒、麵線、風獅爺",hours:"10:00–21:00",go:"金城市區步行",must:1},
+    {n:"馬祖南竿介壽市場",a:"馬祖",d:"早餐、老酒料理、海味乾貨與在地生活感。",buy:"老酒、淡菜乾、魚麵、繼光餅",hours:"06:00–13:00",go:"南竿介壽村",must:0}
+  ]);
+
+  addUnique(ensure(tw,"hotels"), [
+    {n:"台中林酒店",a:"台中",stars:5,type:"市區奢華",fit:"家庭/商務",budget:"高",near:"七期、國家歌劇院",d:"七期商圈高星飯店，逛百貨與歌劇院方便。",must:1},
+    {n:"台中日月千禧酒店",a:"台中",stars:5,type:"商務",fit:"商務/購物",budget:"高",near:"市政府、歌劇院",d:"七期位置好，商務與購物動線順。",must:0},
+    {n:"李方艾美酒店台中",a:"台中",stars:5,type:"車站",fit:"交通/美食",budget:"高",near:"台中火車站、宮原眼科",d:"老城區高星選擇，吃市區小吃方便。",must:0},
+    {n:"清新溫泉飯店",a:"台中",stars:5,type:"溫泉景觀",fit:"家庭/放鬆",budget:"中高",near:"烏日、大肚山",d:"泡湯與夜景兼具，適合台中二日。",must:0},
+    {n:"涵碧樓",a:"南投",stars:5,type:"湖景奢華",fit:"情侶/紀念日",budget:"高",near:"日月潭水社",d:"日月潭代表高端湖景住宿。",must:1},
+    {n:"雲品溫泉酒店日月潭",a:"南投",stars:5,type:"溫泉親子",fit:"家庭/放鬆",budget:"高",near:"日月潭",d:"溫泉、湖景與親子設施完整。",must:1},
+    {n:"清境老英格蘭莊園",a:"南投",stars:5,type:"山景精品",fit:"情侶/拍照",budget:"高",near:"清境農場",d:"歐風建築與山景，適合慢遊清境。",must:0},
+    {n:"泰安觀止溫泉會館",a:"苗栗",stars:4,type:"溫泉",fit:"放鬆/情侶",budget:"中高",near:"泰安溫泉",d:"苗栗山林泡湯代表。",must:0},
+    {n:"鹿港永樂酒店",a:"彰化",stars:4,type:"老街",fit:"文化/美食",budget:"中",near:"鹿港老街",d:"住老街旁，晚上散步與吃小吃方便。",must:0},
+    {n:"三好國際酒店",a:"雲林",stars:4,type:"市區",fit:"商務/家庭",budget:"中",near:"斗六、雲林科技大學",d:"雲林市區機能型住宿。",must:0},
+    {n:"嘉義長榮文苑酒店",a:"嘉義",stars:5,type:"藝文",fit:"家庭/展館",budget:"中高",near:"故宮南院、高鐵嘉義",d:"故宮南院旁，適合親子與展館行程。",must:0},
+    {n:"阿里山賓館",a:"嘉義",stars:5,type:"山林經典",fit:"日出/長輩",budget:"高",near:"阿里山森林遊樂區",d:"園區內代表住宿，看日出最省力。",must:1},
+    {n:"台南晶英酒店",a:"台南",stars:5,type:"市中心",fit:"美食/家庭",budget:"高",near:"新光三越、國華街",d:"台南市中心高星飯店，吃逛都方便。",must:1},
+    {n:"台南遠東香格里拉",a:"台南",stars:5,type:"車站",fit:"商務/交通",budget:"高",near:"台南火車站、成大",d:"車站旁高樓景觀，交通容易。",must:0},
+    {n:"大員皇冠假日酒店",a:"台南",stars:5,type:"安平水岸",fit:"家庭/放鬆",budget:"高",near:"安平、台江",d:"安平海港住宿，適合安平與台江線。",must:0},
+    {n:"高雄洲際酒店",a:"高雄",stars:5,type:"港灣奢華",fit:"商務/情侶",budget:"高",near:"亞洲新灣區、三多商圈",d:"高雄新地標高星酒店。",must:1},
+    {n:"高雄漢來大飯店",a:"高雄",stars:5,type:"經典市區",fit:"家庭/購物",budget:"高",near:"漢神百貨、愛河",d:"老牌高星飯店，餐飲與購物機能強。",must:0},
+    {n:"高雄萬豪酒店",a:"高雄",stars:5,type:"親子商場",fit:"家庭/商務",budget:"高",near:"凹子底、義享天地",d:"房量大、餐飲多，親子與商務都方便。",must:0},
+    {n:"晶英國際行館",a:"高雄",stars:5,type:"設計精品",fit:"情侶/紀念日",budget:"高",near:"亞洲新灣區",d:"高雄高端精品住宿，服務與設計感強。",must:0},
+    {n:"墾丁凱撒大飯店",a:"屏東",stars:5,type:"海灘度假",fit:"家庭/海島",budget:"高",near:"小灣、墾丁大街",d:"墾丁經典五星度假飯店，親子與海灘方便。",must:1},
+    {n:"墾丁夏都沙灘酒店",a:"屏東",stars:5,type:"沙灘",fit:"親子/放鬆",budget:"高",near:"墾丁大街、沙灘",d:"直接臨沙灘，適合不想移動的度假。",must:0},
+    {n:"太魯閣晶英酒店",a:"花蓮",stars:5,type:"峽谷度假",fit:"自然/長輩",budget:"高",near:"太魯閣、天祥",d:"峽谷內高端住宿，園區開放狀態需先確認。",must:1},
+    {n:"遠雄悅來大飯店",a:"花蓮",stars:5,type:"海景親子",fit:"家庭/親子",budget:"高",near:"遠雄海洋公園",d:"海景與主題樂園搭配最順。",must:0},
+    {n:"理想大地渡假飯店",a:"花蓮",stars:5,type:"度假",fit:"家庭/放鬆",budget:"高",near:"壽豐、縱谷",d:"運河式度假村，適合慢住。",must:0},
+    {n:"台東桂田喜來登酒店",a:"台東",stars:5,type:"市區",fit:"家庭/美食",budget:"中高",near:"台東市中心、鐵花村",d:"台東市區高星住宿，吃逛方便。",must:0},
+    {n:"知本老爺酒店",a:"台東",stars:5,type:"溫泉度假",fit:"放鬆/長輩",budget:"高",near:"知本溫泉",d:"東部代表溫泉度假飯店。",must:1},
+    {n:"台東娜路彎大酒店",a:"台東",stars:5,type:"度假",fit:"家庭/團體",budget:"中高",near:"台東市區",d:"房型與設施完整，家庭團體好安排。",must:0},
+    {n:"澎湖福朋喜來登酒店",a:"澎湖",stars:5,type:"海港",fit:"家庭/交通",budget:"高",near:"馬公港、觀音亭",d:"馬公市區高星飯店，花火節動線佳。",must:1},
+    {n:"澎澄飯店",a:"澎湖",stars:4,type:"親子市區",fit:"家庭/購物",budget:"中高",near:"馬公商圈",d:"市區機能佳，親子設施與購物方便。",must:0},
+    {n:"金湖飯店",a:"金門",stars:5,type:"商場度假",fit:"家庭/購物",budget:"高",near:"昇恆昌、太湖",d:"金門高星住宿與商場連結，適合首訪。",must:0},
+    {n:"日光春和",a:"馬祖",stars:4,type:"海景民宿",fit:"拍照/慢旅",budget:"中高",near:"南竿海景",d:"馬祖海景住宿代表，旺季需早訂。",must:0}
+  ]);
+
+  addUnique(ensure(tw,"routes"), [
+    {n:"中部山城湖景 4 日",days:4,mode:"🚗 自駕/高鐵＋包車",tags:["自然","放鬆","美食","家庭"],best:"10–4 月涼爽，櫻花季需早訂",
+     plan:[
+      {t:"台中市區吃逛",items:[
+       {time:"10:00",n:"臺中國家歌劇院",k:"spot",must:1,go:"捷運市政府站轉乘",note:"曲牆建築與七期商圈"},
+       {time:"12:00",n:"台中第二市場",k:"food",must:1,go:"市區移動",note:"滷肉飯、蘿蔔糕"},
+       {time:"15:00",n:"審計新村・草悟道",k:"spot",must:0,go:"YouBike/公車",note:"選物與甜點"},
+       {time:"19:00",n:"逢甲夜市",k:"food",must:1,go:"計程車/公車",note:"晚餐宵夜一次完成"}]},
+      {t:"日月潭湖景",items:[
+       {time:"09:00",n:"台中 → 日月潭",k:"move",must:0,go:"南投客運約90分/自駕",note:"買套票含船票"},
+       {time:"11:00",n:"日月潭遊湖・玄光寺",k:"spot",must:1,go:"水社碼頭搭船",note:"阿婆茶葉蛋"},
+       {time:"14:00",n:"九族文化村",k:"spot",must:0,go:"纜車接駁",note:"親子可玩半天"},
+       {time:"18:00",n:"伊達邵商圈",k:"food",must:1,go:"環湖巴士/船",note:"小米酒、山豬肉"}]},
+      {t:"溪頭森林",items:[
+       {time:"09:00",n:"溪頭自然教育園區",k:"spot",must:1,go:"日月潭/竹山自駕",note:"森林步道避暑"},
+       {time:"12:30",n:"竹山番薯包・山產",k:"food",must:0,go:"竹山/鹿谷",note:"午餐補給"},
+       {time:"15:00",n:"妖怪村",k:"spot",must:0,go:"溪頭旁",note:"伴手禮與拍照"}]},
+      {t:"彰化老街回程",items:[
+       {time:"10:00",n:"彰化扇形車庫",k:"spot",must:1,go:"彰化站步行",note:"先查開放日"},
+       {time:"12:00",n:"鹿港老街午餐",k:"food",must:1,go:"彰化轉客運/自駕",note:"肉包、麵線糊"},
+       {time:"15:00",n:"鹿港天后宮・老街採買",k:"spot",must:0,go:"步行",note:"糕餅伴手禮"}]}]},
+    {n:"南部古都港灣 5 日",days:5,mode:"🚄 高鐵＋捷運/台鐵",tags:["文化","美食","購物","親子"],best:"11–3 月舒適，夏季避正午",
+     plan:[
+      {t:"嘉義阿里山前哨",items:[
+       {time:"10:00",n:"故宮南院",k:"spot",must:0,go:"高鐵嘉義轉公車",note:"雨天文化備案"},
+       {time:"13:00",n:"嘉義雞肉飯",k:"food",must:1,go:"嘉義市區",note:"文化路周邊名店多"},
+       {time:"16:00",n:"檜意森活村",k:"spot",must:0,go:"市區步行",note:"日式宿舍群"},
+       {time:"19:00",n:"文化路夜市",k:"food",must:1,go:"步行",note:"砂鍋魚頭、飲料"}]},
+      {t:"台南古蹟美食",items:[
+       {time:"09:30",n:"赤崁樓・祀典武廟",k:"spot",must:1,go:"台南市區公車",note:"國定古蹟"},
+       {time:"12:00",n:"國華街小吃",k:"food",must:1,go:"步行",note:"小卷米粉、碗粿"},
+       {time:"15:00",n:"神農街・河樂廣場",k:"spot",must:1,go:"步行/YouBike",note:"黃昏拍照"},
+       {time:"19:00",n:"花園夜市或大東夜市",k:"food",must:0,go:"先查營業日",note:"台南夜市輪流開"}]},
+      {t:"安平台江",items:[
+       {time:"09:30",n:"安平古堡・樹屋",k:"spot",must:1,go:"市區公車",note:"台灣第一城"},
+       {time:"12:00",n:"安平豆花・蝦捲",k:"food",must:1,go:"老街內",note:"小吃密集"},
+       {time:"14:30",n:"四草綠色隧道",k:"spot",must:0,go:"台江線/自駕",note:"船班先查"},
+       {time:"18:00",n:"大員皇冠假日水岸晚餐",k:"food",must:0,go:"安平",note:"看夕陽"}]},
+      {t:"高雄港灣",items:[
+       {time:"10:00",n:"美麗島站・中央公園",k:"spot",must:0,go:"高雄捷運",note:"光之穹頂"},
+       {time:"12:00",n:"鹽埕鴨肉飯",k:"food",must:1,go:"捷運鹽埕埔",note:"老高雄味"},
+       {time:"15:00",n:"駁二・大港橋・棧貳庫",k:"spot",must:1,go:"輕軌",note:"傍晚最美"},
+       {time:"19:00",n:"瑞豐夜市",k:"food",must:1,go:"捷運巨蛋站",note:"人多注意集合點"}]},
+      {t:"旗津海線返程",items:[
+       {time:"09:30",n:"旗津渡輪",k:"move",must:0,go:"西子灣站轉渡輪",note:"可租腳踏車"},
+       {time:"10:00",n:"旗津老街・燈塔",k:"spot",must:1,go:"島上步行/單車",note:"海岸線"},
+       {time:"12:30",n:"旗津海產午餐",k:"food",must:1,go:"老街",note:"烤小卷、海產"},
+       {time:"15:00",n:"高鐵左營返程",k:"move",must:0,go:"捷運轉高鐵",note:"留採買時間"}]}]},
+    {n:"花東離島慢旅行 5 日",days:5,mode:"🚄 台鐵＋自駕/船班",tags:["自然","放鬆","美食","網美"],best:"3–6 月、9–11 月；颱風季保留備案",
+     plan:[
+      {t:"花蓮海岸與夜市",items:[
+       {time:"10:00",n:"七星潭・清水斷崖",k:"spot",must:1,go:"包車/自駕",note:"海景拍照"},
+       {time:"13:00",n:"公正包子・炸蛋蔥油餅",k:"food",must:1,go:"花蓮市區",note:"排隊名物"},
+       {time:"16:00",n:"松園別館・金三角商圈",k:"spot",must:0,go:"市區",note:"伴手禮"},
+       {time:"19:00",n:"東大門夜市",k:"food",must:1,go:"市區步行",note:"原民一條街"}]},
+      {t:"花東縱谷",items:[
+       {time:"09:00",n:"雲山水・林田山",k:"spot",must:0,go:"自駕/包車",note:"落羽松與林業文化"},
+       {time:"12:30",n:"瑞穗鮮奶・玉里麵",k:"food",must:0,go:"縱谷南下",note:"中繼補給"},
+       {time:"15:00",n:"池上伯朗大道",k:"spot",must:1,go:"池上租電動車",note:"稻浪季最美"}]},
+      {t:"台東市與鹿野",items:[
+       {time:"09:30",n:"台東森林公園",k:"spot",must:0,go:"市區租單車",note:"琵琶湖"},
+       {time:"12:00",n:"藍蜻蜓炸雞・卑南豬血湯",k:"food",must:1,go:"市區",note:"台東經典"},
+       {time:"15:00",n:"鹿野高台",k:"spot",must:1,go:"自駕/包車",note:"熱氣球季早訂"}]},
+      {t:"知本放鬆",items:[
+       {time:"10:00",n:"知本森林遊樂區",k:"spot",must:0,go:"知本溫泉區",note:"森林步道"},
+       {time:"13:00",n:"台東原民料理",k:"food",must:0,go:"市區/知本",note:"山產與野菜"},
+       {time:"15:00",n:"知本溫泉",k:"spot",must:1,go:"住宿區",note:"泡湯放鬆"}]},
+      {t:"離島延伸或返程",items:[
+       {time:"08:00",n:"富岡漁港或台東機場",k:"move",must:0,go:"蘭嶼/綠島看天候",note:"船班受風浪影響"},
+       {time:"10:00",n:"蘭嶼/綠島一日延伸",k:"spot",must:0,go:"船班/飛機",note:"尊重在地文化與環境"},
+       {time:"16:00",n:"台鐵/機場返程",k:"move",must:0,go:"提早訂票",note:""}]}]}
+  ]);
+
+  addLinks(tw, [
+    ["台中觀光旅遊網","https://travel.taichung.gov.tw"],
+    ["南投旅遊網","https://travel.nantou.gov.tw"],
+    ["彰化旅遊資訊網","https://tourism.chcg.gov.tw"],
+    ["嘉義市觀光旅遊網","https://travel.chiayi.gov.tw"],
+    ["台南旅遊網","https://www.twtainan.net"],
+    ["高雄旅遊網","https://khh.travel"],
+    ["屏東旅遊網","https://www.i-pingtung.com"],
+    ["花蓮觀光資訊網","https://tour-hualien.hl.gov.tw"],
+    ["台東觀光旅遊網","https://tour.taitung.gov.tw"],
+    ["澎湖國家風景區","https://www.penghu-nsa.gov.tw"],
+    ["金門觀光旅遊網","https://kinmen.travel"],
+    ["馬祖國家風景區","https://www.matsu-nsa.gov.tw"]
+  ]);
+})();
+
+/* v3.5 國外資料補強：日本/韓國/泰國商圈、料理、旅宿與路線模板 */
+(function enhanceInternationalV35(){
+  function ensure(dest, key){ dest[key]=dest[key]||[]; return dest[key]; }
+  function addUnique(bucket, items){
+    items.forEach(item=>{
+      const exists=bucket.some(x=>String(x.n||"")===String(item.n||"") && String(x.a||"")===String(item.a||""));
+      if(!exists) bucket.push(item);
+    });
+  }
+  function addLinks(dest, links){
+    dest.links=dest.links||[];
+    links.forEach(link=>{ if(!dest.links.some(x=>x[0]===link[0] || x[1]===link[1])) dest.links.push(link); });
+  }
+
+  addUnique(ensure(DB.jp,"spots"), [
+    {n:"築地場外市場・豐洲千客萬來",a:"東京",d:"壽司、海鮮丼、玉子燒與新開幕溫泉商業設施，早餐到午餐最順。",must:1,hot:1,go:"大江戶線築地市場站/百合海鷗市場前站"},
+    {n:"東京站一番街・Character Street",a:"東京",d:"動漫角色店、伴手禮與拉麵街集中，轉車補貨超省時。",must:0,hot:1,go:"東京站八重洲地下街"},
+    {n:"銀座・有樂町",a:"東京",d:"百貨、旗艦店、文具與高級甜點一線完成。",must:0,hot:1,go:"銀座線銀座站/有樂町站"},
+    {n:"京都錦市場・河原町",a:"京都",d:"京都廚房、抹茶甜點、漬物與百貨商圈集中。",must:1,hot:1,go:"阪急河原町站/地下鐵四條站"},
+    {n:"大阪梅田・Grand Front",a:"大阪",d:"大型車站城、百貨地下街與夜景空中庭園可順遊。",must:0,hot:1,go:"JR大阪站/梅田站"},
+    {n:"福岡天神地下街・大名",a:"福岡",d:"地下街、選物店、咖啡與屋台夜生活集中。",must:0,hot:1,go:"地鐵天神站"}
+  ]);
+  addUnique(ensure(DB.jp,"foods"), [
+    {n:"築地海鮮丼・玉子燒",a:"東京",d:"清晨到中午最熱鬧，海鮮丼、串燒、玉子燒可走吃。",must:1,hot:1},
+    {n:"銀座甜點・百貨地下街",a:"東京",d:"高級和菓子、蛋糕、伴手禮與限定便當集中。",must:0},
+    {n:"京都湯豆腐・抹茶甜點",a:"京都",d:"南禪寺湯豆腐、宇治抹茶與錦市場小吃。",must:1},
+    {n:"大阪串炸・章魚燒",a:"大阪",d:"新世界串炸、道頓堀章魚燒與大阪燒，是大阪三件套。",must:1,hot:1},
+    {n:"福岡明太子・胡麻鯖",a:"福岡",d:"明太子、胡麻鯖、豚骨拉麵與屋台料理。",must:1},
+    {n:"北海道湯咖哩・海鮮市場",a:"北海道",d:"札幌湯咖哩、小樽海鮮丼與函館朝市，冬天尤其舒服。",must:1}
+  ]);
+  addUnique(ensure(DB.jp,"shops"), [
+    {n:"東京站一番街・Character Street",a:"東京",d:"角色周邊、伴手禮與拉麵街集中，返程補貨最好用。",buy:"東京香蕉、NY Perfect Cheese、角色周邊、拉麵包",hours:"10:00–20:30",go:"東京站八重洲地下街",must:1},
+    {n:"銀座・有樂町商圈",a:"東京",d:"精品、百貨、Loft、文具與甜點旗艦店。",buy:"文具、美妝、甜點、精品、手帕",hours:"11:00–21:00",go:"銀座站/有樂町站",must:0},
+    {n:"京都錦市場・河原町",a:"京都",d:"京都食材、漬物、茶葉、和菓子與百貨。",buy:"抹茶、漬物、七味粉、和菓子、手拭巾",hours:"10:00–18:00",go:"河原町站/四條站",must:1},
+    {n:"大阪梅田地下街・Grand Front",a:"大阪",d:"百貨地下美食、生活雜貨與大型購物中心。",buy:"藥妝、甜點、生活雜貨、服飾",hours:"10:00–21:00",go:"大阪/梅田站",must:0},
+    {n:"福岡天神地下街・博多阪急",a:"福岡",d:"地下街不怕雨，博多站與天神雙核心採買。",buy:"明太子、博多通りもん、美妝、服飾",hours:"10:00–20:00",go:"天神站/博多站",must:0},
+    {n:"札幌狸小路・二條市場",a:"北海道",d:"藥妝、零食、海鮮乾貨與北海道甜點集中。",buy:"白色戀人、薯條三兄弟、六花亭、海鮮乾貨",hours:"10:00–22:00",go:"札幌大通站步行",must:1}
+  ]);
+  addUnique(ensure(DB.jp,"hotels"), [
+    {n:"Hotel Metropolitan Tokyo Marunouchi",a:"東京",stars:4,type:"車站景觀",fit:"交通/商務",budget:"中高",near:"東京站",d:"東京站旁，適合跨城市移動與購物。",must:0},
+    {n:"Cross Hotel Kyoto",a:"京都",stars:4,type:"市中心",fit:"美食/購物",budget:"中高",near:"河原町、三條",d:"走路可到鴨川、錦市場與河原町。",must:0},
+    {n:"RIHGA Royal Hotel Osaka",a:"大阪",stars:5,type:"大型經典",fit:"家庭/商務",budget:"中高",near:"中之島、梅田",d:"房型多、接駁與餐飲完整。",must:0},
+    {n:"Hotel Nikko Fukuoka",a:"福岡",stars:5,type:"博多車站",fit:"交通/美食",budget:"高",near:"博多站",d:"博多站旁，高速移動與機場線方便。",must:0}
+  ]);
+
+  addUnique(ensure(DB.kr,"spots"), [
+    {n:"星空圖書館・COEX Mall",a:"首爾",d:"大型地下商場與圖書館打卡點，雨天購物備案強。",must:0,hot:1,go:"地鐵三成站/奉恩寺站"},
+    {n:"聖水洞咖啡街",a:"首爾",d:"倉庫改建咖啡、設計選物與快閃店，年輕人最愛。",must:0,hot:1,go:"地鐵聖水站"},
+    {n:"益善洞韓屋街",a:"首爾",d:"韓屋咖啡、甜點、飾品小店與鐘路夜間散步。",must:0,hot:1,go:"地鐵鐘路3街站"},
+    {n:"汝矣島漢江公園・現代百貨 The Hyundai Seoul",a:"首爾",d:"漢江野餐、百貨打卡與美食地下街，一日室內外都能排。",must:0,hot:1,go:"汝矣渡口站/汝矣島站"},
+    {n:"松島海上纜車・甘川文化村",a:"釜山",d:"海景纜車和彩色山城聚落，釜山拍照路線。",must:1,hot:1,go:"釜山市區公車/計程車"},
+    {n:"涉地可支・城山日出峰",a:"西歸浦",d:"濟州東線海岸與火山口，日出與海景代表。",must:1,hot:1,go:"濟州自駕/包車"}
+  ]);
+  addUnique(ensure(DB.kr,"foods"), [
+    {n:"廣藏市場綠豆煎餅・生拌牛肉",a:"首爾",d:"市場小吃代表，綠豆煎餅、麻藥飯捲與生拌牛肉最熱門。",must:1,hot:1},
+    {n:"明洞烤肉・刀削麵",a:"首爾",d:"明洞逛街後吃烤肉、餃子刀削麵與街頭小吃。",must:1},
+    {n:"聖水洞咖啡甜點",a:"首爾",d:"大型烘焙、鹽麵包、精品咖啡與韓系甜點。",must:0,hot:1},
+    {n:"釜山豬肉湯飯・小麥冷麵",a:"釜山",d:"釜山代表早餐與清爽冷麵，南浦洞/西面都有名店。",must:1},
+    {n:"釜山札嘎其海鮮",a:"釜山",d:"現流海鮮市場，可吃生魚片、烤貝與海鮮鍋。",must:1,hot:1},
+    {n:"濟州黑豬肉・海女海鮮",a:"濟州市",d:"濟州烤黑豬、鮑魚粥與海女餐廳，是濟州必吃。",must:1,hot:1}
+  ]);
+  addUnique(ensure(DB.kr,"shops"), [
+    {n:"The Hyundai Seoul",a:"首爾",d:"韓國人氣百貨，B1 美食、快閃店與品牌選物很好逛。",buy:"韓系服飾、甜點、香氛、快閃限定",hours:"10:30–20:00",go:"汝矣島站/汝矣渡口站",must:1},
+    {n:"聖水洞選物街",a:"首爾",d:"設計品牌、咖啡、鞋服快閃和生活選物。",buy:"韓系服飾、球鞋、香氛、咖啡豆",hours:"11:00–21:00",go:"地鐵聖水站",must:0},
+    {n:"COEX Mall・星空圖書館",a:"首爾",d:"大型地下商場，雨天購物和水族館同排。",buy:"美妝、服飾、K-pop周邊、甜點",hours:"10:30–22:00",go:"三成站/奉恩寺站",must:0},
+    {n:"釜山西面地下街・樂天百貨",a:"釜山",d:"釜山購物核心，地下街平價、百貨完整。",buy:"韓系服飾、美妝、鞋包、零食",hours:"10:30–21:00",go:"西面站",must:0},
+    {n:"濟州東門市場",a:"濟州市",d:"夜市、橘子伴手禮、海產與黑豬小吃集中。",buy:"橘子巧克力、海產乾貨、蜂蜜、伴手禮",hours:"08:00–23:00",go:"濟州市區",must:1}
+  ]);
+  addUnique(ensure(DB.kr,"hotels"), [
+    {n:"Lotte Hotel Busan",a:"釜山",stars:5,type:"西面商圈",fit:"購物/交通",budget:"高",near:"西面站、樂天百貨",d:"釜山市中心交通購物都方便。",must:0},
+    {n:"Grand Josun Jeju",a:"西歸浦",stars:5,type:"濟州度假",fit:"家庭/放鬆",budget:"高",near:"中文觀光園區",d:"濟州南部度假感強，適合自駕。",must:0},
+    {n:"Parnas Hotel Jeju",a:"西歸浦",stars:5,type:"海景奢華",fit:"情侶/度假",budget:"高",near:"中文海水浴場",d:"海景與度假設施突出。",must:0}
+  ]);
+  addUnique(ensure(DB.kr,"routes"), [
+    {n:"首爾釜山雙城 6 日",days:6,tags:["首訪","美食","購物","文化"],best:"4–6 月、9–11 月",
+     plan:[
+      {t:"首爾宮闕與明洞",items:[
+       {time:"09:30",n:"景福宮・北村韓屋村",k:"spot",must:1,go:"地鐵景福宮站",note:"租韓服可免部分門票"},
+       {time:"12:30",n:"土俗村蔘雞湯",k:"food",must:1,go:"步行",note:"午餐尖峰排隊"},
+       {time:"15:00",n:"益善洞韓屋街",k:"spot",must:0,go:"鐘路3街站",note:"咖啡甜點"},
+       {time:"19:00",n:"明洞商圈",k:"food",must:1,go:"地鐵明洞站",note:"美妝與街頭小吃"}]},
+      {t:"漢江與汝矣島購物",items:[
+       {time:"10:00",n:"The Hyundai Seoul",k:"spot",must:1,go:"汝矣島站",note:"B1 美食與快閃"},
+       {time:"14:00",n:"汝矣島漢江公園",k:"spot",must:0,go:"步行/計程車",note:"野餐與泡麵機"},
+       {time:"18:00",n:"弘大晚餐與夜生活",k:"food",must:0,go:"地鐵弘大入口",note:"烤肉、炸雞"}]},
+      {t:"聖水與江南",items:[
+       {time:"10:30",n:"聖水洞咖啡街",k:"spot",must:1,go:"聖水站",note:"快閃店與咖啡"},
+       {time:"14:00",n:"COEX 星空圖書館",k:"spot",must:0,go:"三成站",note:"雨天備案"},
+       {time:"19:00",n:"江南烤肉",k:"food",must:1,go:"江南站/新沙站",note:"晚餐先訂位"}]},
+      {t:"KTX 前往釜山",items:[
+       {time:"09:00",n:"首爾站 → 釜山站",k:"move",must:0,go:"KTX 約 2.5 小時",note:"提前訂票"},
+       {time:"13:00",n:"釜山豬肉湯飯",k:"food",must:1,go:"釜山站/西面",note:"在地早餐午餐"},
+       {time:"15:00",n:"甘川文化村",k:"spot",must:1,go:"公車/計程車",note:"山城彩繪"},
+       {time:"19:00",n:"札嘎其市場海鮮",k:"food",must:1,go:"南浦洞",note:"現流海鮮"}]},
+      {t:"海雲台海線",items:[
+       {time:"10:00",n:"海雲台海水浴場",k:"spot",must:1,go:"地鐵海雲台站",note:"海岸散步"},
+       {time:"12:00",n:"膠囊列車・青沙浦",k:"spot",must:1,go:"海岸列車",note:"提前預約熱門時段"},
+       {time:"17:00",n:"廣安里夜景",k:"spot",must:1,go:"地鐵/計程車",note:"看廣安大橋"}]},
+      {t:"返程採買",items:[
+       {time:"10:00",n:"西面地下街",k:"spot",must:0,go:"西面站",note:"美妝服飾"},
+       {time:"13:00",n:"金海機場",k:"move",must:0,go:"輕軌/計程車",note:"退稅與托運"}]}]}]);
+
+  addUnique(ensure(DB.th,"spots"), [
+    {n:"曼谷 King Power Mahanakhon",a:"曼谷",d:"高空玻璃步道與城市夜景，夕陽場次最熱門。",must:0,hot:1,go:"BTS Chong Nonsi 站"},
+    {n:"曼谷暹羅商圈・Siam Paragon",a:"曼谷",d:"百貨、水族館、甜點與捷運交會，雨天購物核心。",must:1,hot:1,go:"BTS Siam 站"},
+    {n:"大城歷史公園",a:"大城",d:"世界遺產古城遺址，曼谷近郊一日團最經典。",must:1,hot:1,go:"曼谷火車/包車約 1.5 小時"},
+    {n:"清邁茵他儂山",a:"清邁",d:"泰國最高峰、雙塔花園與瀑布，涼季最舒服。",must:0,hot:1,go:"清邁參加一日團/包車"},
+    {n:"清邁湄康蓬村",a:"清邁",d:"山林咖啡、溪谷村落與慢生活，適合自駕包車。",must:0,hot:1,go:"清邁市區包車約 1.5 小時"},
+    {n:"普吉大佛・查龍寺",a:"普吉",d:"普吉南段經典文化線，可接卡塔/卡倫海景。",must:0,hot:1,go:"普吉包車/Grab"},
+    {n:"PP 島・瑪雅灣",a:"PP 島",d:"世界級海灣與跳島行程，需留意保育開放規定。",must:1,hot:1,go:"普吉/喀比船團"},
+    {n:"喀比萊利海灘",a:"喀比",d:"石灰岩峭壁、攀岩與沙灘，船進船出。",must:1,hot:1,go:"奧南搭長尾船"}
+  ]);
+  addUnique(ensure(DB.th,"foods"), [
+    {n:"曼谷水門海南雞飯",a:"曼谷",d:"粉紅制服名店，逛 CentralWorld/Big C 時順吃。",must:1,hot:1},
+    {n:"泰式船麵・勝利紀念碑",a:"曼谷",d:"小碗船麵一碗接一碗，是曼谷在地吃法。",must:0},
+    {n:"米其林街邊 Jay Fai 蟹肉蛋",a:"曼谷",d:"名氣極高，需預約或排隊，預算較高。",must:0,hot:1},
+    {n:"清邁咖哩麵 Khao Soi",a:"清邁",d:"泰北椰奶咖哩麵，寧曼與古城都有名店。",must:1,hot:1},
+    {n:"清邁烤雞・青木瓜沙拉",a:"清邁",d:"泰北/伊善風味，搭糯米飯很對味。",must:0},
+    {n:"普吉福建麵・Roti",a:"普吉",d:"普吉老城代表風味，福建麵、咖哩與甜煎餅。",must:1},
+    {n:"喀比海鮮燒烤",a:"喀比",d:"奧南夜市與海邊餐廳，烤魚、蝦、魷魚最方便。",must:0}
+  ]);
+  addUnique(ensure(DB.th,"shops"), [
+    {n:"Siam Paragon・CentralWorld・暹羅商圈",a:"曼谷",d:"曼谷百貨核心，精品、伴手禮、美食街與水族館集中。",buy:"NaRaYa、香氛、零食、設計品牌、美妝",hours:"10:00–22:00",go:"BTS Siam/Chit Lom",must:1},
+    {n:"King Power Rangnam",a:"曼谷",d:"市區免稅店，適合回程前集中看免稅商品。",buy:"免稅美妝、泰國品牌、零食禮盒",hours:"10:00–21:00",go:"BTS Victory Monument",must:0},
+    {n:"清邁 Baan Kang Wat",a:"清邁",d:"藝術村、陶藝、手作與森林系咖啡。",buy:"陶器、手作飾品、明信片、咖啡豆",hours:"10:00–18:00",go:"清邁市區 Grab",must:0},
+    {n:"清邁瓦洛洛市場",a:"清邁",d:"在地市場與乾貨伴手禮，白天採買最適合。",buy:"炸豬皮、青辣椒醬、香料、芒果乾",hours:"06:00–18:00",go:"清邁古城東側",must:1},
+    {n:"普吉 Central Phuket",a:"普吉",d:"普吉大型百貨，雨天、親子、餐廳都好用。",buy:"服飾、美妝、伴手禮、超市零食",hours:"10:30–22:00",go:"普吉鎮/芭東 Grab",must:0},
+    {n:"喀比奧南夜市",a:"喀比",d:"海灘主街採買與晚餐，跳島後補貨方便。",buy:"防水袋、沙灘用品、手作飾品、香氛",hours:"17:00–23:00",go:"奧南海灘步行",must:0}
+  ]);
+  addUnique(ensure(DB.th,"hotels"), [
+    {n:"Siam Kempinski Hotel Bangkok",a:"曼谷",stars:5,type:"暹羅奢華",fit:"家庭/購物",budget:"高",near:"Siam Paragon",d:"百貨直連，親子與購物非常方便。",must:0},
+    {n:"The Okura Prestige Bangkok",a:"曼谷",stars:5,type:"日系商務",fit:"商務/情侶",budget:"高",near:"BTS Phloen Chit",d:"服務細緻，BTS 直結。",must:0},
+    {n:"Rayavadee Krabi",a:"喀比",stars:5,type:"海灘奢華",fit:"情侶/度假",budget:"高",near:"萊利海灘",d:"喀比高端海灘度假代表。",must:1},
+    {n:"SAii Phi Phi Island Village",a:"PP 島",stars:5,type:"離島度假",fit:"放鬆/海島",budget:"高",near:"PP 島北部",d:"離島度假村型住宿，適合慢住。",must:0}
+  ]);
+  addUnique(ensure(DB.th,"routes"), [
+    {n:"曼谷購物美食 4 日",days:4,tags:["首訪","購物","美食","雨天"],best:"11–2 月涼季",
+     plan:[
+      {t:"抵達與暹羅商圈",items:[
+       {time:"12:00",n:"蘇汪納蓬機場 → 市區",k:"move",must:0,go:"ARL/BTS 或 Grab",note:"先買 eSIM"},
+       {time:"15:00",n:"Siam Paragon・CentralWorld",k:"spot",must:1,go:"BTS Siam/Chit Lom",note:"百貨與美食街"},
+       {time:"19:00",n:"水門海南雞飯",k:"food",must:1,go:"步行/Grab",note:"粉紅制服名店"}]},
+      {t:"寺廟與老城",items:[
+       {time:"08:30",n:"大皇宮・玉佛寺",k:"spot",must:1,go:"MRT Sanam Chai",note:"服裝規定嚴格"},
+       {time:"11:30",n:"臥佛寺・鄭王廟",k:"spot",must:1,go:"步行/渡船",note:"河畔經典"},
+       {time:"17:00",n:"Mahanakhon SkyWalk",k:"spot",must:0,go:"BTS Chong Nonsi",note:"夕陽夜景"},
+       {time:"20:00",n:"Jodd Fairs 夜市",k:"food",must:1,go:"MRT Phra Ram 9",note:"火山排骨"}]},
+      {t:"市場採買",items:[
+       {time:"09:30",n:"洽圖洽週末市集",k:"spot",must:1,go:"BTS Mo Chit",note:"若非週末改 Big C/水門"},
+       {time:"14:30",n:"Big C 超市掃貨",k:"spot",must:1,go:"Chit Lom",note:"零食伴手禮"},
+       {time:"18:00",n:"泰式按摩",k:"spot",must:0,go:"住處附近",note:"先預約"}]},
+      {t:"河畔與返程",items:[
+       {time:"10:00",n:"ICONSIAM",k:"spot",must:1,go:"BTS 金線",note:"室內水上市場"},
+       {time:"13:00",n:"曼谷河畔午餐",k:"food",must:0,go:"ICONSIAM/碼頭",note:"河景餐廳"},
+       {time:"16:00",n:"前往機場",k:"move",must:0,go:"Grab/ARL",note:"留退稅時間"}]}]},
+    {n:"清邁普吉雙城 6 日",days:6,tags:["自然","放鬆","美食","海島"],best:"11–3 月",
+     plan:[
+      {t:"清邁古城",items:[
+       {time:"10:00",n:"清邁古城寺廟",k:"spot",must:1,go:"步行/Grab",note:"契迪龍寺、帕辛寺"},
+       {time:"12:30",n:"Khao Soi 咖哩麵",k:"food",must:1,go:"古城/寧曼",note:"泰北必吃"},
+       {time:"17:00",n:"清邁週日夜市",k:"spot",must:1,go:"塔佩門",note:"依星期調整"}]},
+      {t:"素帖山與寧曼",items:[
+       {time:"09:00",n:"雙龍寺",k:"spot",must:1,go:"雙條車上山",note:"306階龍梯"},
+       {time:"13:00",n:"寧曼路咖啡",k:"food",must:0,go:"Grab",note:"選物與咖啡"},
+       {time:"16:00",n:"瓦洛洛市場",k:"spot",must:0,go:"市區",note:"乾貨伴手禮"}]},
+      {t:"茵他儂山",items:[
+       {time:"08:00",n:"茵他儂山一日團",k:"spot",must:0,go:"包車/一日團",note:"最高峰與雙塔"},
+       {time:"18:00",n:"泰北烤雞晚餐",k:"food",must:0,go:"清邁市區",note:"搭糯米飯"}]},
+      {t:"飛往普吉",items:[
+       {time:"10:00",n:"清邁 → 普吉",k:"move",must:0,go:"國內線",note:"留行李時間"},
+       {time:"15:00",n:"普吉老城",k:"spot",must:1,go:"Grab/包車",note:"彩色騎樓與週日市集"},
+       {time:"18:30",n:"普吉福建麵",k:"food",must:1,go:"老城",note:"在地味"}]},
+      {t:"跳島日",items:[
+       {time:"08:00",n:"PP 島・瑪雅灣",k:"spot",must:1,go:"船團",note:"查保育開放"},
+       {time:"17:00",n:"回芭東/卡塔按摩",k:"spot",must:0,go:"飯店附近",note:"跳島後放鬆"}]},
+      {t:"南段文化與返程",items:[
+       {time:"09:30",n:"普吉大佛・查龍寺",k:"spot",must:0,go:"包車",note:"服裝得體"},
+       {time:"13:00",n:"Central Phuket 採買",k:"spot",must:0,go:"市區",note:"雨天備案"},
+       {time:"16:00",n:"普吉機場",k:"move",must:0,go:"Grab/接送",note:"留塞車時間"}]}]}]);
+
+  addLinks(DB.jp, [
+    ["日本國家旅遊局 JNTO","https://www.japan.travel/tw/"],
+    ["東京旅遊官方網站","https://www.gotokyo.org/tc/"],
+    ["京都觀光官方網站","https://kyoto.travel/tw/"]
+  ]);
+  addLinks(DB.kr, [
+    ["韓國觀光公社 Visit Korea","https://big5chinese.visitkorea.or.kr"],
+    ["首爾官方旅遊資訊","https://www.visitseoul.net"],
+    ["濟州觀光公社","https://www.visitjeju.net"]
+  ]);
+  addLinks(DB.th, [
+    ["泰國觀光局官方 Amazing Thailand","https://www.tourismthailand.org"],
+    ["曼谷 BTS 官方","https://www.bts.co.th"],
+    ["泰國國鐵 SRT","https://www.railway.co.th"]
+  ]);
+})();
+
 /* 共通必帶（分類）：intl:1 = 僅出國需要 */
 const PACK_GROUPS = [
  ["📄 證件文件",[
@@ -1560,7 +2302,7 @@ const TRIP_TYPES = {
 /* ════════════════ 目的地資料庫 ════════════════ */
 /* Static trip catalog is loaded from src/data/catalog.js. */
 const APP_CONFIG = window.TripPlannerConfig || {};
-const APP_VERSION = APP_CONFIG.appVersion || "3.3";          // 系統版本（改版時更新）
+const APP_VERSION = APP_CONFIG.appVersion || "3.6";          // 系統版本（改版時更新）
 const DATA_DATE   = APP_CONFIG.dataDate || "2026-06";        // 資料更新月份
 const LS_KEY  = APP_CONFIG.storageKey || "twTrip.planner.v3"; // 帶命名空間的儲存鍵
 const OLD_KEYS = APP_CONFIG.legacyStorageKeys || ["tripPlanner.v2", "tripPlanner.v1"]; // 舊鍵（自動遷移）
@@ -1581,6 +2323,8 @@ function defaultState(){
   return {dest:"jp", startDate:"", days:5, adults:2, kids:0, aaPeople:0, fx:null, style:1,
           endDate:"", prices:{}, itin:[], checks:{}, custom:[], prefs:[],
           userAlias:"", wantsRecommendation:false, regionScope:"", regionScopes:[], regionCity:"", customPlaces:{},
+          placeGuide:{intent:"", pace:"", scene:"", sort:"recommend", q:""},
+          smartPlan:{pace:"balanced", replace:true, includeShop:true},
           flights:[], hotels:[], tickets:[], itinBackup:null,
           members:["我"], expenses:[], expDraft:null, itinDay:0, expDay:1, settleMode:"twd",
           tripType:"family", party:[], journal:{}, photos:[],
@@ -1604,6 +2348,15 @@ function mergeState(p){
   if(typeof m.regionScope!=="string") m.regionScope = "";
   if(!Array.isArray(m.regionScopes)) m.regionScopes = (m.regionScope ? [m.regionScope] : []);
   if(typeof m.regionCity!=="string") m.regionCity = "";
+  if(!m.placeGuide || typeof m.placeGuide!=="object" || Array.isArray(m.placeGuide)) m.placeGuide = {};
+  m.placeGuide = Object.assign({intent:"", pace:"", scene:"", sort:"recommend", q:""}, m.placeGuide);
+  ["intent","pace","scene","sort","q"].forEach(k=>{ if(typeof m.placeGuide[k]!=="string") m.placeGuide[k]=""; });
+  if(!["recommend","must","hot","area"].includes(m.placeGuide.sort)) m.placeGuide.sort = "recommend";
+  if(!m.smartPlan || typeof m.smartPlan!=="object" || Array.isArray(m.smartPlan)) m.smartPlan = {};
+  m.smartPlan = Object.assign({pace:"balanced", replace:true, includeShop:true}, m.smartPlan);
+  if(!["easy","balanced","full"].includes(m.smartPlan.pace)) m.smartPlan.pace = "balanced";
+  m.smartPlan.replace = m.smartPlan.replace !== false;
+  m.smartPlan.includeShop = m.smartPlan.includeShop !== false;
   if(typeof m.endDate!=="string") m.endDate = "";
   if(!Array.isArray(m.flights)) m.flights = [];
   if(!Array.isArray(m.hotels)) m.hotels = [];
@@ -1755,6 +2508,7 @@ function init(){
   renderPlanBar();
   renderCloud();
   renderAll();
+  setInterval(()=>{ if($("tripNowPanel")) renderTripNowPanel(); }, 60000);
   updateBackupBanner();
   checkShareLink();   // 若網址帶分享連結，載入共享計畫
   if(S.wantsRecommendation && !S.wizDone) openWiz();   // 只有勾選推薦安排才自動開啟引導
@@ -1784,13 +2538,18 @@ function renderAll(){
   $("ov-cards").innerHTML = wx + d.facts.map(f=>`<div class="card"><h4>${f[0]}</h4><p class="meta">${f[1]}</p></div>`).join("");
   $("ov-transport").innerHTML = d.transport.map(t=>card(t)).join("");
   $("ov-stay").innerHTML = d.stay.map(t=>card(t)).join("");
+  renderHotelCatalog();
   renderRegionControls();
+  renderPlaceGuide();
+  renderSmartPlan();
   const regLbl = S.regionCity || activeScopesLabel();
-  $("spotsTitle").textContent = `${d.flag} ${d.name}${regLbl?`\u30fb${regLbl}`:""}\u53ef\u73a9\u666f\u9ede\uff08\u2605\uff1d\u5fc5\u53bb\uff09`;
   const sd=$("spotAddDay"); if(sd){ const cur=Math.min(+sd.value||1, Math.max(S.days,1)); sd.innerHTML=Array.from({length:Math.max(S.days,1)},(_,k)=>`<option value="${k+1}" ${k+1===cur?"selected":""}>${k+1}</option>`).join(""); }
   const spotList = getPlaceList("spot"), foodList = getPlaceList("food"), shopList = getPlaceList("shop");
+  $("spotsTitle").textContent = `${d.flag} ${d.name}${regLbl?`\u30fb${regLbl}`:""}\u53ef\u73a9\u666f\u9ede\uff08${spotList.length} 個，★＝必去\uff09`;
   $("spotCards").innerHTML = spotList.length ? spotList.map((s,i)=>spotCard(s,"spot",i)).join("") : emptyPlaceCard("spot");
+  const foodTitle=$("foodTitle"); if(foodTitle) foodTitle.textContent = `美食推薦（${foodList.length} 個，🍜＝必吃）`;
   $("foodCards").innerHTML = foodList.length ? foodList.map((s,i)=>spotCard(s,"food",i)).join("") : emptyPlaceCard("food");
+  const shopTitle=$("shopTitle"); if(shopTitle) shopTitle.textContent = `購物商圈（${shopList.length} 個，🛍️＝必逛）`;
   $("shopCards").innerHTML = shopList.length ? shopList.map((s,i)=>spotCard(s,"shop",i)).join("") : emptyPlaceCard("shop");
   $("notesTitle").textContent = `${d.flag} ${d.name}注意事項`;
   $("noteList").innerHTML = d.notes.map(n=>`<li class="note-li">${n}</li>`).join("");
@@ -1835,6 +2594,64 @@ function scrubNote(text){
     .replace(/\b(19|20)\d{2}[\/\-.](0?[1-9]|1[0-2])[\/\-.](0?[1-9]|[12]\d|3[01])\b/g, "[已隱碼]"); // 生日
 }
 const card = t => `<div class="card"><h4>${t.n}</h4><p class="meta">${t.d}</p><div style="margin-top:6px">${(t.t||[]).map(x=>`<span class="tag">${x}</span>`).join("")}</div></div>`;
+function hotelMatchesRegion(h){
+  const area = String(h.a || "").trim();
+  const city = String(S.regionCity || "").trim();
+  if(city) return area===city || area.includes(city) || city.includes(area);
+  const cities = activeScopeCities();
+  if(cities.length) return cities.some(c=>area===c || area.includes(c) || c.includes(area));
+  return true;
+}
+function hotelSortValue(h){
+  const stars = Number(h.stars || h.level || 0);
+  return isNaN(stars) ? 0 : stars;
+}
+function hotelStars(stars){
+  const n = Math.max(0, Math.min(5, Math.round(Number(stars)||0)));
+  return n ? Array.from({length:n},()=>`<span class="hotel-star">★</span>`).join("") : `<span class="meta">星級待查</span>`;
+}
+function hotelCard(h, i){
+  const stars = hotelSortValue(h);
+  const rank = stars ? `${stars}星` : (h.level || "參考");
+  const chips = [h.a, h.type, h.fit, h.budget].filter(Boolean).map(x=>`<span class="hotel-chip">${esc(x)}</span>`).join("");
+  const nearby = h.near ? `<p class="meta"><b>近：</b>${esc(h.near)}</p>` : "";
+  const why = h.d ? `<p class="meta">${esc(h.d)}</p>` : "";
+  const q = [h.n, h.a, DB[S.dest].name].filter(Boolean).join(" ");
+  return `<div class="card hotel-card">
+    <span class="hotel-rank">${esc(rank)}</span>
+    <h4>${esc(h.n)}</h4>
+    <div class="hotel-stars">${hotelStars(stars)}</div>
+    <div class="hotel-meta">${chips}</div>
+    ${nearby}${why}
+    <div class="btn-row"><a class="map-link" href="${mapUrl(q)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a><button class="btn small ghost" onclick="addHotelFromCatalog(${i})">＋ 放到住宿資料</button></div>
+  </div>`;
+}
+function hotelCatalogList(){
+  const d=DB[S.dest];
+  return (d.hotels||[]).filter(hotelMatchesRegion).slice().sort((a,b)=>
+    hotelSortValue(b)-hotelSortValue(a) ||
+    (b.must||0)-(a.must||0) ||
+    String(a.a||"").localeCompare(String(b.a||""),"zh-Hant") ||
+    String(a.n||"").localeCompare(String(b.n||""),"zh-Hant")
+  );
+}
+function renderHotelCatalog(){
+  const title=$("hotelCatalogTitle"), box=$("hotelCatalog");
+  if(!title || !box) return;
+  const d=DB[S.dest], list=hotelCatalogList(), reg=S.regionCity || activeScopesLabel();
+  title.textContent = `🏨 飯店 / 旅館推薦${reg?`・${reg}`:""}（${list.length} 間，依星級參考排序）`;
+  if(list.length){
+    box.innerHTML = list.map((h,i)=>hotelCard(h,i)).join("");
+    return;
+  }
+  box.innerHTML = `<div class="card hotel-card"><h4>目前地區尚未收錄飯店候選</h4><p class="meta">可先切回全部地區，或用交通部觀光署旅宿網查合法旅宿與星級旅館。正式訂房前也請確認即時房價、評鑑與交通位置。</p><div class="btn-row"><a class="map-link" href="https://taiwanstay.net.tw/" target="_blank" rel="noopener noreferrer">合法旅宿查詢</a></div></div>`;
+}
+function addHotelFromCatalog(i){
+  const h=hotelCatalogList()[i];
+  if(!h) return;
+  S.hotels.push({dest:S.dest,name:h.n||"",addr:h.addr||h.a||"",cin:"",cout:"",code:"",tel:"",link:h.url||mapUrl([h.n,h.a,DB[S.dest].name].filter(Boolean).join(" ")),lat:"",lng:""});
+  save(); renderTravelInfo(); renderAll(); showSave("已加入住宿資料："+h.n);
+}
 function customPlaceBucket(kind){
   S.customPlaces = S.customPlaces || {};
   S.customPlaces[S.dest] = S.customPlaces[S.dest] || {spot:[], food:[], shop:[]};
@@ -1871,15 +2688,293 @@ function placeMatchesRegion(place){
   if(cities.length) return cities.some(c=>area===c || area.includes(c) || c.includes(area));
   return true;
 }
+const PLACE_GUIDE = Object.freeze({
+  intents:[
+    {id:"classic", label:"第一次必去", terms:["必去","經典","代表","地標","世界級","古蹟","神社","寺","宮","城","塔","觀景","夜景"]},
+    {id:"food", label:"美食優先", terms:["夜市","拉麵","牛肉湯","小吃","市場","甜點","冰","咖啡","壽司","烤肉","料理","美食"], kinds:["food"]},
+    {id:"photo", label:"拍照打卡", terms:["網美","打卡","拍","夕陽","夜景","紅燈籠","彩色","天空","花","海","橋","燈籠"]},
+    {id:"family", label:"親子輕鬆", terms:["親子","家庭","樂園","動物","水族","公園","農場","Outlet","商場","牧場"]},
+    {id:"nature", label:"自然放鬆", terms:["自然","山","海","湖","溫泉","草原","森林","瀑布","海岸","花","步道","農場","海灘"]},
+    {id:"shopping", label:"購物採買", terms:["購物","商圈","Outlet","百貨","伴手禮","文創","選物","藥妝","電器","市場"], kinds:["shop"]},
+    {id:"rain", label:"雨天備案", terms:["博物館","美術館","商場","百貨","水族","地下街","咖啡","市場","室內","Outlet","影城"]}
+  ],
+  paces:[
+    {id:"easy", label:"少走路", terms:["捷運","車站","火車站","商圈","老街","市場","夜市","百貨","Outlet","市區","步行","公園","咖啡"]},
+    {id:"half", label:"半日剛好", terms:["老街","商圈","夜市","博物館","美術館","公園","市場","咖啡","碼頭","寺","神社"]},
+    {id:"deep", label:"深度戶外", terms:["步道","山","環島","自駕","縱谷","海岸","遠","預約","船","登山","日出","峽谷"]}
+  ],
+  scenes:[
+    {id:"indoor", label:"室內/雨天", terms:["博物館","美術館","商場","百貨","水族","地下街","咖啡","市場","室內","Outlet","影城"]},
+    {id:"outdoor", label:"戶外風景", terms:["山","海","湖","瀑布","步道","公園","草原","海岸","夕陽","夜景","花","橋","農場"]},
+    {id:"night", label:"晚上也好玩", terms:["夜市","夜景","晚","燈","酒吧","市集","宵夜","黃昏"]},
+    {id:"booking", label:"需先確認", terms:["預約","票","需","登島","入山","訂","船團","開放","申請"]}
+  ],
+  sorts:[
+    {id:"recommend", label:"推薦排序"},
+    {id:"must", label:"必去優先"},
+    {id:"hot", label:"熱門打卡"},
+    {id:"area", label:"依地區"}
+  ]
+});
+function guideActive(){
+  const g=S.placeGuide||{};
+  return !!((g.intent||"") || (g.pace||"") || (g.scene||"") || (g.q||"").trim() || (g.sort&&g.sort!=="recommend"));
+}
+function placePool(kind){
+  const d=DB[S.dest];
+  const base = kind==="spot" ? d.spots : kind==="food" ? d.foods : (d.shops||[]);
+  return base.concat(customPlaceBucket(kind));
+}
+function placeText(place, kind){
+  return [kind, place.n, place.a, place.d, place.go, place.buy, place.hours, ...(place.t||[]), ...(place.tags||[])].filter(Boolean).join(" ").toLowerCase();
+}
+function dimensionScore(place, kind, group, id){
+  if(!id) return 0;
+  const opt=(PLACE_GUIDE[group]||[]).find(x=>x.id===id);
+  if(!opt) return 0;
+  const txt=placeText(place, kind);
+  let score=(opt.kinds||[]).includes(kind) ? 5 : 0;
+  (opt.terms||[]).forEach(term=>{ if(txt.includes(String(term).toLowerCase())) score+=2; });
+  if(id==="classic" && place.must) score+=4;
+  if(id==="photo" && place.hot) score+=4;
+  if(id==="shopping" && kind==="shop") score+=4;
+  if(id==="food" && kind==="food") score+=4;
+  return score;
+}
+function placeGuideScore(place, kind){
+  const g=S.placeGuide||{};
+  let score=0;
+  score+=dimensionScore(place, kind, "intents", g.intent);
+  score+=dimensionScore(place, kind, "paces", g.pace);
+  score+=dimensionScore(place, kind, "scenes", g.scene);
+  if(place.must) score+=3;
+  if(place.hot) score+=2;
+  if(place.custom) score+=1;
+  return score;
+}
+function placeMatchesGuide(place, kind){
+  const g=S.placeGuide||{}, txt=placeText(place, kind);
+  const q=(g.q||"").trim().toLowerCase();
+  if(q && !txt.includes(q)) return false;
+  if(g.intent && dimensionScore(place, kind, "intents", g.intent)<=0) return false;
+  if(g.pace && dimensionScore(place, kind, "paces", g.pace)<=0) return false;
+  if(g.scene && dimensionScore(place, kind, "scenes", g.scene)<=0) return false;
+  return true;
+}
+function sortPlaces(list, kind){
+  const sort=(S.placeGuide&&S.placeGuide.sort)||"recommend";
+  return list.slice().sort((a,b)=>{
+    if(sort==="must") return (b.must||0)-(a.must||0) || placeGuideScore(b,kind)-placeGuideScore(a,kind) || String(a.n).localeCompare(String(b.n),"zh-Hant");
+    if(sort==="hot") return (b.hot||0)-(a.hot||0) || placeGuideScore(b,kind)-placeGuideScore(a,kind) || String(a.n).localeCompare(String(b.n),"zh-Hant");
+    if(sort==="area") return String(a.a||"").localeCompare(String(b.a||""),"zh-Hant") || String(a.n).localeCompare(String(b.n),"zh-Hant");
+    return placeGuideScore(b,kind)-placeGuideScore(a,kind) || (b.must||0)-(a.must||0) || String(a.n).localeCompare(String(b.n),"zh-Hant");
+  });
+}
+function basePlaceList(kind){
+  return placePool(kind).filter(placeMatchesRegion);
+}
 function emptyPlaceCard(kind){
   const label = kind==="food" ? "美食" : kind==="shop" ? "購物點" : "景點";
   const city = S.regionCity || activeRegionScope().label || DB[S.dest].name;
+  if(guideActive()){
+    return `<div class="card empty-place"><h4>沒有符合目前條件的${label}</h4><p class="meta">可以清除導購條件、放寬地區，或換一個旅行情境。現在的篩選很像購物 App：條件越多，結果越精準，但也越容易太窄。</p><div class="guide-empty-actions"><button class="btn small" onclick="clearPlaceGuide()">清除導購條件</button><button class="btn small ghost" onclick="clearRegionScopes()">看全部地區</button></div></div>`;
+  }
   return `<div class="card empty-place"><h4>📍 ${esc(city)} 目前還沒有收錄的${label}</h4><p class="meta">可切換上方「縣市 / 城市」改看其他地區，或用下方欄位自行新增${label}；加入後會出現在這裡，也能一鍵排進行程。</p></div>`;
 }
 function getPlaceList(kind){
-  const d=DB[S.dest];
-  const base = kind==="spot" ? d.spots : kind==="food" ? d.foods : (d.shops||[]);
-  return base.concat(customPlaceBucket(kind)).filter(placeMatchesRegion);
+  return sortPlaces(basePlaceList(kind).filter(p=>placeMatchesGuide(p, kind)), kind);
+}
+function guideChip(group, item){
+  const on=(S.placeGuide||{})[group]===item.id;
+  return `<button type="button" class="guide-chip${on?" on":""}" onclick="setPlaceGuide('${group}','${item.id}')">${on?"✓ ":""}${item.label}</button>`;
+}
+function renderPlaceGuide(){
+  const el=$("placeGuide"); if(!el) return;
+  const d=DB[S.dest], g=S.placeGuide||{};
+  const counts={spot:getPlaceList("spot").length, food:getPlaceList("food").length, shop:getPlaceList("shop").length};
+  const totals={spot:basePlaceList("spot").length, food:basePlaceList("food").length, shop:basePlaceList("shop").length};
+  el.innerHTML=`<div class="guide-head">
+    <div><h3>${d.flag} 像逛商品一樣挑景點</h3><p>先回答你想怎麼玩，再從景點、美食、購物裡縮小選擇。</p></div>
+    <input class="guide-search" id="placeGuideSearch" value="${esc(g.q||"")}" placeholder="搜尋地名、特色、伴手禮…" oninput="setPlaceGuideQuery(this.value)">
+    <button class="btn ghost" type="button" onclick="clearPlaceGuide()">清除條件</button>
+  </div>
+  <div class="guide-groups">
+    <div class="guide-group"><div class="guide-label">這次想怎麼玩？</div><div class="guide-chips">${PLACE_GUIDE.intents.map(x=>guideChip("intent",x)).join("")}</div></div>
+    <div class="guide-group"><div class="guide-label">腳力與時間</div><div class="guide-chips">${PLACE_GUIDE.paces.map(x=>guideChip("pace",x)).join("")}</div></div>
+    <div class="guide-group"><div class="guide-label">情境條件</div><div class="guide-chips">${PLACE_GUIDE.scenes.map(x=>guideChip("scene",x)).join("")}</div></div>
+    <div class="guide-group"><div class="guide-label">排序方式</div><div class="guide-chips">${PLACE_GUIDE.sorts.map(x=>guideChip("sort",x)).join("")}</div></div>
+  </div>
+  <div class="guide-stats">
+    <span class="guide-stat">景點 ${counts.spot}/${totals.spot}</span>
+    <span class="guide-stat">美食 ${counts.food}/${totals.food}</span>
+    <span class="guide-stat">購物 ${counts.shop}/${totals.shop}</span>
+  </div>
+  <div class="guide-quick">
+    <button class="btn small" type="button" onclick="addTopGuideResults('spot',3)">＋ 前 3 個景點加入行程</button>
+    <button class="btn small ghost" type="button" onclick="addTopGuideResults('food',3)">＋ 前 3 個美食加入行程</button>
+    <button class="btn small ghost" type="button" onclick="addTopGuideResults('shop',3)">＋ 前 3 個購物加入行程</button>
+  </div>`;
+}
+function setPlaceGuide(key,val){
+  S.placeGuide=S.placeGuide||{intent:"", pace:"", scene:"", sort:"recommend", q:""};
+  S.placeGuide[key] = key==="sort" ? val : (S.placeGuide[key]===val ? "" : val);
+  renderAll(); save();
+}
+function setPlaceGuideQuery(v){
+  S.placeGuide=S.placeGuide||{intent:"", pace:"", scene:"", sort:"recommend", q:""};
+  S.placeGuide.q=v;
+  clearTimeout(window._placeGuideQueryTimer);
+  window._placeGuideQueryTimer=setTimeout(()=>{ renderAll(); save(); }, 260);
+}
+function clearPlaceGuide(){
+  S.placeGuide={intent:"", pace:"", scene:"", sort:"recommend", q:""};
+  renderAll(); save();
+}
+function selectedSpotDay(){
+  const sd=$("spotAddDay");
+  return Math.min(Math.max(sd ? (+sd.value||1) : Math.max(S.days,1), 1), Math.max(S.days,1));
+}
+function appendPlaceToDay(s, kind, day){
+  const pre = kind==="food"?"🍜 ":kind==="shop"?"🛍️ ":"📍 ";
+  const dayItems = getItin().filter(x=>x.day===day);
+  const start = dayItems.length ? dayItems.map(x=>x.end||x.time).sort().pop() : "09:00";
+  S.itin.push({dest:S.dest, day, time:start, end:addMin(start,90), title:pre+(s.must?"★":"")+s.n, go:s.go||"", note:kind==="shop"?`必買：${s.buy||s.d||""}`:s.a});
+}
+function addTopGuideResults(kind, limit){
+  const list=getPlaceList(kind).slice(0, limit||3);
+  const label=kind==="food"?"美食":kind==="shop"?"購物":"景點";
+  if(!list.length){ alert(`目前沒有符合條件的${label}可加入。請放寬導購或地區條件。`); return; }
+  const day=selectedSpotDay();
+  const existing=getItin().filter(x=>x.day===day).map(x=>stripName(x.title));
+  const picked=list.filter(s=>!existing.some(t=>t===s.n || t.includes(s.n) || s.n.includes(t))).slice(0, limit||3);
+  if(!picked.length){ alert(`Day ${day} 已經有這些${label}，沒有重複加入。`); return; }
+  picked.forEach(s=>appendPlaceToDay(s, kind, day));
+  save(); renderAll(); showSave(`✓ 已把 ${picked.length} 個${label}加入 Day ${day}`);
+}
+const SMART_DAY_TEMPLATES = {
+  easy:[
+    {time:"09:30", kind:"spot", label:"上午輕景點"},
+    {time:"12:00", kind:"food", label:"午餐"},
+    {time:"14:30", kind:"spot", label:"下午景點"},
+    {time:"18:00", kind:"food", label:"晚餐"}
+  ],
+  balanced:[
+    {time:"09:00", kind:"spot", label:"上午主景點"},
+    {time:"12:00", kind:"food", label:"午餐"},
+    {time:"14:00", kind:"spot", label:"下午景點"},
+    {time:"16:30", kind:"shop", label:"購物/伴手禮"},
+    {time:"19:00", kind:"food", label:"晚餐"}
+  ],
+  full:[
+    {time:"08:30", kind:"spot", label:"早場景點"},
+    {time:"10:30", kind:"spot", label:"第二景點"},
+    {time:"12:30", kind:"food", label:"午餐"},
+    {time:"14:30", kind:"spot", label:"下午景點"},
+    {time:"17:00", kind:"shop", label:"購物/市集"},
+    {time:"19:30", kind:"food", label:"晚餐"}
+  ]
+};
+function setSmartPlan(k,v){
+  S.smartPlan=S.smartPlan||{pace:"balanced", replace:true, includeShop:true};
+  if(k==="replace"||k==="includeShop") S.smartPlan[k]=!!v;
+  else S.smartPlan[k]=v;
+  save(); renderSmartPlan();
+}
+function smartCandidateList(kind){
+  const seen=new Set(), out=[];
+  const add=p=>{ const key=(p.n||"")+"|"+(p.a||""); if(!seen.has(key)){ seen.add(key); out.push(p); } };
+  getPlaceList(kind).forEach(add);
+  sortPlaces(basePlaceList(kind), kind).forEach(add);
+  return out;
+}
+function smartAreas(cands){
+  const chosen = S.regionCity ? [S.regionCity] : activeScopeCities();
+  if(chosen.length) return chosen;
+  const areas=[];
+  cands.forEach(p=>{ if(p.a && !areas.includes(p.a)) areas.push(p.a); });
+  return areas.length ? areas : [DB[S.dest].name];
+}
+function smartPick(pool, used, area){
+  const clean = p => p && !used.has((p.n||"")+"|"+(p.a||"")) && !used.has(p.n||"");
+  let p = pool.find(x=>clean(x) && x.a===area);
+  if(!p) p = pool.find(x=>clean(x) && (String(x.a||"").includes(area) || String(area||"").includes(x.a||"")));
+  if(!p) p = pool.find(clean);
+  if(p){ used.add((p.n||"")+"|"+(p.a||"")); used.add(p.n||""); }
+  return p;
+}
+function smartItinItem(place, kind, slot){
+  const icon = kind==="food" ? "🍜 " : kind==="shop" ? "🛍️ " : "📍 ";
+  const note = kind==="shop"
+    ? `智慧排程：${slot.label}｜必買：${place.buy||place.d||""}`
+    : `智慧排程：${slot.label}｜${place.d||place.a||""}`;
+  return {dest:S.dest, day:1, time:slot.time, end:addMin(slot.time,90), title:icon+(place.must?"★":"")+place.n, go:place.go||"", note};
+}
+function renderSmartPlan(){
+  const el=$("smartPlanPanel"); if(!el) return;
+  const d=DB[S.dest], cfg=S.smartPlan||{pace:"balanced", replace:true, includeShop:true};
+  const spots=smartCandidateList("spot"), foods=smartCandidateList("food"), shops=smartCandidateList("shop");
+  const guide = guideActive() ? "會優先使用目前導購條件" : "會使用目前地區與旅遊類型排序";
+  const enough = spots.length || foods.length || shops.length;
+  el.innerHTML = `<div class="smart-plan">
+    <div class="smart-plan-head">
+      <div>
+        <h3>🧠 智慧排程器</h3>
+        <p>${d.flag} ${d.name}｜${guide}，把新景點資料自動排成合理天數與時段。</p>
+      </div>
+      <div class="smart-score">
+        <strong>${Math.max(S.days,1)}天</strong>
+        <span>可用 ${spots.length} 景點 / ${foods.length} 美食 / ${shops.length} 購物</span>
+      </div>
+    </div>
+    <div class="smart-controls">
+      <label><span>旅行步調</span><select onchange="setSmartPlan('pace',this.value)">
+        <option value="easy" ${cfg.pace==="easy"?"selected":""}>輕鬆少走路</option>
+        <option value="balanced" ${cfg.pace==="balanced"?"selected":""}>標準均衡</option>
+        <option value="full" ${cfg.pace==="full"?"selected":""}>充實多點</option>
+      </select></label>
+      <label class="smart-check"><input type="checkbox" ${cfg.includeShop!==false?"checked":""} onchange="setSmartPlan('includeShop',this.checked)"> 保留購物/伴手禮時段</label>
+      <label class="smart-check"><input type="checkbox" ${cfg.replace!==false?"checked":""} onchange="setSmartPlan('replace',this.checked)"> 取代目前本目的地行程</label>
+      <button class="btn big" ${enough?"":"disabled"} onclick="buildSmartItinerary()">⚡ 依需求自動排程</button>
+    </div>
+    <div class="smart-notes">
+      <span>同一天盡量安排同縣市/同區域</span>
+      <span>午餐與晚餐自動插入美食</span>
+      <span>會避開重複景點</span>
+      <span>仍可到「我的行程」手動微調時間</span>
+    </div>
+  </div>`;
+}
+function buildSmartItinerary(){
+  const cfg=S.smartPlan||{pace:"balanced", replace:true, includeShop:true};
+  const d=DB[S.dest], days=Math.max(S.days,1);
+  const pools={spot:smartCandidateList("spot"), food:smartCandidateList("food"), shop:smartCandidateList("shop")};
+  if(!pools.spot.length && !pools.food.length && !pools.shop.length){ alert("目前篩選條件下沒有足夠資料可排程，請先放寬地區或導購條件。"); return; }
+  const existing=getItin();
+  if(cfg.replace!==false && existing.length && !confirm(`會先清空本目的地目前 ${existing.length} 筆行程，再依照現在條件重新智慧排程。確定？`)) return;
+  if(cfg.replace!==false){
+    if(existing.length) S.itinBackup={dest:S.dest,items:JSON.parse(JSON.stringify(existing)),days:S.days};
+    S.itin=S.itin.filter(x=>x.dest!==S.dest);
+  }
+  const used=new Set(getItin().flatMap(x=>[stripName(x.title), stripName(x.title)+"|"]));
+  const allCands=[...pools.spot, ...pools.food, ...pools.shop];
+  const areas=smartAreas(allCands);
+  const slots=(SMART_DAY_TEMPLATES[cfg.pace]||SMART_DAY_TEMPLATES.balanced).filter(s=>cfg.includeShop!==false || s.kind!=="shop");
+  let added=0;
+  for(let day=1; day<=days; day++){
+    const area=areas[(day-1)%areas.length];
+    const dayItems=[];
+    slots.forEach(slot=>{
+      const place=smartPick(pools[slot.kind]||[], used, area);
+      if(!place) return;
+      const item=smartItinItem(place, slot.kind, slot);
+      item.day=day;
+      dayItems.push(item);
+    });
+    dayItems.sort((a,b)=>a.time.localeCompare(b.time));
+    dayItems.forEach((it,i)=>{ it.end = dayItems[i+1] ? dayItems[i+1].time : addMin(it.time,90); S.itin.push(it); added++; });
+  }
+  S.itinDay=1;
+  save(); renderAll(); showTab("itinerary"); showSave(`已智慧排程 ${added} 筆行程，可再手動微調`);
 }
 function renderRegionControls(){
   const catalog = allScopes();
@@ -2262,8 +3357,87 @@ function buildAutoItin(day){
   hout.forEach(o=>{ r+=`<div class="auto-itin">🏨 退房 ${esc(o.name||"住宿")}</div>`; });
   return r ? `<div class="auto-itin-wrap">${r}<div class="auto-itin-note">↑ 自動帶入自「✈️ 我的航班／🏨 住宿」，在上方那區編輯就會同步</div></div>` : "";
 }
+function todayISO(){
+  const n=new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;
+}
+function timeMin(t){
+  const a=String(t||"00:00").split(":").map(Number);
+  return (a[0]||0)*60+(a[1]||0);
+}
+function tripNowContext(){
+  const now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
+  let day=1, stage="preview";
+  if(S.startDate){
+    const diff=daysBetweenISO(S.startDate, todayISO());
+    if(diff && diff>=1 && diff<=S.days){ day=diff; stage="active"; }
+    else if(diff && diff<1){ day=1; stage="before"; }
+    else if(diff && diff>S.days){ day=Math.max(S.days,1); stage="after"; }
+    else day=(S.itinDay||1);
+  } else day=(S.itinDay||1);
+  day=Math.min(Math.max(day,1),Math.max(S.days,1));
+  const list=getItin().filter(x=>x.day===day).sort((a,b)=>String(a.time||"").localeCompare(String(b.time||"")));
+  const current=list.find(x=>timeMin(x.time)<=nowMin && nowMin<timeMin(x.end||addMin(x.time,90)));
+  const next=list.find(x=>timeMin(x.time)>nowMin) || null;
+  const prev=[...list].reverse().find(x=>timeMin(x.end||x.time)<=nowMin) || null;
+  const start=list.length?Math.min(...list.map(x=>timeMin(x.time))):8*60;
+  const end=list.length?Math.max(...list.map(x=>timeMin(x.end||addMin(x.time,90)))):22*60;
+  const pct = stage==="active" ? Math.max(0, Math.min(100, Math.round((nowMin-start)/Math.max(end-start,1)*100))) : 0;
+  return {stage, day, list, current, next, prev, nowMin, pct};
+}
+function prepTipsFor(it){
+  if(!it) return ["先確認今日行程、交通時間與天氣。"];
+  const txt=[it.title,it.go,it.note].join(" ");
+  const tips=[];
+  if(/機場|航班|飛機|高鐵|台鐵|KTX|新幹線|巴士|船|碼頭|渡輪|機捷|move|🚄|✈️/.test(txt)) tips.push("提早確認票券、月台/航廈、交通時間與證件。");
+  if(/飯店|住宿|入住|退房|hotel|🏨/.test(txt)) tips.push("準備訂房代碼、護照/證件，先看退房或入住時間。");
+  if(/夜市|餐|午餐|晚餐|小吃|市場|拉麵|烤肉|food|🍜/.test(txt)) tips.push("確認營業時間、排隊狀況，現金與支付工具都備好。");
+  if(/商圈|購物|百貨|Outlet|市場|伴手禮|shop|🛍️/.test(txt)) tips.push("帶購物袋，出國購物先確認退稅門檻與護照。");
+  if(/山|海|湖|瀑布|步道|森林|草原|海灘|島|戶外|日出/.test(txt)) tips.push("補水、防曬/雨具，山海線先確認天候與開放狀態。");
+  if(/預約|門票|票|申請|登島|船團/.test(txt)) tips.push("先打開預約憑證或 QR Code，避免現場找不到。");
+  return tips.length ? tips.slice(0,3) : ["抓 10–15 分鐘緩衝，確認地圖與下一段交通。"];
+}
+function tripNowItemHTML(it, label){
+  if(!it) return `<div class="trip-now-item empty"><b>${label}</b><span>目前沒有安排</span></div>`;
+  const q=stripName(it.title);
+  return `<div class="trip-now-item">
+    <b>${label}</b>
+    <span class="trip-time">${esc(it.time||"--:--")}–${esc(it.end||addMin(it.time,90))}</span>
+    <span class="trip-title">${esc(it.title)}</span>
+    ${it.go?`<span class="trip-go">${esc(it.go)}</span>`:""}
+    <a class="map-link" href="${mapUrl(q)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a>
+  </div>`;
+}
+function openExpenseForTrip(day, itemTitle){
+  S.expDay=day||1;
+  S.expDraft=Object.assign({}, S.expDraft||{}, {day:S.expDay, name:stripName(itemTitle||"")});
+  save(); renderExpense(); showTab("expense");
+}
+function renderTripNowPanel(){
+  const el=$("tripNowPanel"); if(!el) return;
+  const ctx=tripNowContext(), d=DB[S.dest];
+  const dateTxt=S.startDate ? dayDate(ctx.day).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric",weekday:"short"}) : "未設定日期";
+  const nextForPrep=ctx.next || ctx.current;
+  const stageText = ctx.stage==="active" ? "旅途中" : ctx.stage==="before" ? "尚未出發" : ctx.stage==="after" ? "旅程已結束" : "預覽模式";
+  const lead = ctx.stage==="active"
+    ? (ctx.current ? "現在進行中" : ctx.next ? "目前是空檔，準備下一站" : "今天行程已接近完成")
+    : "可先檢查當日動線與準備事項";
+  el.innerHTML=`<div class="trip-now">
+    <div class="trip-now-head">
+      <div><span class="trip-pill">${stageText}</span><h3>${d.flag} Day ${ctx.day}｜${dateTxt}</h3><p>${lead}</p></div>
+      <button class="btn ghost" onclick="setItinDay(${ctx.day});renderItin()">只看 Day ${ctx.day}</button>
+    </div>
+    <div class="trip-progress"><div style="width:${ctx.pct}%"></div></div>
+    <div class="trip-now-grid">
+      ${tripNowItemHTML(ctx.current,"目前行程")}
+      ${tripNowItemHTML(ctx.next,"下一個行程")}
+      <div class="trip-now-prep"><b>下一站提醒準備</b><ul>${prepTipsFor(nextForPrep).map(t=>`<li>${esc(t)}</li>`).join("")}</ul><button class="btn small" onclick='openExpenseForTrip(${ctx.day},${JSON.stringify((nextForPrep&&nextForPrep.title)||"")})'>⚡ 這站快速記帳</button></div>
+    </div>
+  </div>`;
+}
 /* ── 逐日行程 ── */
 function renderItin(){
+  renderTripNowPanel();
   const list=getItin();
   // 工具列：清空＋（有備份才顯示）復原
   $("itinTools").innerHTML = `<button class="btn ghost" onclick="clearItin()">清空本目的地行程</button>` +
@@ -2339,13 +3513,9 @@ function setItinDay(d){ S.itinDay=d; save(); renderItin(); }
 function addItinDay(day){ S.itin.push({dest:S.dest, day, time:"09:00", end:"10:30", title:"", go:"", note:""}); save(); renderItin(); }
 function quickAdd(kind,i){
   const s=getPlaceList(kind)[i];
-  const pre = kind==="food"?"🍜 ":kind==="shop"?"🛍️ ":"📍 ";
   // 加到使用者在上方選的「第幾天」（沒選就放最後一天），接在那天最後一筆之後，避免時間重疊
-  const sd=$("spotAddDay");
-  const day = Math.min(Math.max(sd ? (+sd.value||1) : Math.max(S.days,1), 1), Math.max(S.days,1));
-  const dayItems = getItin().filter(x=>x.day===day);
-  const start = dayItems.length ? dayItems.map(x=>x.end||x.time).sort().pop() : "09:00";
-  S.itin.push({dest:S.dest, day, time:start, end:addMin(start,90), title:pre+(s.must?"★":"")+s.n, go:s.go||"", note:kind==="shop"?`必買：${s.buy||s.d||""}`:s.a});
+  const day = selectedSpotDay();
+  appendPlaceToDay(s, kind, day);
   save(); renderItin();
   showSave(`✓ 已加到 Day ${day}：${s.n}　按上方「前往我的行程」可調整`);
 }
@@ -2699,15 +3869,17 @@ function dataHealth(destKey){
     景點:(d.spots||[]).length,
     美食:(d.foods||[]).length,
     購物:(d.shops||[]).length,
+    飯店:(d.hotels||[]).length,
     路線:(d.routes||[]).length,
     連結:(d.links||[]).length,
     提醒:(d.notes||[]).length,
     停靠點:routeStopCount(d.routes)
   };
-  const goals={景點:25, 美食:15, 購物:10, 路線:4, 連結:5, 提醒:4, 停靠點:40};
+  const goals={景點:25, 美食:15, 購物:10, 飯店:8, 路線:4, 連結:5, 提醒:4, 停靠點:40};
   const score=Math.round(Object.keys(goals).reduce((s,k)=>s+Math.min(counts[k]/goals[k],1),0)/Object.keys(goals).length*100);
   const tips=[];
   if(counts.購物<goals.購物) tips.push("補購物商圈、伴手禮與營業時間");
+  if(counts.飯店<goals.飯店) tips.push("補飯店/旅館候選與星級類型");
   if(counts.路線<goals.路線) tips.push("補 1 日、3 日、5 日不同強度模板");
   if(counts.連結<goals.連結) tips.push("補官方交通、天氣、入境與匯率連結");
   if(counts.停靠點<goals.停靠點) tips.push("增加路線停靠點與交通銜接備註");
@@ -2768,6 +3940,57 @@ function fmtCur(v,cur){ return (CUR_SYM[cur]||(cur+" "))+Math.round(v).toLocaleS
 function expOf(){ return (S.expenses||[]).filter(e=>e.dest===S.dest); }
 function toTWD(amt,cur){ const d=DB[S.dest]; const fx=S.fx??d.rate; return cur==="TWD"?amt:amt*fx; }
 function expDayLabel(day){ return day===0 ? "🧳 出發前花費" : "Day "+day; }
+function quickCurrency(){ return S.dest==="tw" ? "TWD" : DB[S.dest].cur; }
+function quickAmounts(cur){
+  if(cur==="JPY") return [1000,3000,5000];
+  if(cur==="KRW") return [10000,30000,50000];
+  if(cur==="THB") return [100,300,800];
+  return [100,300,800];
+}
+function quickContextName(){
+  const c=tripNowContext();
+  return stripName((c.current&&c.current.title) || (c.next&&c.next.title) || "");
+}
+function renderQuickExpensePanel(){
+  const el=$("quickExpensePanel"); if(!el) return;
+  const d=DB[S.dest], cur=quickCurrency(), amounts=quickAmounts(cur), ctxName=quickContextName();
+  const dayOpts=`<option value="0" ${S.expDay===0?"selected":""}>🧳 出發前</option>`+Array.from({length:Math.max(S.days,1)},(_,i)=>`<option value="${i+1}" ${S.expDay===i+1?"selected":""}>Day ${i+1}</option>`).join("");
+  const curOpts=`<option ${cur==="TWD"?"selected":""}>TWD</option>${S.dest!=="tw"?`<option ${cur===d.cur?"selected":""}>${d.cur}</option>`:""}`;
+  const payOpts=PAY_METHODS.map(p=>`<option>${p}</option>`).join("");
+  const preset=(cat,label,amt)=>`<button class="quick-chip" onclick="quickExpenseAdd('${cat}',${amt},'${label}')">${label} ${fmtCur(amt,cur)}</button>`;
+  el.innerHTML=`<div class="quick-expense">
+    <div class="quick-expense-head"><div><h3>⚡ 現場快速記帳</h3><p>旅途中先求快：預設由 ${esc(S.members[0]||"我")} 先付、全員分攤，之後可到下方完整表單補刷卡備註或收據。</p></div><button class="btn small ghost" onclick="openExpenseForTrip(tripNowContext().day, quickContextName())">帶入目前/下一站</button></div>
+    <div class="quick-presets">
+      ${preset("🍜 餐飲","餐飲",amounts[0])}${preset("🍜 餐飲","餐飲",amounts[1])}${preset("🚇 交通","交通",amounts[0])}${preset("🎫 門票","門票",amounts[1])}${preset("🛍️ 購物","購物",amounts[2])}
+    </div>
+    <div class="quick-form">
+      <select id="qDay">${dayOpts}</select>
+      <input id="qName" value="${esc(ctxName)}" placeholder="項目名稱，例如 午餐、計程車、門票">
+      <input id="qAmt" type="text" inputmode="decimal" placeholder="金額">
+      <select id="qCur">${curOpts}</select>
+      <select id="qPay">${payOpts}</select>
+      <input id="qNote" placeholder="刷哪張卡 / 備註">
+      <button class="btn" onclick="quickExpenseAdd()">＋ 快速記下</button>
+    </div>
+  </div>`;
+}
+function quickExpenseAdd(cat, amt, label){
+  const dayEl=$("qDay"), nameEl=$("qName"), amtEl=$("qAmt"), curEl=$("qCur"), payEl=$("qPay"), noteEl=$("qNote");
+  const day=+(dayEl&&dayEl.value)||S.expDay||1;
+  const useCat=cat || "📦 其他";
+  const useAmt=amt!=null ? +amt : +(amtEl&&amtEl.value);
+  const useCur=curEl ? curEl.value : quickCurrency();
+  const name=(label || (nameEl&&nameEl.value) || quickContextName() || useCat.replace(/^[^ ]+\s*/,"")).trim();
+  if(!useAmt || useAmt<=0){ alert("請輸入金額，或點一個快速金額。"); return; }
+  const payer=S.members[0]||"我";
+  const sharers=S.members.length?S.members.slice():[payer];
+  const rec={dest:S.dest, day, name, amt:useAmt, cur:useCur, cat:useCat, pay:(payEl&&payEl.value)||PAY_METHODS[0], payer, sharers};
+  const note=scrubNote((noteEl&&noteEl.value||"").trim());
+  if(note) rec.note=note;
+  S.expenses.push(rec);
+  S.expDay=day;
+  save(); renderExpense(); renderItin(); showSave(`已快速記帳：${name} ${fmtCur(useAmt,useCur)}`);
+}
 function expItemHTML(e){
   const gi=S.expenses.indexOf(e);
   const orig=e.cur==="TWD"?"":`${e.cur} ${(+e.amt).toLocaleString()}（≈`;
@@ -2807,6 +4030,7 @@ function renderExpense(){
     const over=total>LAST_BUDGET;
     $("expBudgetBar").innerHTML=`預算 ${fmt(LAST_BUDGET)}｜已花 <b style="color:${over?"#b91c1c":"#15803d"}">${fmt(total)}（${Math.round(total/LAST_BUDGET*100)}%）</b>${over?"　⚠️ 已超出預算！":""}<div class="track"><div class="fill" style="width:${pct}%${over?";background:#ef4444":""}"></div></div>`;
   } else $("expBudgetBar").innerHTML="";
+  renderQuickExpensePanel();
   $("expDayView").innerHTML=`<option value="0" ${S.expDay===0?"selected":""}>🧳 出發前花費</option>`+Array.from({length:Math.max(S.days,1)},(_,i)=>{
     const dt=S.startDate?dayDate(i+1).toLocaleDateString("zh-TW",{month:"numeric",day:"numeric"}):"";
     return `<option value="${i+1}" ${S.expDay===i+1?"selected":""}>Day ${i+1}（${dt}）</option>`;}).join("");
