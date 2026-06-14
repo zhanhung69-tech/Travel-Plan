@@ -42,8 +42,8 @@
   .tab{padding:11px 14px; border:none; border-radius:10px; background:transparent; cursor:pointer; font-size:.92rem; font-weight:700; color:var(--sub); text-align:left; width:100%;}
   .tab:hover{background:#eef3f8;}
   .tab.active{background:var(--accent); color:#fff; box-shadow:0 2px 8px rgba(0,0,0,.12);}
-  .nav-group{font-size:.68rem; font-weight:800; color:#94a3b8; letter-spacing:1.5px; padding:12px 14px 3px; user-select:none;}
-  .nav-group:first-child{padding-top:0;}
+  .nav-group{font-size:.78rem; font-weight:800; color:#64748b; letter-spacing:.5px; padding:12px 14px 4px; margin-top:6px; border-top:1px solid var(--line); user-select:none;}
+  .nav-group:first-child{padding-top:0; margin-top:0; border-top:none;}
   body.nav-hidden nav.tabs{transform:translateX(-100%); box-shadow:none;}
   .nav-toggle{position:fixed; top:10px; left:10px; z-index:130; width:42px; height:42px; border-radius:10px; border:1px solid var(--line); background:var(--card); cursor:pointer; font-size:1.25rem; line-height:1; box-shadow:0 1px 4px rgba(0,0,0,.12);}
   .nav-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:110;}
@@ -324,7 +324,7 @@
   .ov-fold>summary::after{content:"▾"; transition:transform .2s; color:var(--sub);}
   .ov-fold[open]>summary::after{transform:rotate(180deg);}
   .ov-fold>summary:hover{color:#155e75;}
-  .ov-fold>*:not(summary){padding:0 14px 14px;}
+  .ov-fold>*:not(summary){padding:6px 14px 14px;}
   .ov-fold .meta-count{font-weight:400; font-size:.8rem; color:var(--sub); margin-left:6px;}
   /* PDF 內容勾選器 */
   #printArea{display:none;}
@@ -342,8 +342,10 @@
     /* 內容勾選列印模式：只印 #printArea，其餘全隱藏 */
     body.print-pick>*{display:none!important;}
     body.print-pick #printArea{display:block!important; padding:0;}
-    body.print-pick #printArea .pa-row{break-inside:avoid;}
-    body.print-pick #printArea .pa-photos img{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    body.print-pick #printArea .pa-row{break-inside:avoid; page-break-inside:avoid;}
+    body.print-pick #printArea .pa-sec{break-inside:auto;}
+    body.print-pick #printArea .pa-photos{display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:6px;}
+    body.print-pick #printArea .pa-photos img{width:100%; height:auto; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     header,nav.tabs,.setup,.btn,.btn-row,.savebar,.wiz-overlay,.backup-banner,.map-link,.warn-row,.url-share,.alert,.nav-toggle,.nav-backdrop,.plan-bar,.cloud-bar{display:none!important;}
     body{padding-left:0!important;}
     #p-routes,#p-spots,#p-resources,#p-export,#p-notes{display:none!important;}
@@ -426,6 +428,11 @@
     .ritem .desc{padding-left:0;}
     .ritem .time{min-width:auto;}
     .btn.small{padding:7px 12px;}
+    .member-totals .mtot{flex:1 1 calc(50% - 4px); min-width:0;}   /* 手機兩欄不溢出 */
+    .print-pick-list{grid-template-columns:1fr;}                    /* PDF 勾選單欄，標籤不換行擠壓 */
+    .ov-fold>*:not(summary){padding:6px 10px 10px;}
+    .confirm-box .row{flex-direction:column-reverse;}              /* 危險動作確認：按鈕直排、取消在下方好按 */
+    .confirm-box .row .btn{width:100%; min-height:44px;}
   }
   /* ── 三平台版面保險：避免 ☰ 壓標題、新元件在小螢幕溢出壓線壓字 ── */
   @media(max-width:979px){
@@ -1401,7 +1408,7 @@ th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
   {n:"清邁古城寺廟群",a:"清邁",d:"契迪龍寺、帕辛寺，古城牆內漫步。",must:1,go:"市區步行或雙條車 ฿30"},
   {n:"雙龍寺 Doi Suthep",a:"清邁",d:"素帖山金色佛塔俯瞰清邁全城。",must:1,go:"古城搭雙條車上山 40 分"},
   {n:"大象保護營",a:"清邁",d:"餵食、泥巴浴，僅選國際認證的「無騎乘」道德營區（如 Elephant Nature Park），避免騎乘與表演，Klook/KKday 可篩選。",must:1,go:"營區含飯店接送"},
-  {n:"PP 島跳島",a:"普吉",d:"瑪雅灣、竹子島浮潛，快艇一日遊。",must:1,go:"普吉碼頭快艇 45 分，選含保險船公司"},
+  {n:"PP 島跳島",a:"普吉",d:"瑪雅灣、竹子島浮潛，快艇一日遊。瑪雅灣有每日人數上限、須線上預約並收國家公園門票，旺季提前訂。",must:1,go:"普吉碼頭快艇 45 分，選含保險船公司",hot:1},
   {n:"水門寺玻璃佛塔",a:"曼谷",d:"翡翠綠玻璃佛塔＋巨大金佛，IG 曼谷寺廟新霸主。",must:0,hot:1,go:"MRT Bang Phai 站步行 10 分"},
   {n:"唐人街耀華力路",a:"曼谷",d:"霓虹招牌＋街頭海鮮攤，入夜後最有電影感。",must:0,hot:1,go:"MRT Wat Mangkon 站"},
   {n:"Asiatique 河濱夜市",a:"曼谷",d:"摩天輪河景夜市，泰拳秀＋人妖秀劇場。",must:0,go:"BTS Saphan Taksin 站轉免費接駁船"},
@@ -1488,12 +1495,12 @@ th:{name:"泰國", flag:"🇹🇭", cur:"THB", rate:0.95, dom:false,
     {t:"抵達・古城寺廟",items:[
      {time:"11:00",n:"清邁機場 → 古城",k:"move",must:0,go:"Grab 15 分 ฿150",note:""},
      {time:"14:00",n:"契迪龍寺・帕辛寺",k:"spot",must:1,go:"古城內步行",note:"巨大磚塔遺跡"},
-     {time:"17:00",n:"週日夜市（或夜市巷）",k:"spot",must:1,go:"拉差當儂路",note:"手作工藝＋街頭按摩"},
+     {time:"17:00",n:"週日夜市（限週日；平日改塔佩門夜市巷）",k:"spot",must:1,go:"拉差當儂路",note:"週日步行街僅週日營業；非週日抵達改逛塔佩門周邊夜市巷或長康夜市"},
      {time:"19:00",n:"鳳飛飛豬腳飯",k:"food",must:1,go:"北門（昌卜克門）",note:"17:00 開攤"}]},
     {t:"素帖山雙龍寺日",items:[
-     {time:"09:00",n:"雙龍寺",k:"spot",must:1,go:"古城搭紅色雙條車上山 40 分",note:"306 階龍梯或纜車"},
-     {time:"12:00",n:"寧曼路午餐",k:"food",must:1,go:"雙條車下山 30 分",note:"Khao Soi 咖哩麵名店 Khao Soi Nimman"},
-     {time:"14:00",n:"寧曼路咖啡巡禮",k:"spot",must:0,go:"步行",note:"Ristr8to 拉花冠軍"},
+     {time:"08:00",n:"雙龍寺",k:"spot",must:1,go:"古城搭紅色雙條車上山 40 分",note:"306 階龍梯或纜車；含上下山＋參拜約 2.5–3 小時，早點出發避人潮"},
+     {time:"13:00",n:"寧曼路午餐",k:"food",must:1,go:"雙條車下山 30 分",note:"Khao Soi 咖哩麵名店（如 Khao Soi Nimman；旺季宜先查營業）"},
+     {time:"14:30",n:"寧曼路咖啡巡禮",k:"spot",must:0,go:"步行",note:"Ristr8to 拉花冠軍"},
      {time:"17:00",n:"MAYA 商場頂樓夕陽",k:"spot",must:0,go:"步行 5 分",note:""},
      {time:"19:00",n:"昌康夜市海鮮",k:"food",must:0,go:"Grab 10 分",note:"河畔燒烤"}]},
     {t:"大象保護營一日",items:[
@@ -2435,6 +2442,9 @@ function mergeState(p){
   if(typeof m.adults!=="number" || m.adults<1) m.adults = 1;
   if(typeof m.kids!=="number" || m.kids<0) m.kids = 0;
   if(typeof m.aaPeople!=="number" || m.aaPeople<0) m.aaPeople = 0;
+  // expDraft 防呆：格式錯誤就清掉，避免污染記帳表單
+  if(!m.expDraft || typeof m.expDraft!=="object" || Array.isArray(m.expDraft)) m.expDraft = null;
+  else if(m.expDraft.sharers!=null && !Array.isArray(m.expDraft.sharers)) m.expDraft.sharers = undefined;
   return m;
 }
 
@@ -2446,14 +2456,13 @@ function showSave(msg, err){
 function save(){
   S.schemaVersion=3;
   const ap=activePlan(); if(ap){ ap.state=S; ap.updatedAt=Date.now(); }
+  let ok=false;
   try{
-    if(window.TripStorageService) TripStorageService.writeJson(PLANS_KEY, PLANS);
-    else localStorage.setItem(PLANS_KEY, JSON.stringify(PLANS));
-    showSave("✓ 已自動儲存", false);
-  }catch(e){
-    // 隱私模式 / 容量滿 / 暫存環境會走到這裡，不再靜默
-    showSave("⚠️ 儲存失敗！請到「匯出/同步」按『備份』保存", true);
-  }
+    if(window.TripStorageService) ok=TripStorageService.writeJson(PLANS_KEY, PLANS);
+    else { localStorage.setItem(PLANS_KEY, JSON.stringify(PLANS)); ok=true; }
+  }catch(e){ ok=false; }
+  save._failed = !ok;
+  showSave(ok ? "✓ 已自動儲存" : "⚠️ 儲存失敗（空間可能已滿）！請到「匯出/同步」按『下載紀錄檔』備份，再刪除部分照片", !ok);
   if(typeof cloudAutoPush==="function") cloudAutoPush();   // 登入時自動保留到雲端
   updateBackupBanner();
 }
@@ -2464,7 +2473,9 @@ function load(){
   if(cont && Array.isArray(cont.plans) && cont.plans.length){
     PLANS = cont;
     PLANS.plans.forEach(p=>{ if(!p.id) p.id=genPlanId(); if(!p.name) p.name="未命名計畫"; });
-    const ap = activePlan(); PLANS.activePlanId = ap.id;
+    let ap = activePlan();
+    if(!ap){ ap=PLANS.plans[0]; }   // 防 activePlanId 失效或資料污染導致 null
+    PLANS.activePlanId = ap.id;
     S = mergeState(ap.state||{});
     return;
   }
@@ -2641,7 +2652,7 @@ function renderAll(){
   const su=$("storUse"); if(su){ const kb=storUsedKB(); su.textContent=`📦 已用空間約 ${kb} KB / 5000 KB（照片會佔最多，滿了先備份再刪舊照片）`; }
 }
 /* 即時暫存：每次輸入就更新狀態（防抖寫入），切頁/關閉前 flushInputs 兜底 */
-function debSave(){ clearTimeout(debSave._t); debSave._t=setTimeout(()=>save(), 400); }
+function debSave(){ if(save._failed && storUsedKB()>4800) return;  /* 空間已滿且上次存檔失敗：停止每 400ms 空轉重試 */ clearTimeout(debSave._t); debSave._t=setTimeout(()=>save(), 400); }
 function liveItin(gi,k,v){ if(S.itin[gi]){ S.itin[gi][k]=v; debSave(); } }
 function flushInputs(){ clearTimeout(debSave._t); }
 /* 地圖連結：韓國用 Naver，其餘用 Google Maps */
@@ -3320,7 +3331,7 @@ function updParty(gi,k,v){
 }
 function delParty(gi){
   const nm=(S.party[gi].name||"").trim()||"成員";
-  if(expOf().some(e=>e.payer===nm||e.sharers.includes(nm))){ alert(`「${nm}」已有記帳紀錄，請先刪除相關支出再移除成員`); return; }
+  if((S.expenses||[]).some(e=>e.payer===nm||e.sharers.includes(nm))){ alert(`「${nm}」已有記帳紀錄（含其他目的地），請先刪除相關支出再移除成員`); return; }
   S.party.splice(gi,1); syncMembers(); save(); renderTravelInfo(); renderExpense(); renderAll();
 }
 
@@ -3733,7 +3744,13 @@ async function cloudPost(action, payload){
   const res = await fetch(url, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(Object.assign({action}, payload||{})), redirect:"follow" });
   const txt = await res.text();
   let j; try{ j=JSON.parse(txt); }catch(e){ throw new Error("雲端回應異常，請確認網址正確、且部署為『任何人』可存取"); }
-  if(!j.ok) throw new Error(j.error||"雲端錯誤");
+  if(!j.ok){
+    // 憑證失效：自動清除 token，避免之後反覆用過期 token 失敗
+    if(/未登入|憑證|token|unauthor/i.test(String(j.error||"")) && action!=="login" && action!=="register"){
+      CLOUD.token=""; saveCloud(); if(typeof renderCloud==="function") renderCloud();
+    }
+    throw new Error(j.error||"雲端錯誤");
+  }
   return j;
 }
 function cloudCreds(forReg){
@@ -3778,7 +3795,8 @@ async function cloudPull(){
     if(!cps.length){ alert("雲端目前沒有計畫。"); return; }
     cps.forEach(cp=>{ if(!cp||!cp.id) return; cp.state=mergeState(cp.state||{}); if(!cp.name) cp.name="未命名計畫"; const i=PLANS.plans.findIndex(p=>p.id===cp.id); if(i>=0) PLANS.plans[i]=cp; else PLANS.plans.push(cp); });   // 下載後即正規化，補齊新版欄位、防舊版 schema 缺欄
     if(!planById(PLANS.activePlanId)) PLANS.activePlanId=PLANS.plans[0].id;
-    S=mergeState(activePlan().state); applyPlanRerender();
+    const ap=activePlan(); if(!ap) return;
+    S=mergeState(ap.state); applyPlanRerender();
     showSave("已從雲端下載 "+cps.length+" 個計畫");
   }catch(e){ alert("下載失敗："+e.message); }
 }
@@ -4107,7 +4125,7 @@ function renderExpense(){
   const d=DB[S.dest], list=expOf();
   // Sticky 看板
   const total=list.reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
-  if(S.expDay>S.days) S.expDay=1;
+  if(S.expDay>S.days || S.expDay<0) S.expDay=0;   // 超出範圍回到「出發前(0)」而非武斷跳 Day1
   const daySum=list.filter(e=>e.day===S.expDay).reduce((s,e)=>s+toTWD(e.amt,e.cur),0);
   $("expTotal").textContent=fmt(total);
   $("expDaySum").textContent=fmt(daySum);
@@ -4179,7 +4197,7 @@ function delMember(i){
   const m=S.members[i];
   const pi=S.party.findIndex(p=>((p.name||"").trim()||"成員")===m);
   if(pi>=0){ delParty(pi); return; }
-  if(expOf().some(e=>e.payer===m||e.sharers.includes(m))){ alert(`「${m}」已有記帳紀錄，不能移除（先刪除相關紀錄）`); return; }
+  if((S.expenses||[]).some(e=>e.payer===m||e.sharers.includes(m))){ alert(`「${m}」已有記帳紀錄（含其他目的地），不能移除（先刪除相關紀錄）`); return; }
   S.members.splice(i,1); save(); renderExpense();
 }
 function pickRcpt(input){
@@ -4457,9 +4475,10 @@ function buildPrintArea(keys){
     }
   }
   if(has("packing")){
-    const must=[...COMMON_MUST.filter(x=>d.dom?!x.includes("出國"):true), ...d.packMust];
+    const common=PACK_GROUPS.flatMap(([,items])=>items.filter(it=>d.dom?!it.intl:true).map(it=>it.n));
+    const must=[...common, ...(d.packMust||[])];
     const line=arr=>arr.map(it=>`<span style="display:inline-block;margin-right:12px;white-space:nowrap">${S.checks[S.dest+"|"+it]?"☑":"☐"} ${esc(it)}</span>`).join("");
-    h+=`<div class="pa-sec"><h3>🎒 攜帶清單</h3><div style="font-size:.9rem;line-height:2.1">${line(must)}${line(d.packNice)}${line(S.custom||[])}</div></div>`;
+    h+=`<div class="pa-sec"><h3>🎒 攜帶清單</h3><div style="font-size:.9rem;line-height:2.1">${line(must)}${line(d.packNice||[])}${line(S.custom||[])}</div></div>`;
   }
   if(has("notes")) h+=`<div class="pa-sec"><h3>⚠️ 注意事項</h3>`+d.notes.map(n=>`<div class="pa-row"><span>• ${esc(n)}</span></div>`).join("")+`</div>`;
   $("printArea").innerHTML=h;
@@ -4622,7 +4641,8 @@ async function importTripPack(p){
   S.expenses=S.expenses.filter(keep).concat((Array.isArray(p.expenses)?p.expenses:[]).filter(e=>e&&Array.isArray(e.sharers)&&e.sharers.length&&e.sharers.every(s=>typeof s==="string")));
   S.photos=S.photos.filter(keep).concat((Array.isArray(p.photos)?p.photos:[]).filter(x=>x&&typeof x.src==="string"));
   Object.keys(S.journal).forEach(k=>{ if(k.startsWith(dest+"|")) delete S.journal[k]; });
-  Object.assign(S.journal, (p.journal&&typeof p.journal==="object")?p.journal:{});
+  // 只併入屬於此目的地、且鍵值格式正確的日誌，避免污染
+  if(p.journal && typeof p.journal==="object"){ Object.entries(p.journal).forEach(([k,v])=>{ if(typeof k==="string" && k.startsWith(dest+"|") && typeof v==="string") S.journal[k]=v; }); }
   if(Array.isArray(p.party)&&p.party.length){ S.party=p.party.filter(x=>x&&typeof x==="object"); syncMembers(); }
   S.dest=dest; S.fx=null;   // 匯入共編包換目的地→匯率回該國預設
   if(p.startDate) S.startDate=p.startDate;
@@ -4642,7 +4662,7 @@ function importJSON(input){
     catch(e){ alert("檔案格式錯誤，無法讀取（請確認是本系統匯出的 .json 檔案）"); input.value=""; return; }
     input.value="";
     if(!p || typeof p!=="object" || Array.isArray(p)){ alert("這不是有效的檔案。"); return; }
-    if(p._kind==="tripShare"){ importTripPack(p); return; }   // 共編包 → 只換該目的地
+    if(p._kind==="tripShare"){ await importTripPack(p); return; }   // 共編包 → 只換該目的地（須 await，確認框才生效）
     if(!await uiConfirm("還原會覆蓋目前【全部】資料（所有計畫）。\n目前資料會先自動存到備援，可救回。", {danger:true, title:"還原完整備份檔", okText:"確定還原"})) return;
     try{ window.TripStorageService ? TripStorageService.backup(PLANS_KEY, BACKUP_KEY) : localStorage.setItem(BACKUP_KEY, localStorage.getItem(PLANS_KEY)||""); }catch(e){}
     S = mergeState(p);
